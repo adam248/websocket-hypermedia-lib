@@ -190,9 +190,23 @@ We welcome contributions! However, this library prioritizes **leanness, size, sp
 4. **Create Extensions**: Build separate libraries that work with this core library
 
 ### Development Setup
+
+#### Using Nix (Recommended)
 ```bash
 git clone https://github.com/adam248/websocket-hypermedia-lib.git
 cd websocket-hypermedia-lib
+nix-shell
+# Now you have all build tools available
+npm install
+npm run build
+npm run test:local
+```
+
+#### Without Nix
+```bash
+git clone https://github.com/adam248/websocket-hypermedia-lib.git
+cd websocket-hypermedia-lib
+npm install
 # Run tests to verify everything works
 ./test.sh
 ```
