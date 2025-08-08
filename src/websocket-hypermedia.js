@@ -13,6 +13,14 @@ class WebSocketHypermedia {
             onError: null,
             onMessage: null,
             enableLogging: true,
+            maxJsonSize: 1024 * 1024,
+            enableJsonValidation: false,
+            maxMessageSize: 1024 * 1024,
+            maxParts: 100,
+            enableSecurityLogging: false,
+            securityLogLevel: 'warn',
+            protocolVersion: '1.1',
+            requireVersion: false,
             ...options
         };
         
@@ -42,9 +50,20 @@ class WebSocketHypermedia {
                 const event = new Event(eventType, { bubbles: true, cancelable: true });
                 if (eventData) {
                     try {
+                        if (this.options.enableJsonValidation) {
+                            this._vJson(eventData, this.options.maxJsonSize);
+                        }
                         const data = JSON.parse(eventData);
-                        Object.assign(event, data);
+                        
+                        const safeData = {};
+                        for (const [key, value] of Object.entries(data)) {
+                            if (key !== '__proto__' && key !== 'constructor') {
+                                safeData[key] = value;
+                            }
+                        }
+                        Object.assign(event, safeData);
                     } catch (e) {
+                        this._logSec('JSON parsing error', { error: e.message, eventData });
                         event.detail = eventData;
                     }
                 }
@@ -108,7 +127,21 @@ class WebSocketHypermedia {
                 return null;
             },
             keyframe: (el, animationName, keyframes, duration) => {
-                const parsedKeyframes = typeof keyframes === 'string' ? JSON.parse(keyframes) : keyframes;
+                let parsedKeyframes;
+                if (typeof keyframes === 'string') {
+                    try {
+                        if (this.options.enableJsonValidation) {
+                            this._vJson(keyframes, this.options.maxJsonSize);
+                        }
+                        parsedKeyframes = JSON.parse(keyframes);
+                    } catch (e) {
+                        this._logSec('Keyframe JSON parsing error', { error: e.message, keyframes });
+                        return;
+                    }
+                } else {
+                    parsedKeyframes = keyframes;
+                }
+                
                 const animation = el.animate(parsedKeyframes, {
                     duration: duration ? parseFloat(duration) * 1000 : 1000
                 });
@@ -150,6 +183,30 @@ class WebSocketHypermedia {
             return false;
         }
         return /^[a-zA-Z0-9_-]+$/.test(id);
+    }
+    
+    _vJson(d, s = 1024 * 1024) {
+        if (d.length > s) throw new Error('JSON too large');
+        if (d.includes('"__proto__"') || d.includes('"constructor"')) throw new Error('Prototype pollution');
+        return true;
+    }
+    
+    _logSec(e, d) {
+        if (this.options.enableSecurityLogging) {
+            const m = this.options.securityLogLevel === 'error' ? 'error' : 'warn';
+            console[m](`[Security] ${e}:`, d);
+        }
+    }
+    
+    _san(v, t) {
+        const s = this.options.inputSanitizers[t];
+        return s ? s(v) : v;
+    }
+    
+    _vProto(v, o) {
+        if (!this.options.requireVersion) return true;
+        const ver = o.find(opt => opt.startsWith('version='));
+        return ver ? ver.split('=')[1] === this.options.protocolVersion : false;
     }
     
     setupEventHandlers() {
@@ -197,9 +254,16 @@ class WebSocketHypermedia {
             
             if (parts.length >= 3) {
                 const [verb, noun, subject, ...options] = parts;
+                
+                if (this.options.requireVersion && !this._vProto(verb, options)) {
+                    this._logSec('Protocol version mismatch', { verb, options });
+                    return;
+                }
+                
                 await this.processAction(verb, noun, subject, options);
             }
         } catch (error) {
+            this._logSec('Message processing error', { error: error.message });
             if (this.options.enableLogging) {
                 console.error('Error processing message:', error);
             }
@@ -207,6 +271,11 @@ class WebSocketHypermedia {
     }
     
     parseMessage(data) {
+        if (data.length > this.options.maxMessageSize) {
+            this._logSec('Message too large', { size: data.length, maxSize: this.options.maxMessageSize });
+            throw new Error('Message too large');
+        }
+        
         const parts = [];
         let currentPart = '';
         let i = 0;
@@ -229,6 +298,11 @@ class WebSocketHypermedia {
                 parts.push(currentPart);
                 currentPart = '';
                 i++;
+                
+                if (parts.length > this.options.maxParts) {
+                    this._logSec('Too many message parts', { parts: parts.length, maxParts: this.options.maxParts });
+                    throw new Error('Too many message parts');
+                }
                 continue;
             }
             
@@ -378,4 +452,4 @@ if (typeof window !== 'undefined') {
             window.wsHypermedia = new WebSocketHypermedia(script.dataset.url);
         }
     });
-} 
+}

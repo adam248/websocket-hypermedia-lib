@@ -1,6 +1,6 @@
 {
   "name": "websocket-hypermedia",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A minimal, powerful library for building real-time hypermedia applications using WebSockets",
   "main": "dist/websocket-hypermedia.min.js",
   "files": [

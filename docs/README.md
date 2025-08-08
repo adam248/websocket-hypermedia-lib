@@ -6,49 +6,150 @@ A minimal, powerful library for building real-time hypermedia applications using
 **Protocol**: Simple action-based messaging  
 **Browser Support**: All modern browsers with WebSocket support
 
-## ⚠️ **CRITICAL: Production Security Considerations**
+## ⚠️ **CRITICAL: Security Responsibilities**
 
-**IMPORTANT**: This library directly inserts HTML content into the DOM using `innerHTML` and `outerHTML`. This creates XSS (Cross-Site Scripting) vulnerabilities if untrusted content is processed.
+**IMPORTANT**: This library is designed as a **transparent protocol handler**. This means security vulnerabilities in content must be prevented at the source (server), not patched in the client.
 
-### Security Requirements for Production
+### 🛡️ **Security Philosophy**
 
-1. **Server-Side HTML Sanitization**: ALL HTML content sent to clients MUST be sanitized on the server side before transmission.
+The WebSocket Hypermedia library follows a **transparent protocol** approach where:
+- **Server Responsibility**: Content validation, sanitization, and business logic security
+- **Client Responsibility**: Protocol handling and safe DOM manipulation
+- **Library Responsibility**: Secure protocol implementation and defense-in-depth measures
 
-2. **Content Security Policy**: Implement CSP headers to restrict script execution:
-   ```http
-   Content-Security-Policy: script-src 'self'; object-src 'none';
-   ```
+**Core Principle**: The library uses `innerHTML`, `outerHTML`, and `insertAdjacentHTML` without sanitization by design to maintain transparency. This is a feature, not a bug.
 
-3. **WebSocket URL Validation**: Validate WebSocket URLs to prevent SSRF attacks.
+### 🔒 **SERVER-SIDE SECURITY REQUIREMENTS (CRITICAL)**
 
-4. **Click-to-Send Security**: The click-to-send feature sends element HTML to the server. Ensure this doesn't expose sensitive data.
-
-### Recommended Security Practices
-
+#### **1. HTML Sanitization (MANDATORY)**
 ```javascript
-// Server-side HTML sanitization (example with DOMPurify)
+// REQUIRED: Server-side HTML sanitization
 const DOMPurify = require('dompurify');
 
 function sanitizeHTML(html) {
     return DOMPurify.sanitize(html, {
-        ALLOWED_TAGS: ['p', 'div', 'span', 'strong', 'em', 'ul', 'li'],
-        ALLOWED_ATTR: ['class', 'id']
+        ALLOWED_TAGS: ['p', 'div', 'span', 'strong', 'em', 'ul', 'li', 'a'],
+        ALLOWED_ATTR: ['class', 'id', 'href'],
+        FORBID_TAGS: ['script', 'iframe', 'object', 'embed'],
+        FORBID_ATTR: ['onclick', 'onload', 'onerror', 'javascript:']
     });
 }
 
-// Always sanitize before sending
+// ALWAYS sanitize before sending
 websocket.send(`update|content|${sanitizeHTML(userContent)}`);
 ```
 
-### Security Checklist for Production Deployment
+#### **2. JSON Data Validation (MANDATORY)**
+```javascript
+// REQUIRED: Validate JSON data before sending
+function validateAndSanitizeJSON(data) {
+    // Check for prototype pollution attempts
+    const jsonString = JSON.stringify(data);
+    if (jsonString.includes('"__proto__"') || jsonString.includes('"constructor"')) {
+        throw new Error('Invalid JSON: prototype pollution attempt');
+    }
+    
+    // Validate size limits
+    if (jsonString.length > 1024 * 1024) { // 1MB limit
+        throw new Error('JSON data too large');
+    }
+    
+    return data;
+}
 
-- [ ] Implement server-side HTML sanitization
-- [ ] Configure Content Security Policy headers
-- [ ] Validate WebSocket URLs
-- [ ] Review click-to-send data exposure
-- [ ] Test with malicious HTML content
-- [ ] Monitor for XSS attempts
-- [ ] Implement rate limiting on WebSocket connections
+// ALWAYS validate JSON before sending
+const eventData = validateAndSanitizeJSON({ type: 'user-action', data: userInput });
+websocket.send(`trigger|button|click|${JSON.stringify(eventData)}`);
+```
+
+#### **3. Message Size Limits (MANDATORY)**
+```javascript
+// REQUIRED: Enforce message size limits
+const MAX_MESSAGE_SIZE = 1024 * 1024; // 1MB
+const MAX_PARTS = 100;
+
+function validateMessageSize(message) {
+    if (message.length > MAX_MESSAGE_SIZE) {
+        throw new Error('Message too large');
+    }
+    
+    const parts = message.split('|');
+    if (parts.length > MAX_PARTS) {
+        throw new Error('Too many message parts');
+    }
+    
+    return true;
+}
+
+// ALWAYS validate before sending
+validateMessageSize(message);
+websocket.send(message);
+```
+
+#### **4. Authentication & Authorization (MANDATORY)**
+```javascript
+// REQUIRED: Authenticate WebSocket connections
+wss.on('connection', (ws, req) => {
+    const token = req.headers['authorization'];
+    if (!validateToken(token)) {
+        ws.close(1008, 'Unauthorized');
+        return;
+    }
+    ws.userId = getUserIdFromToken(token);
+});
+
+// REQUIRED: Authorize actions
+function authorizeAction(ws, verb, noun, subject) {
+    if (!canUserPerformAction(ws.userId, verb, noun)) {
+        throw new Error('Unauthorized action');
+    }
+}
+```
+
+#### **5. Content Security Policy (MANDATORY)**
+```http
+# REQUIRED: CSP headers
+Content-Security-Policy: 
+    default-src 'self'; 
+    script-src 'self' 'unsafe-inline'; 
+    style-src 'self' 'unsafe-inline'; 
+    object-src 'none'; 
+    base-uri 'self';
+```
+
+### 🖥️ **CLIENT-SIDE SECURITY (ALREADY IMPLEMENTED)**
+
+The library already implements:
+- ✅ WebSocket URL validation (prevents SSRF)
+- ✅ Element ID validation (safe DOM operations)
+- ✅ Basic error handling and logging
+
+### 🚨 **SECURITY CHECKLIST FOR PRODUCTION**
+
+#### **Server Implementation (CRITICAL)**
+- [ ] Implement HTML sanitization (DOMPurify recommended)
+- [ ] Validate JSON data for prototype pollution
+- [ ] Enforce message size limits
+- [ ] Implement authentication for WebSocket connections
+- [ ] Implement authorization for all actions
+- [ ] Configure rate limiting
+- [ ] Set up Content Security Policy headers
+- [ ] Validate all inputs before processing
+- [ ] Monitor for security violations
+- [ ] Log security events
+
+#### **Client Implementation (VERIFIED)**
+- [ ] Use HTTPS/WSS in production
+- [ ] Validate WebSocket URLs (already implemented)
+- [ ] Monitor for security warnings
+- [ ] Test with malicious content
+- [ ] Keep library updated
+
+### 📚 **Additional Resources**
+
+- **Complete Security Guide**: See `security/SECURITY-RESPONSIBILITIES.md`
+- **Security Audit Report**: See `security/SECURITY-AUDIT-2025-01-08.md`
+- **Security Summary**: See `security/SECURITY-SUMMARY-2025.md`
 
 ## Quick Start
 

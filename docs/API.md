@@ -8,7 +8,25 @@
 
 WebSocket Hypermedia Core Library - A minimal library for WebSocket-based hypermedia applications.
 
-**Size**: ~8.2KB uncompressed, ~2.2KB gzipped
+**Size**: ~13.5KB uncompressed, ~3.1KB gzipped
+
+## ⚠️ **Security Notice**
+
+This library is a **transparent protocol handler** that uses `innerHTML`, `outerHTML`, and `insertAdjacentHTML` without sanitization by design. 
+
+**Server-side security is MANDATORY**:
+- ✅ HTML sanitization (DOMPurify recommended)
+- ✅ JSON validation (prototype pollution protection)
+- ✅ Message size limits
+- ✅ Authentication & authorization
+- ✅ Content Security Policy headers
+
+**Client-side security is already implemented**:
+- ✅ WebSocket URL validation
+- ✅ Element ID validation
+- ✅ Basic error handling
+
+See `security/SECURITY-RESPONSIBILITIES.md` for complete security guidance.
 
 ## Protocol
 
