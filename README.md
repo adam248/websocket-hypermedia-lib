@@ -5,7 +5,7 @@
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Tests](https://img.shields.io/badge/tests-198%2F198%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Performance](https://img.shields.io/badge/performance-50K%20msg%2Fs-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
-[![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.1.0)
+[![Version](https://img.shields.io/badge/version-v1.1.1-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.1.1)
 [![Stars](https://img.shields.io/github/stars/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Forks](https://img.shields.io/github/forks/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Issues](https://img.shields.io/github/issues/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/issues)
@@ -19,7 +19,7 @@
 
 Transform your static HTML into dynamic, interactive experiences with just **one line of JavaScript**. No frameworks, no dependencies, no bloat - just pure, lightning-fast real-time updates with enterprise-grade security and powerful animation capabilities.
 
-**✨ Production Ready v1.1.0** - Tested, optimized, and battle-hardened with comprehensive security features and animation system!
+**✨ Production Ready v1.1.1** - Tested, optimized, and battle-hardened with comprehensive security features and animation system!
 
 **Note:** This library requires JavaScript to function. The "progressive enhancement" approach means you can build traditional HTML forms first, then enhance them with real-time capabilities.
 
@@ -34,7 +34,7 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 **🎯 Server sends:** `update|content|<p>Hello World!</p>`  
 **⚡ Page updates:** Instantly, no JavaScript needed!
 
-## 🆕 **New in v1.1.0 - Major Feature Expansion!**
+## 🆕 **New in v1.1.1 - Performance & Size Optimization!**
 
 ### 🎬 **Animation System**
 - **CSS Animations**: `animate|element|fadeIn|1s|ease|0|1|normal|forwards`
@@ -205,23 +205,23 @@ document.body.addEventListener('click', (e) => {
 <!-- Latest version -->
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@main/src/websocket-hypermedia.js"></script>
 
-<!-- Production-ready v1.1.0 -->
-<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.0/src/websocket-hypermedia.js"></script>
+<!-- Production-ready v1.1.1 -->
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.1/src/websocket-hypermedia.js"></script>
 
-<!-- Ultra-compressed v1.1.0 (2.7KB gzipped!) -->
-<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.0/dist/websocket-hypermedia.min.js"></script>
+<!-- Ultra-compressed v1.1.1 (3.4KB gzipped!) -->
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.1/dist/websocket-hypermedia.min.js"></script>
 ```
 
 ### 📦 **Direct Download**
 ```bash
-# Source file (17KB)
-curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/src/websocket-hypermedia.js
+# Source file (13.6KB)
+curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.1/src/websocket-hypermedia.js
 
 # Minified version (7.4KB)
-curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/dist/websocket-hypermedia.min.js
+curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.1/dist/websocket-hypermedia.min.js
 
-# Gzipped version (2.7KB)
-curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/dist/websocket-hypermedia.min.js.gz
+# Gzipped version (3.4KB)
+curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.1/dist/websocket-hypermedia.min.js.gz
 ```
 
 ### 🎯 **NPM (Coming Soon)**
@@ -490,7 +490,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Inspired by** the simplicity of hypermedia-driven applications
 - **Built on** the power of WebSocket technology  
 - **Thanks to** the open source community for inspiration and feedback
-- **Special thanks** to all contributors who helped make v1.1.0 production-ready with security and animation features!
+- **Special thanks** to all contributors who helped make v1.1.1 production-ready with security, animation, and performance features!
 
 ## 📞 Support
 
@@ -508,7 +508,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🎉 **Ready to Build Something Amazing?**
 
-**WebSocket Hypermedia v1.1.0** is production-ready and waiting to power your next real-time application!
+**WebSocket Hypermedia v1.1.1** is production-ready and waiting to power your next real-time application!
 
 - **⚡ Lightning fast** - 50K+ messages/second
 - **📦 Ultra tiny** - 7.4KB minified, 2.7KB gzipped

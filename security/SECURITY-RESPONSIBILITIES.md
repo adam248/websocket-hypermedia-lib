@@ -5,7 +5,7 @@
 This document clearly defines security responsibilities between **server-side** and **client-side** components when using the WebSocket Hypermedia library. It's based on comprehensive security audits and follows the library's transparent protocol philosophy.
 
 **Last Updated**: 2025-01-08  
-**Library Version**: v1.1.0  
+**Library Version**: v1.1.1  
 **Audit Basis**: Comprehensive security audit (204/204 tests passing)
 
 ---

@@ -5,7 +5,7 @@
 This comprehensive security audit examines the `websocket-hypermedia.js` library for potential security vulnerabilities following the recent addition of advanced features including animations, form enhancements, and event delegation.
 
 **Audit Date**: 2025-01-08  
-**Library Version**: v1.1.0 (Current)  
+**Library Version**: v1.1.1 (Current)  
 **Audit Scope**: Main library file (`websocket-hypermedia.js`) and supporting files  
 **Test Status**: 204/204 tests passing (100%)  
 **Security Philosophy**: Transparent protocol handler with server-side responsibility for content security
