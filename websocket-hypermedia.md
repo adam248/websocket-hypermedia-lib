@@ -9,21 +9,21 @@ A minimal, powerful library for building real-time hypermedia applications using
 ## Quick Start
 
 ```html
+<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+```
+
+That's it! The library auto-initializes and creates a global `window.wsHypermedia` instance.
+
+### Manual Initialization (Advanced)
+
+For more control, you can manually initialize the library:
+
+```html
 <script src="websocket-hypermedia.js"></script>
 <script>
 const ws = new WebSocketHypermedia("ws://localhost:8765");
 </script>
 ```
-
-### Auto-Initialization
-
-You can also auto-initialize the library by adding a `data-url` attribute to the script tag:
-
-```html
-<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
-```
-
-This creates a global `window.wsHypermedia` instance automatically.
 
 ---
 
@@ -47,10 +47,7 @@ Create a simple HTML page with a content area:
         <p>Waiting for updates...</p>
     </div>
     
-    <script src="websocket-hypermedia.js"></script>
-    <script>
-        const ws = new WebSocketHypermedia("ws://localhost:8765");
-    </script>
+    <script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
 </body>
 </html>
 ```
@@ -75,12 +72,10 @@ Add buttons that send actions to the server:
 <button data-action="get_time">Get Time</button>
 
 <script>
-const ws = new WebSocketHypermedia("ws://localhost:8765");
-
 // Handle button clicks
 document.body.addEventListener('click', (e) => {
-    if (e.target.dataset.action && ws.readyState === WebSocket.OPEN) {
-        ws.send(e.target.dataset.action);
+    if (e.target.dataset.action && window.wsHypermedia.readyState === WebSocket.OPEN) {
+        window.wsHypermedia.send(e.target.dataset.action);
     }
 });
 </script>
@@ -103,10 +98,8 @@ document.body.addEventListener('click', (e) => {
 ### Step 2: Custom Message Handler
 
 ```javascript
-const ws = new WebSocketHypermedia("ws://localhost:8765");
-
 // Custom handler for chat messages
-ws.addMessageHandler('chat_messages', (element, html, elementId) => {
+window.wsHypermedia.addMessageHandler('chat_messages', (element, html, elementId) => {
     element.insertAdjacentHTML('beforeend', html);
     element.scrollTop = element.scrollHeight; // Auto-scroll
 });
@@ -117,7 +110,7 @@ document.body.addEventListener('click', (e) => {
         const input = document.getElementById('message_input');
         const message = input.value.trim();
         if (message) {
-            ws.send(`send_message:${message}`);
+            window.wsHypermedia.send(`send_message:${message}`);
             input.value = '';
         }
     }
@@ -156,17 +149,15 @@ def handle_message(websocket, message):
 ### Step 2: Multiple Update Types
 
 ```javascript
-const ws = new WebSocketHypermedia("ws://localhost:8765");
-
 // Handle different types of updates
-ws.addMessageHandler('user_count', (element, html, elementId) => {
+window.wsHypermedia.addMessageHandler('user_count', (element, html, elementId) => {
     element.innerHTML = html;
     // Add animation
     element.style.animation = 'pulse 0.5s';
     setTimeout(() => element.style.animation = '', 500);
 });
 
-ws.addMessageHandler('activities', (element, html, elementId) => {
+window.wsHypermedia.addMessageHandler('activities', (element, html, elementId) => {
     element.insertAdjacentHTML('afterbegin', html);
     // Keep only last 10 activities
     const items = element.querySelectorAll('li');
@@ -193,9 +184,8 @@ class NewsFeed {
     constructor(maxVisible = 5) {
         this.maxVisible = maxVisible;
         this.allItems = [];
-        this.ws = new WebSocketHypermedia("ws://localhost:8765");
         
-        this.ws.addMessageHandler('news_list', (element, html, elementId) => {
+        window.wsHypermedia.addMessageHandler('news_list', (element, html, elementId) => {
             this.handleNewsUpdate(element, html);
         });
     }
@@ -263,7 +253,6 @@ Update the UI immediately, then sync with server response.
 ```javascript
 class OptimisticUI {
     constructor() {
-        this.ws = new WebSocketHypermedia("ws://localhost:8765");
         this.pendingActions = new Map();
     }
     
@@ -278,7 +267,7 @@ class OptimisticUI {
         this.pendingActions.set(todoId, { action: 'add_todo', text });
         
         // Send to server
-        this.ws.send(`add_todo:${text}`);
+        window.wsHypermedia.send(`add_todo:${text}`);
     }
     
     handleServerResponse(action, elementId, html) {
@@ -301,14 +290,13 @@ Use dynamic element IDs and room-specific handlers.
 ```javascript
 class MultiRoomChat {
     constructor() {
-        this.ws = new WebSocketHypermedia("ws://localhost:8765");
         this.currentRoom = 'general';
         this.setupRoomHandlers();
     }
     
     setupRoomHandlers() {
         // Dynamic handler for room messages
-        this.ws.addMessageHandler('room_messages', (element, html, elementId) => {
+        window.wsHypermedia.addMessageHandler('room_messages', (element, html, elementId) => {
             const roomId = elementId.split('_')[1]; // room_messages_general
             if (roomId === this.currentRoom) {
                 element.insertAdjacentHTML('beforeend', html);
@@ -317,7 +305,7 @@ class MultiRoomChat {
         });
         
         // Dynamic handler for room user lists
-        this.ws.addMessageHandler('room_users', (element, html, elementId) => {
+        window.wsHypermedia.addMessageHandler('room_users', (element, html, elementId) => {
             const roomId = elementId.split('_')[1];
             if (roomId === this.currentRoom) {
                 element.innerHTML = html;
@@ -327,7 +315,7 @@ class MultiRoomChat {
     
     joinRoom(roomId) {
         this.currentRoom = roomId;
-        this.ws.send(`join_room:${roomId}`);
+        window.wsHypermedia.send(`join_room:${roomId}`);
         
         // Update UI to show current room
         document.querySelectorAll('.room-tab').forEach(tab => {
@@ -337,7 +325,7 @@ class MultiRoomChat {
     }
     
     sendMessage(message) {
-        this.ws.send(`send_message:${this.currentRoom}|${message}`);
+        window.wsHypermedia.send(`send_message:${this.currentRoom}|${message}`);
     }
 }
 ```
@@ -353,7 +341,6 @@ Use debounced input events and server-side validation.
 ```javascript
 class RealTimeValidation {
     constructor() {
-        this.ws = new WebSocketHypermedia("ws://localhost:8765");
         this.debounceTimers = new Map();
         this.setupValidationHandlers();
     }

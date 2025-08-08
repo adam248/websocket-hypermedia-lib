@@ -98,13 +98,22 @@ The automated test suite covers all the core WebSocket Hypermedia functionality:
 - **Helper Methods** - sendEscaped() convenience methods
 
 ### **Click-to-Send Feature** (7 tests)
-- **Element Click Detection** - Automatic detection of clicked elements
-- **Interactive Element Skipping** - Smart filtering of buttons, links, forms
-- **HTML Content Escaping** - Proper escaping of HTML content with pipes
-- **Custom Click Verbs** - Configurable verbs for different click types
-- **Runtime Enable/Disable** - Dynamic enabling and disabling of the feature
-- **Event Delegation** - Efficient event handling for all elements
-- **Content Integrity** - Proper HTML content transmission
+- **Basic Connection** - Auto-initialization and connection establishment
+- **Click-to-Send Disabled** - Default state verification
+- **Enable Click-to-Send** - Dynamic feature enabling
+- **Custom Click Verb** - Configurable click action verbs
+- **Element Click Detection** - Proper element targeting
+- **Interactive Element Skipping** - Form element handling
+- **HTML Content Escaping** - Content safety and escaping
+
+### **Data-URL Auto-Initialization** (7 tests)
+- **Basic Data-URL Initialization** - Primary showcased feature testing
+- **Data-URL with Custom Config** - Hybrid auto/manual configuration
+- **Data-URL with Message Handlers** - Adding handlers to auto-initialized instance
+- **Data-URL with Interactive Elements** - Complete interactive workflow
+- **Data-URL Error Handling** - Graceful error handling with invalid URLs
+- **Data-URL Multiple Script Tags** - Proper handling of duplicate script tags
+- **Data-URL Different Formats** - URL format parsing and validation
 
 ## Manual Testing
 

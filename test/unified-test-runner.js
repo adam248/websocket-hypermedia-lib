@@ -17,6 +17,7 @@ const CoreTests = require('./core-tests');
 const EdgeCaseTests = require('./edge-case-tests');
 const EscapeTests = require('./escape-tests');
 const ClickToSendTests = require('./click-to-send-tests');
+const DataUrlTests = require('./data-url-tests');
 
 class UnifiedTestRunner {
     constructor() {
@@ -30,6 +31,7 @@ class UnifiedTestRunner {
         this.edgeCaseTests = new EdgeCaseTests();
         this.escapeTests = new EscapeTests();
         this.clickToSendTests = new ClickToSendTests();
+        this.dataUrlTests = new DataUrlTests();
     }
 
     log(message, type = 'info') {
@@ -147,6 +149,17 @@ class UnifiedTestRunner {
                 'testHtmlContentEscaping'
             ]);
             
+            // Data-URL Tests
+            await this.runTestSuite('Data-URL Tests', this.dataUrlTests, [
+                'testBasicDataUrlInitialization',
+                'testDataUrlWithCustomConfig',
+                'testDataUrlWithMessageHandlers',
+                'testDataUrlWithInteractiveElements',
+                'testDataUrlErrorHandling',
+                'testDataUrlMultipleScriptTags',
+                'testDataUrlDifferentFormats'
+            ]);
+            
         } catch (error) {
             this.log(`Test runner error: ${error.message}`, 'error');
             throw error;
@@ -193,6 +206,7 @@ class UnifiedTestRunner {
         console.log('  - Edge Case Tests: Unusual scenarios and robustness');
         console.log('  - Escape Tests: Content escaping and parsing');
         console.log('  - Click-to-Send Tests: Element interaction feature');
+        console.log('  - Data-URL Tests: Auto-initialization via data-url attribute');
     }
 }
 

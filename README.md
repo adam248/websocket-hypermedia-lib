@@ -14,13 +14,10 @@ A minimal, powerful library for building real-time hypermedia applications using
 ## 🚀 Quick Start
 
 ```html
-<script src="websocket-hypermedia.js"></script>
-<script>
-const ws = new WebSocketHypermedia("ws://localhost:8765");
-</script>
+<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
 ```
 
-That's it! Your page is now ready for real-time updates from the server.
+That's it! Your page is now ready for real-time updates from the server. The library auto-initializes and creates a global `window.wsHypermedia` instance.
 
 ## ✨ Features
 
@@ -46,9 +43,7 @@ The documentation includes:
 
 ### Basic Usage
 ```javascript
-// Connect to WebSocket server
-const ws = new WebSocketHypermedia("ws://localhost:8765");
-
+// Auto-initialized via data-url attribute
 // Server sends: "update|content|<p>Hello World!</p>"
 // Content div automatically updates
 ```
@@ -56,7 +51,7 @@ const ws = new WebSocketHypermedia("ws://localhost:8765");
 ### Custom Handlers
 ```javascript
 // Add custom message handling
-ws.addMessageHandler('chat_messages', (element, html, elementId) => {
+window.wsHypermedia.addMessageHandler('chat_messages', (element, html, elementId) => {
     element.insertAdjacentHTML('beforeend', html);
     element.scrollTop = element.scrollHeight; // Auto-scroll
 });
@@ -69,8 +64,8 @@ ws.addMessageHandler('chat_messages', (element, html, elementId) => {
 
 <script>
 document.body.addEventListener('click', (e) => {
-    if (e.target.dataset.action && ws.readyState === WebSocket.OPEN) {
-        ws.send(e.target.dataset.action);
+    if (e.target.dataset.action && window.wsHypermedia.readyState === WebSocket.OPEN) {
+        window.wsHypermedia.send(e.target.dataset.action);
     }
 });
 </script>
@@ -94,6 +89,10 @@ npm install websocket-hypermedia
 ```
 
 ## 🔧 Configuration
+
+### Manual Initialization (Advanced)
+
+For more control, you can manually initialize the library:
 
 ```javascript
 const ws = new WebSocketHypermedia("ws://localhost:8765", {
@@ -212,7 +211,7 @@ cd test
 npm test
 ```
 
-This runs comprehensive automated tests (15 test cases) covering core functionality and edge cases with clear results.
+This runs comprehensive automated tests (30 test cases) covering core functionality, edge cases, and the primary data-url auto-initialization feature with clear results.
 
 #### Manual Testing (Optional)
 ```bash

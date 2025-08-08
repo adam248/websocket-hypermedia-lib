@@ -164,6 +164,16 @@ wss.on('connection', (ws) => {
                 }
                 break;
                 
+            case 'refresh':
+                // Handle refresh action for data-url tests
+                ws.send('update|content|<p>Page refreshed</p>');
+                break;
+                
+            case 'test_handler':
+                // Handle test handler for data-url tests
+                ws.send('update|content|<p>Test handler executed</p>');
+                break;
+                
             default:
                 if (verb.startsWith('echo:')) {
                     const text = verb.substring(5);
