@@ -61,7 +61,7 @@ The test suite is organized into modular test files:
 - **`core-tests.js`** - Basic WebSocket functionality
 - **`edge-case-tests.js`** - Unusual scenarios and robustness
 - **`escape-tests.js`** - Content escaping and parsing
-- **`click-to-send-tests.js`** - Element interaction feature
+
 - **`unified-test-runner.js`** - Main test runner that executes all modules
 
 ### Running Specific Test Modules
@@ -97,14 +97,7 @@ The automated test suite covers all the core WebSocket Hypermedia functionality 
 - **Escape with Pipes** - Content containing pipe characters
 - **Helper Methods** - sendEscaped() convenience methods
 
-### **Click-to-Send Feature** (7 tests)
-- **Basic Connection** - Auto-initialization and connection establishment
-- **Click-to-Send Disabled** - Default state verification
-- **Enable Click-to-Send** - Dynamic feature enabling
-- **Custom Click Verb** - Configurable click action verbs
-- **Element Click Detection** - Proper element targeting
-- **Interactive Element Skipping** - Form element handling
-- **HTML Content Escaping** - Content safety and escaping
+
 
 ### **Data-URL Auto-Initialization** (7 tests)
 - **Basic Data-URL Initialization** - Primary showcased feature testing
@@ -153,14 +146,7 @@ Click the buttons to test different functionality:
 - **Remove Status** - Tests remove functionality
 - **Send Echo** - Tests custom action handling
 
-### **Click-to-Send Testing**
-- **Enable Click-to-Send** - Enable the click-to-send feature
-- **Disable Click-to-Send** - Disable the click-to-send feature
-- **Test Custom Click Verb** - Test with custom click verb
-- **Test Server Click Handling** - Test server-side click handling
-- **Click Test Elements** - Click on paragraph, div, span elements to test
-- **Interactive Elements** - Verify buttons and links don't trigger click-to-send
-- **Connect/Disconnect** - Tests connection management
+
 
 ## Expected Behavior
 

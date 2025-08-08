@@ -253,32 +253,7 @@ wss.on('connection', (ws) => {
                 ws.send(`append|messages|^${logContent}^`);
                 break;
                 
-            case 'test_click_to_send':
-                // Test click-to-send functionality
-                ws.send('update|click-results|<p>Server received click-to-send test request</p>');
-                break;
-                
-            case 'element_clicked':
-                // Handle click-to-send messages
-                console.log(`Element clicked: ${noun} - HTML: ${subject}`);
-                ws.send(`click_response|click-results|<p>Server received click on element: ${noun}</p>|clicked|${noun}`);
-                break;
-                
-            case 'user_clicked':
-                // Handle custom click verb
-                console.log(`User clicked: ${noun} - HTML: ${subject}`);
-                ws.send(`click_response|click-results|<p>Server received user click on: ${noun}</p>|user_clicked|${noun}`);
-                break;
-                
-            case 'enable_click_to_send':
-                // Test enabling click-to-send
-                ws.send('update|click-results|<p>Click-to-send enabled</p>');
-                break;
-                
-            case 'test_interactive_elements':
-                // Test interactive element detection
-                ws.send('update|click-results|<p>Interactive elements test completed</p>');
-                break;
+
                 
             case 'malformed':
                 // Handle malformed message test

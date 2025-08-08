@@ -125,29 +125,7 @@
         <input type="text" id="echo-input" placeholder="Type message to echo..." style="padding: 8px; margin: 5px;">
     </div>
     
-    <div class="section">
-        <h3>Click-to-Send Test Area</h3>
-        <div id="click-test-area" style="background: #f0f8ff; padding: 15px; border-radius: 4px;">
-            <p id="clickable-paragraph" style="cursor: pointer; background: #e6f3ff; padding: 10px; border-radius: 4px; margin: 5px 0;">
-                Click me! I'm a paragraph element.
-            </p>
-            <div id="clickable-div" style="cursor: pointer; background: #fff2e6; padding: 10px; border-radius: 4px; margin: 5px 0;">
-                Click me! I'm a div element.
-            </div>
-            <span id="clickable-span" style="cursor: pointer; background: #f0fff0; padding: 10px; border-radius: 4px; margin: 5px 0; display: inline-block;">
-                Click me! I'm a span element.
-            </span>
-            <button id="non-clickable-button" style="margin: 5px;">I'm a button - should NOT trigger click-to-send</button>
-            <a href="#" id="non-clickable-link" style="margin: 5px; display: inline-block;">I'm a link - should NOT trigger click-to-send</a>
-        </div>
-        <div id="click-results" style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin: 10px 0; min-height: 50px;">
-            <p>Click results will appear here...</p>
-        </div>
-        <button onclick="enableClickToSend()">Enable Click-to-Send</button>
-        <button onclick="disableClickToSend()">Disable Click-to-Send</button>
-        <button onclick="testClickToSendWithCustomVerb()">Test Custom Click Verb</button>
-        <button onclick="ws.send('test_click_to_send')">Test Server Click Handling</button>
-    </div>
+
     
     <div class="section">
         <h3>Connection Controls</h3>
@@ -227,42 +205,7 @@
             wsCustom.sendEscaped('append', 'messages', contentWithPipes);
         }
         
-        // Click-to-Send test functions
-        function enableClickToSend() {
-            ws.enableClickToSend();
-            updateClickResults('Click-to-send enabled! Try clicking on the elements above.');
-        }
-        
-        function disableClickToSend() {
-            ws.disableClickToSend();
-            updateClickResults('Click-to-send disabled!');
-        }
-        
-        function testClickToSendWithCustomVerb() {
-            // Create a new instance with custom click verb
-            const wsCustom = new WebSocketHypermedia("ws://localhost:8765", {
-                enableClickToSend: true,
-                clickVerb: 'user_clicked',
-                onConnect: () => {
-                    console.log('Custom click verb instance connected');
-                    updateClickResults('Custom click verb instance created with "user_clicked" verb');
-                }
-            });
-        }
-        
-        function updateClickResults(message) {
-            const resultsDiv = document.getElementById('click-results');
-            resultsDiv.innerHTML = `<p>${message}</p>`;
-        }
-        
-        // Add message handler for click-to-send responses
-        ws.addMessageHandler('click_response', (element, subject, noun, options) => {
-            updateClickResults(`Click response: ${subject}`);
-        });
-        
-        ws.addMessageHandler('element_clicked', (element, subject, noun, options) => {
-            updateClickResults(`Element clicked: ${noun} - ${subject}`);
-        });
+
     </script>
 </body>
 </html> 

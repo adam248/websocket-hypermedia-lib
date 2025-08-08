@@ -302,8 +302,7 @@ ws.sendEscaped("update", "content", "Hello | World & Good Morning!");
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `enableClickToSend` | boolean | `false` | Enable click-to-send feature |
-| `clickVerb` | string | `'element_clicked'` | Verb for clicked elements |
+
 | `enableLogging` | boolean | `true` | Enable console logging |
 
 ### Callback Options

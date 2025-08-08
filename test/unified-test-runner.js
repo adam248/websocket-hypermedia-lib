@@ -5,7 +5,7 @@
  * 
  * This script runs all test modules in a single command:
  * - Starts the WebSocket server
- * - Runs all test suites (core, edge cases, escape, click-to-send)
+ * - Runs all test suites (core, edge cases, escape)
  * - Provides clear output
  * - Cleans up automatically
  */
@@ -16,7 +16,7 @@ const { spawn } = require('child_process');
 const CoreTests = require('./core-tests');
 const EdgeCaseTests = require('./edge-case-tests');
 const EscapeTests = require('./escape-tests');
-const ClickToSendTests = require('./click-to-send-tests');
+
 const DataUrlTests = require('./data-url-tests');
 const SizeTests = require('./size-tests');
 const BrowserCompatibilityTests = require('./browser-compatibility-tests');
@@ -42,7 +42,7 @@ class UnifiedTestRunner {
         this.coreTests = new CoreTests();
         this.edgeCaseTests = new EdgeCaseTests();
         this.escapeTests = new EscapeTests();
-        this.clickToSendTests = new ClickToSendTests();
+
         this.dataUrlTests = new DataUrlTests();
         this.sizeTests = new SizeTests();
         this.browserCompatibilityTests = new BrowserCompatibilityTests();
@@ -162,16 +162,7 @@ class UnifiedTestRunner {
                 'testEscapeCharacterHelperMethods'
             ]);
             
-            // Click-to-Send Tests
-            await this.runTestSuite('Click-to-Send Tests', this.clickToSendTests, [
-                'testBasicConnection',
-                'testClickToSendDisabled',
-                'testEnableClickToSend',
-                'testCustomClickVerb',
-                'testElementClickDetection',
-                'testInteractiveElementSkipping',
-                'testHtmlContentEscaping'
-            ]);
+            
             
             // Data-URL Tests
             await this.runTestSuite('Data-URL Tests', this.dataUrlTests, [
@@ -451,7 +442,7 @@ class UnifiedTestRunner {
         console.log('  - Core Tests: Basic WebSocket functionality');
         console.log('  - Edge Case Tests: Unusual scenarios and robustness');
         console.log('  - Escape Tests: Content escaping and parsing');
-        console.log('  - Click-to-Send Tests: Element interaction feature');
+        console.log('');
         console.log('  - Data-URL Tests: Auto-initialization via data-url attribute');
         console.log('  - Size Tests: Library size verification and compression');
         console.log('  - Browser Compatibility Tests: Browser support validation');

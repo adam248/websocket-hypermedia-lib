@@ -46,7 +46,7 @@ Use configurable escape character (default: `~`) to escape content containing pi
 - `update|breaking-news|<p>Breaking news!</p>|priority-high|code-black`
 - `update|content|~<p>Hello World | & Good Morning New York!</p>~`
 - `append|log|~<span>Error: File not found | Path: /usr/local/bin</span>~`
-- `element_clicked|content|~<p>Hello world</p>~` (from click-to-send feature)
+
 - `addClass|button|active|highlight` (add multiple classes)
 - `removeClass|button|inactive` (remove single class)
 - `toggleClass|sidebar|collapsed` (toggle class state)
@@ -94,8 +94,7 @@ const ws = new WebSocketHypermedia("ws://localhost:8765", {
     reconnectDelay: 1000,
     maxReconnectAttempts: 5,
     escapeChar: '~', // Custom escape character (default: ~)
-    enableClickToSend: true, // Enable click-to-send feature
-    clickVerb: 'element_clicked', // Custom verb for clicked elements
+
     enableLogging: false, // Disable console logging in production
     onConnect: () => console.log('Connected!'),
     onDisconnect: () => console.log('Disconnected!'),
@@ -131,12 +130,7 @@ ws.addMessageHandler('custom_verb', (element, subject, noun, options) => {
 });
 ```
 
-### Enable/Disable Click-to-Send After Initialization
 
-```javascript
-ws.enableClickToSend();
-ws.disableClickToSend();
-```
 
 ## API Reference
 
@@ -157,8 +151,7 @@ new WebSocketHypermedia(url, options = {})
     reconnectDelay: 1000,
     maxReconnectAttempts: 5,
     escapeChar: '~',
-    enableClickToSend: false,
-    clickVerb: 'element_clicked',
+
     onConnect: null,
     onDisconnect: null,
     onError: null,
@@ -179,14 +172,7 @@ new WebSocketHypermedia(url, options = {})
 - `disconnect()` - Disconnect from server
 - `handleError(error)` - Handle errors
 
-#### Click-to-Send Methods
 
-- `setupClickToSend()` - Setup click-to-send functionality
-- `enableClickToSend()` - Enable click-to-send after initialization
-- `disableClickToSend()` - Disable click-to-send
-- `shouldSkipElement(el)` - Check if element should be skipped
-- `isInteractiveElement(el)` - Check if element is interactive
-- `sendClickedElement(el)` - Send clicked element to server
 
 #### Connection Management
 
