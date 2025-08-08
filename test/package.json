@@ -5,7 +5,7 @@
   "main": "test-server.js",
   "scripts": {
     "start": "node test-server.js",
-    "test": "echo \"Open test-client.html in your browser\""
+    "test": "node run-tests.js"
   },
   "dependencies": {
     "ws": "^8.14.2"
