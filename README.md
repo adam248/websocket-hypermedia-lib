@@ -1,7 +1,7 @@
 # ⚡ WebSocket Hypermedia Library
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Size](https://img.shields.io/badge/size-16.5KB%20uncompressed%20%7C%203.7KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Size](https://img.shields.io/badge/size-17KB%20source%20%7C%207.4KB%20minified%20%7C%202.7KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Tests](https://img.shields.io/badge/tests-204%2F204%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Performance](https://img.shields.io/badge/performance-50K%20msg%2Fs-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
@@ -71,7 +71,7 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 
 ### 🚀 **Performance That Blows Minds**
 - **⚡ Lightning Fast**: 50,000+ messages per second
-- **📦 Ultra Tiny**: 16.5KB source, 3.7KB gzipped (22.4% compression!)
+- **📦 Ultra Tiny**: 17KB source, 7.4KB minified, 2.7KB gzipped (84% compression!)
 - **🎯 Zero Bloat**: No dependencies, no frameworks, no overhead
 - **⚡ Low Latency**: <1ms average latency
 - **💾 Memory Efficient**: ~1KB memory per message
@@ -208,19 +208,19 @@ document.body.addEventListener('click', (e) => {
 <!-- Production-ready v1.1.0 -->
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.0/src/websocket-hypermedia.js"></script>
 
-<!-- Ultra-compressed v1.1.0 (2.8KB gzipped!) -->
+<!-- Ultra-compressed v1.1.0 (2.7KB gzipped!) -->
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.1.0/dist/websocket-hypermedia.min.js"></script>
 ```
 
 ### 📦 **Direct Download**
 ```bash
-# Source file (16.5KB)
+# Source file (17KB)
 curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/src/websocket-hypermedia.js
 
-# Minified version (7.6KB)
+# Minified version (7.4KB)
 curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/dist/websocket-hypermedia.min.js
 
-# Gzipped version (2.8KB)
+# Gzipped version (2.7KB)
 curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.1.0/dist/websocket-hypermedia.min.js.gz
 ```
 
@@ -511,7 +511,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **WebSocket Hypermedia v1.1.0** is production-ready and waiting to power your next real-time application!
 
 - **⚡ Lightning fast** - 50K+ messages/second
-- **📦 Ultra tiny** - 3.7KB gzipped
+- **📦 Ultra tiny** - 7.4KB minified, 2.7KB gzipped
 - **🔒 Enterprise secure** - Battle-tested with comprehensive security features
 - **🎨 Animation ready** - Built-in CSS animation and transition support
 - **🎯 Developer friendly** - One-line setup, comprehensive docs
