@@ -525,17 +525,7 @@ Remove an element from the DOM.
 remove|old_notification|
 ```
 
-### Legacy Protocol Support
-The library also supports the legacy 2-part format:
 
-**Format:** `elementId|html`
-
-**Example:**
-```
-content|<p>Legacy update</p>
-```
-
-This is automatically converted to `update|elementId|html`.
 
 ## Error Handling
 

@@ -123,23 +123,15 @@ class WebSocketHypermedia {
         try {
             let parts = data.split("|");
             
-            // Check if this is the action-based protocol (3+ parts)
+            // Protocol: action|elementId|html (3 parts)
             if (parts.length >= 3) {
                 let action = parts[0];
                 let elementId = parts[1];
                 let html = parts[2];
                 
                 this.processAction(action, elementId, html);
-            } else if (parts.length === 2) {
-                // Legacy protocol support (2 parts: id|html)
-                let elementId = parts[0];
-                let html = parts[1];
-                
-                if (elementId && html) {
-                    this.processAction('update', elementId, html);
-                }
             } else {
-                console.warn('Invalid message format:', data);
+                console.warn('Invalid message format. Expected: action|elementId|html, got:', data);
             }
             
             // Call custom message handler if provided
