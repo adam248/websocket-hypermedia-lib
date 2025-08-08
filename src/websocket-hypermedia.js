@@ -1,10 +1,10 @@
 /* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN docs/API.md */
 
 class WebSocketHypermedia {
-    constructor(url, options = {}) {
+    constructor(url, o = {}) {
         this.url = url;
-        this.options = {
-            autoReconnect: true,
+        this.o = {
+            autoReconnect: 1,
             reconnectDelay: 1000,
             maxReconnectAttempts: 5,
             escapeChar: '~',
@@ -12,142 +12,128 @@ class WebSocketHypermedia {
             onDisconnect: null,
             onError: null,
             onMessage: null,
-            enableLogging: true,
+            enableLogging: 1,
             maxJsonSize: 1024 * 1024,
-            enableJsonValidation: false,
+            enableJsonValidation: 0,
             maxMessageSize: 1024 * 1024,
             maxParts: 100,
-            enableSecurityLogging: false,
+            enableSecurityLogging: 0,
             securityLogLevel: 'warn',
             protocolVersion: '1.1',
-            requireVersion: false,
-            ...options
+            requireVersion: 0,
+            ...o
         };
         
         this.ws = null;
         this.reconnectAttempts = 0;
-        this.isConnecting = false;
-        this.messageHandlers = new Map();
+        this.isConnecting = 0;
+        this.handlers = new Map();
+        this.esc = this.o.escapeChar;
         
-        this.esc = this.options.escapeChar;
-        this.actions = {
-            update: (el, subject) => el.innerHTML = subject,
-            append: (el, subject) => el.insertAdjacentHTML('beforeend', subject),
-            prepend: (el, subject) => el.insertAdjacentHTML('afterbegin', subject),
-            replace: (el, subject) => el.outerHTML = subject,
-            remove: (el) => el.remove(),
-            swap: (el, subject) => el.outerHTML = subject,
-            before: (el, subject) => el.insertAdjacentHTML('beforebegin', subject),
-            after: (el, subject) => el.insertAdjacentHTML('afterend', subject),
-            addClass: (el, subject) => el.classList.add(subject),
-            removeClass: (el, subject) => el.classList.remove(subject),
-            toggleClass: (el, subject) => el.classList.toggle(subject),
-            setAttr: (el, attrName, value) => el.setAttribute(attrName, value),
-            removeAttr: (el, subject) => el.removeAttribute(subject),
-            setStyle: (el, property, value) => el.style[property] = value,
-            removeStyle: (el, property) => el.style.removeProperty(property),
-            trigger: (el, eventType, eventData) => {
-                const event = new Event(eventType, { bubbles: true, cancelable: true });
-                if (eventData) {
+        const a = this.actions = {
+            update: (e, s) => e.innerHTML = s,
+            append: (e, s) => e.insertAdjacentHTML('beforeend', s),
+            prepend: (e, s) => e.insertAdjacentHTML('afterbegin', s),
+            replace: (e, s) => e.outerHTML = s,
+            remove: e => e.remove(),
+            swap: (e, s) => e.outerHTML = s,
+            before: (e, s) => e.insertAdjacentHTML('beforebegin', s),
+            after: (e, s) => e.insertAdjacentHTML('afterend', s),
+            addClass: (e, s) => e.classList.add(s),
+            removeClass: (e, s) => e.classList.remove(s),
+            toggleClass: (e, s) => e.classList.toggle(s),
+            setAttr: (e, n, v) => e.setAttribute(n, v),
+            removeAttr: (e, s) => e.removeAttribute(s),
+            setStyle: (e, p, v) => e.style[p] = v,
+            removeStyle: (e, p) => e.style.removeProperty(p),
+            trigger: (e, t, d) => {
+                const ev = new Event(t, { bubbles: 1, cancelable: 1 });
+                if (d) {
                     try {
-                        if (this.options.enableJsonValidation) {
-                            this._vJson(eventData, this.options.maxJsonSize);
+                        if (this.o.enableJsonValidation) this._vJson(d, this.o.maxJsonSize);
+                        const data = JSON.parse(d);
+                        const safe = {};
+                        for (const [k, v] of Object.entries(data)) {
+                            if (k !== '__proto__' && k !== 'constructor') safe[k] = v;
                         }
-                        const data = JSON.parse(eventData);
-                        
-                        const safeData = {};
-                        for (const [key, value] of Object.entries(data)) {
-                            if (key !== '__proto__' && key !== 'constructor') {
-                                safeData[key] = value;
-                            }
-                        }
-                        Object.assign(event, safeData);
-                    } catch (e) {
-                        this._logSec('JSON parsing error', { error: e.message, eventData });
-                        event.detail = eventData;
+                        Object.assign(ev, safe);
+                    } catch (err) {
+                        this._logSec('JSON parsing error', { error: err.message, eventData: d });
+                        ev.detail = d;
                     }
                 }
-                el.dispatchEvent(event);
+                e.dispatchEvent(ev);
             },
-            setValue: (el, value) => el.value = value,
-            setChecked: (el, checked) => el.checked = checked === 'true',
-            setSelected: (el, value) => {
-                if (el.multiple) {
-                    const values = value.split(',');
-                    Array.from(el.options).forEach(option => {
-                        option.selected = values.includes(option.value);
-                    });
-                } else {
-                    el.value = value;
-                }
+            setValue: (e, v) => e.value = v,
+            setChecked: (e, c) => e.checked = c === 'true',
+            setSelected: (e, v) => {
+                if (e.multiple) {
+                    const vals = v.split(',');
+                    Array.from(e.options).forEach(o => o.selected = vals.includes(o.value));
+                } else e.value = v;
             },
-            animate: (el, animationName, duration, easing, delay, iterations, direction, fillMode, ...options) => {
-                const animation = el.animate([
+            animate: (e, n, d, es, dl, it, dir, fill, ...opts) => {
+                const anim = e.animate([
                     { opacity: '0', transform: 'translateY(20px)' },
                     { opacity: '1', transform: 'translateY(0)' }
                 ], {
-                    duration: duration ? parseFloat(duration) * 1000 : 1000,
-                    easing: easing || 'ease',
-                    delay: delay ? parseFloat(delay) * 1000 : 0,
-                    iterations: iterations === 'infinite' ? Infinity : (parseInt(iterations) || 1),
-                    direction: direction || 'normal',
-                    fill: fillMode || 'none'
+                    duration: d ? parseFloat(d) * 1000 : 1000,
+                    easing: es || 'ease',
+                    delay: dl ? parseFloat(dl) * 1000 : 0,
+                    iterations: it === 'infinite' ? Infinity : (parseInt(it) || 1),
+                    direction: dir || 'normal',
+                    fill: fill || 'none'
                 });
-                el.dataset.currentAnimation = animationName;
-                el.dataset.animation = animation;
+                e.dataset.currentAnimation = n;
+                e.dataset.animation = anim;
             },
-            transition: (el, properties, duration, easing) => {
-                el.style.transition = `${properties || 'all'} ${duration || '0.3s'} ${easing || 'ease'}`;
-            },
-            removeAnimation: (el) => {
-                if (el.dataset.animation) {
-                    el.dataset.animation.cancel();
-                    delete el.dataset.animation;
-                    delete el.dataset.currentAnimation;
+            transition: (e, p, d, es) => e.style.transition = `${p || 'all'} ${d || '0.3s'} ${es || 'ease'}`,
+            removeAnimation: e => {
+                if (e.dataset.animation) {
+                    e.dataset.animation.cancel();
+                    delete e.dataset.animation;
+                    delete e.dataset.currentAnimation;
                 }
             },
-            pauseAnimation: (el) => {
-                if (el.dataset.animation) {
-                    el.dataset.animation.pause();
-                }
-            },
-            resumeAnimation: (el) => {
-                if (el.dataset.animation) {
-                    el.dataset.animation.play();
-                }
-            },
-            getAnimationState: (el) => {
-                if (el.dataset.animation) {
-                    return {
-                        name: el.dataset.currentAnimation,
-                        playState: el.dataset.animation.playState,
-                        currentTime: el.dataset.animation.currentTime
-                    };
-                }
-                return null;
-            },
-            keyframe: (el, animationName, keyframes, duration) => {
-                let parsedKeyframes;
-                if (typeof keyframes === 'string') {
+            pauseAnimation: e => e.dataset.animation?.pause(),
+            resumeAnimation: e => e.dataset.animation?.play(),
+            getAnimationState: e => e.dataset.animation ? {
+                name: e.dataset.currentAnimation,
+                playState: e.dataset.animation.playState,
+                currentTime: e.dataset.animation.currentTime
+            } : null,
+            keyframe: (e, n, k, d) => {
+                let parsed;
+                if (typeof k === 'string') {
                     try {
-                        if (this.options.enableJsonValidation) {
-                            this._vJson(keyframes, this.options.maxJsonSize);
-                        }
-                        parsedKeyframes = JSON.parse(keyframes);
-                    } catch (e) {
-                        this._logSec('Keyframe JSON parsing error', { error: e.message, keyframes });
+                        if (this.o.enableJsonValidation) this._vJson(k, this.o.maxJsonSize);
+                        parsed = JSON.parse(k);
+                    } catch (err) {
+                        this._logSec('Keyframe JSON parsing error', { error: err.message, keyframes: k });
                         return;
                     }
-                } else {
-                    parsedKeyframes = keyframes;
-                }
+                } else parsed = k;
                 
-                const animation = el.animate(parsedKeyframes, {
-                    duration: duration ? parseFloat(duration) * 1000 : 1000
-                });
-                el.dataset.currentAnimation = animationName;
-                el.dataset.animation = animation;
+                const anim = e.animate(parsed, { duration: d ? parseFloat(d) * 1000 : 1000 });
+                e.dataset.currentAnimation = n;
+                e.dataset.animation = anim;
             }
+        };
+        
+        this.specialVerbs = {
+            setAttr: (action, el, subject, options) => action(el, subject, options[0] || ''),
+            setStyle: (action, el, subject, options) => action(el, subject, options[0] || ''),
+            trigger: (action, el, subject, options) => action(el, subject, options[0] || ''),
+            setValue: (action, el, subject) => action(el, subject),
+            setChecked: (action, el, subject) => action(el, subject),
+            setSelected: (action, el, subject) => action(el, subject),
+            animate: (action, el, subject, options) => action(el, subject, options[0] || '1s', options[1] || 'ease', options[2] || '0s', options[3] || '1', options[4] || 'normal', options[5] || 'none', ...options.slice(6)),
+            transition: (action, el, subject, options) => action(el, subject, options[0] || '0.3s', options[1] || 'ease'),
+            removeAnimation: (action, el) => action(el),
+            pauseAnimation: (action, el) => action(el),
+            resumeAnimation: (action, el) => action(el),
+            getAnimationState: (action, el) => action(el),
+            keyframe: (action, el, subject, options) => action(el, subject, options[0] || '{}', options[1] || '1s')
         };
         
         this._connect();
@@ -155,91 +141,79 @@ class WebSocketHypermedia {
     
     _connect() {
         if (this.isConnecting) return;
-        this.isConnecting = true;
+        this.isConnecting = 1;
         
         try {
-            this._validateWebSocketUrl(this.url);
+            this._validateUrl(this.url);
             this.ws = new WebSocket(this.url);
-            this.setupEventHandlers();
-        } catch (error) {
-            this.handleError(error);
+            this._setupHandlers();
+        } catch (err) {
+            this._handleError(err);
         }
     }
     
-    _validateWebSocketUrl(url) {
+    _validateUrl(url) {
         try {
-            const urlObj = new URL(url);
-            if (!['ws:', 'wss:'].includes(urlObj.protocol)) {
-                throw new Error('Invalid WebSocket protocol');
-            }
-            return true;
-        } catch (error) {
+            const u = new URL(url);
+            if (!['ws:', 'wss:'].includes(u.protocol)) throw new Error('Invalid WebSocket protocol');
+            return 1;
+        } catch {
             throw new Error('Invalid WebSocket URL');
         }
     }
     
-    _validateElementId(id) {
-        if (typeof id !== 'string' || id.length === 0 || id.length > 100) {
-            return false;
-        }
-        return /^[a-zA-Z0-9_-]+$/.test(id);
+    _validateId(id) {
+        return typeof id === 'string' && id.length > 0 && id.length <= 100 && /^[a-zA-Z0-9_-]+$/.test(id);
     }
     
     _vJson(d, s = 1024 * 1024) {
         if (d.length > s) throw new Error('JSON too large');
         if (d.includes('"__proto__"') || d.includes('"constructor"')) throw new Error('Prototype pollution');
-        return true;
+        return 1;
     }
     
     _logSec(e, d) {
-        if (this.options.enableSecurityLogging) {
-            const m = this.options.securityLogLevel === 'error' ? 'error' : 'warn';
+        if (this.o.enableSecurityLogging) {
+            const m = this.o.securityLogLevel === 'error' ? 'error' : 'warn';
             console[m](`[Security] ${e}:`, d);
         }
     }
     
-    _san(v, t) {
-        const s = this.options.inputSanitizers[t];
-        return s ? s(v) : v;
-    }
-    
     _vProto(v, o) {
-        if (!this.options.requireVersion) return true;
+        if (!this.o.requireVersion) return 1;
         const ver = o.find(opt => opt.startsWith('version='));
-        return ver ? ver.split('=')[1] === this.options.protocolVersion : false;
+        return ver ? ver.split('=')[1] === this.o.protocolVersion : 0;
     }
     
-    setupEventHandlers() {
-        const { onConnect, onDisconnect, onMessage } = this.options;
+    _setupHandlers() {
+        const { onConnect, onDisconnect, onMessage } = this.o;
         
         this.ws.onopen = () => {
-            this.isConnecting = false;
+            this.isConnecting = 0;
             this.reconnectAttempts = 0;
             onConnect?.();
         };
         
-        this.ws.onclose = (event) => {
-            this.isConnecting = false;
-            onDisconnect?.(event);
+        this.ws.onclose = (ev) => {
+            this.isConnecting = 0;
+            onDisconnect?.(ev);
             
-            if (this.options.autoReconnect && this.reconnectAttempts < this.options.maxReconnectAttempts) {
-                this.scheduleReconnect();
+            if (this.o.autoReconnect && this.reconnectAttempts < this.o.maxReconnectAttempts) {
+                this._scheduleReconnect();
             }
         };
         
-        this.ws.onerror = (error) => {
-            this.handleError(error);
-        };
+        this.ws.onerror = (err) => this._handleError(err);
         
-        this.ws.onmessage = async (event) => {
-            await this.handleMessage(event.data);
-            onMessage?.(event.data);
+        this.ws.onmessage = async (ev) => {
+            await this._handleMessage(ev.data);
+            onMessage?.(ev.data);
         };
     }
     
-    scheduleReconnect() {
+    _scheduleReconnect() {
         this.reconnectAttempts++;
-        const delay = this.options.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
+        const delay = this.o.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
         
         setTimeout(() => {
             if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
@@ -248,162 +222,104 @@ class WebSocketHypermedia {
         }, delay);
     }
     
-    async handleMessage(data) {
+    async _handleMessage(data) {
         try {
-            const parts = this.parseMessage(data);
+            const parts = this._parseMessage(data);
             
             if (parts.length >= 3) {
                 const [verb, noun, subject, ...options] = parts;
                 
-                if (this.options.requireVersion && !this._vProto(verb, options)) {
+                if (this.o.requireVersion && !this._vProto(verb, options)) {
                     this._logSec('Protocol version mismatch', { verb, options });
                     return;
                 }
                 
-                await this.processAction(verb, noun, subject, options);
+                await this._processAction(verb, noun, subject, options);
             }
-        } catch (error) {
-            this._logSec('Message processing error', { error: error.message });
-            if (this.options.enableLogging) {
-                console.error('Error processing message:', error);
-            }
+        } catch (err) {
+            this._logSec('Message processing error', { error: err.message });
+            if (this.o.enableLogging) console.error('Error processing message:', err);
         }
     }
     
-    parseMessage(data) {
-        if (data.length > this.options.maxMessageSize) {
-            this._logSec('Message too large', { size: data.length, maxSize: this.options.maxMessageSize });
+    _parseMessage(data) {
+        if (data.length > this.o.maxMessageSize) {
+            this._logSec('Message too large', { size: data.length, maxSize: this.o.maxMessageSize });
             throw new Error('Message too large');
         }
         
         const parts = [];
-        let currentPart = '';
+        let current = [];
         let i = 0;
-        let inEscaped = false;
+        let escaped = 0;
         const esc = this.esc;
         const len = data.length;
         
         while (i < len) {
             const char = data[i];
             
-            if (char === esc && !inEscaped) {
-                inEscaped = true;
+            if (char === esc && !escaped) {
+                escaped = 1;
                 i++;
                 continue;
-            } else if (char === esc && inEscaped) {
-                inEscaped = false;
+            } else if (char === esc && escaped) {
+                escaped = 0;
                 i++;
                 continue;
-            } else if (char === '|' && !inEscaped) {
-                parts.push(currentPart);
-                currentPart = '';
+            } else if (char === '|' && !escaped) {
+                parts.push(current.join(''));
+                current = [];
                 i++;
                 
-                if (parts.length > this.options.maxParts) {
-                    this._logSec('Too many message parts', { parts: parts.length, maxParts: this.options.maxParts });
+                if (parts.length > this.o.maxParts) {
+                    this._logSec('Too many message parts', { parts: parts.length, maxParts: this.o.maxParts });
                     throw new Error('Too many message parts');
                 }
                 continue;
             }
             
-            currentPart += char;
+            current.push(char);
             i++;
         }
         
-        if (currentPart.length > 0 || parts.length > 0) {
-            parts.push(currentPart);
-        }
-        
+        parts.push(current.join(''));
         return parts;
     }
     
-    async processAction(verb, noun, subject, options = []) {
-        if (!this._validateElementId(noun)) {
-            if (this.options.enableLogging) {
-                console.warn('Invalid element ID:', noun);
-            }
+    async _processAction(verb, noun, subject, options = []) {
+        if (!this._validateId(noun)) {
+            if (this.o.enableLogging) console.warn('Invalid element ID:', noun);
             return;
         }
         
         const el = document.getElementById(noun);
-        
         if (!el) {
-            if (this.options.enableLogging) {
-                console.warn('Element not found:', noun);
-            }
+            if (this.o.enableLogging) console.warn('Element not found:', noun);
             return;
         }
         
-        const customHandler = this.messageHandlers.get(verb);
-        if (customHandler) {
-            const result = customHandler(el, subject, noun, options);
-            if (result && typeof result.then === 'function') {
-                await result;
-            }
+        const custom = this.handlers.get(verb);
+        if (custom) {
+            const result = custom(el, subject, noun, options);
+            if (result?.then) await result;
             return;
         }
         
         const action = this.actions[verb];
         if (action) {
-            if (verb === 'setAttr') {
-                const attrName = subject;
-                const value = options[0] || '';
-                action(el, attrName, value);
-            } else if (verb === 'setStyle') {
-                const property = subject;
-                const value = options[0] || '';
-                action(el, property, value);
-            } else if (verb === 'trigger') {
-                const eventType = subject;
-                const eventData = options[0] || '';
-                action(el, eventType, eventData);
-            } else if (verb === 'setValue' || verb === 'setChecked' || verb === 'setSelected') {
-                const value = subject;
-                action(el, value);
-            } else if (verb === 'animate') {
-                const animationName = subject;
-                const duration = options[0] || '1s';
-                const easing = options[1] || 'ease';
-                const delay = options[2] || '0s';
-                const iterations = options[3] || '1';
-                const direction = options[4] || 'normal';
-                const fillMode = options[5] || 'none';
-                const remainingOptions = options.slice(6);
-                action(el, animationName, duration, easing, delay, iterations, direction, fillMode, ...remainingOptions);
-            } else if (verb === 'transition') {
-                const properties = subject;
-                const duration = options[0] || '0.3s';
-                const easing = options[1] || 'ease';
-                action(el, properties, duration, easing);
-            } else if (verb === 'removeAnimation' || verb === 'pauseAnimation' || verb === 'resumeAnimation') {
-                action(el);
-            } else if (verb === 'getAnimationState') {
-                const state = action(el);
-                if (this.options.enableLogging) {
-                    console.log('Animation state:', state);
-                }
-            } else if (verb === 'keyframe') {
-                const animationName = subject;
-                const keyframes = options[0] || '{}';
-                const duration = options[1] || '1s';
-                action(el, animationName, keyframes, duration);
-            } else {
-                action(el, subject);
-            }
-        } else {
-            if (this.options.enableLogging) {
-                console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');
-            }
+            const special = this.specialVerbs[verb];
+            if (special) special(action, el, subject, options);
+            else action(el, subject);
+        } else if (this.o.enableLogging) {
+            console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');
         }
     }
     
     send(action) {
         if (this.ws?.readyState === WebSocket.OPEN) {
             this.ws.send(action);
-        } else {
-            if (this.options.enableLogging) {
-                console.warn('WebSocket not ready, state:', this.ws?.readyState);
-            }
+        } else if (this.o.enableLogging) {
+            console.warn('WebSocket not ready, state:', this.ws?.readyState);
         }
     }
     
@@ -412,24 +328,20 @@ class WebSocketHypermedia {
     }
     
     sendEscaped(verb, noun, subject, ...options) {
-        const esc = this.esc;
-        const escapedSubject = esc + subject + esc;
-        this.send(this.createMessage(verb, noun, escapedSubject, ...options));
+        this.send(this.createMessage(verb, noun, this.esc + subject + this.esc, ...options));
     }
     
     addMessageHandler(action, handler) {
-        this.messageHandlers.set(action, handler);
+        this.handlers.set(action, handler);
     }
     
     removeMessageHandler(action) {
-        this.messageHandlers.delete(action);
+        this.handlers.delete(action);
     }
     
-    handleError(error) {
-        if (this.options.enableLogging) {
-            console.error('WebSocket Hypermedia error:', error);
-        }
-        this.options.onError?.(error);
+    _handleError(err) {
+        if (this.o.enableLogging) console.error('WebSocket Hypermedia error:', err);
+        this.o.onError?.(err);
     }
     
     disconnect() {
