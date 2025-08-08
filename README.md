@@ -6,6 +6,16 @@
 [![Tests](https://img.shields.io/badge/tests-71%2F71%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Performance](https://img.shields.io/badge/performance-50K%20msg%2Fs-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.0.0)
+[![Stars](https://img.shields.io/github/stars/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Forks](https://img.shields.io/github/forks/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Issues](https://img.shields.io/github/issues/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/pulls)
+[![Contributors](https://img.shields.io/github/contributors/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/commits)
+[![Code Size](https://img.shields.io/github/languages/code-size/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Top Language](https://img.shields.io/github/languages/top/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Security](https://img.shields.io/badge/security-audited-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib/tree/main/security)
+[![Production Ready](https://img.shields.io/badge/production-ready-v1.0.0-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.0.0)
 
 **🚀 The fastest, smallest, and most powerful real-time hypermedia library for WebSockets!**
 
