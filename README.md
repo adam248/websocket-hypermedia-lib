@@ -15,7 +15,6 @@
 [![Code Size](https://img.shields.io/github/languages/code-size/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Top Language](https://img.shields.io/github/languages/top/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Security](https://img.shields.io/badge/security-audited-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib/tree/main/security)
-[![Production Ready](https://img.shields.io/badge/production-ready-v1.0.0-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.0.0)
 
 **🚀 The fastest, smallest, and most powerful real-time hypermedia library for WebSockets!**
 
