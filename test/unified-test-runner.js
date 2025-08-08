@@ -24,6 +24,12 @@ const PerformanceTests = require('./performance-tests');
 const UseCaseTests = require('./use-case-tests');
 const AdvancedProtocolTests = require('./advanced-protocol-tests');
 const ReconnectionTests = require('./reconnection-tests');
+const CssClassTests = require('./css-class-tests');
+const AttributeTests = require('./attribute-tests');
+const StyleTests = require('./style-tests');
+const EventTests = require('./event-tests');
+const FormTests = require('./form-tests');
+const AnimationTests = require('./animation-tests');
 
 class UnifiedTestRunner {
     constructor() {
@@ -44,6 +50,12 @@ class UnifiedTestRunner {
         this.useCaseTests = new UseCaseTests();
         this.advancedProtocolTests = new AdvancedProtocolTests();
         this.reconnectionTests = new ReconnectionTests();
+        this.cssClassTests = new CssClassTests();
+        this.attributeTests = new AttributeTests();
+        this.styleTests = new StyleTests();
+        this.eventTests = new EventTests();
+        this.formTests = new FormTests();
+        this.animationTests = new AnimationTests();
     }
 
     log(message, type = 'info') {
@@ -237,6 +249,163 @@ class UnifiedTestRunner {
                 'testReconnectionStateManagement'
             ]);
             
+            // CSS Class Tests
+            await this.runTestSuite('CSS Class Tests', this.cssClassTests, [
+                'testAddClassSingle',
+                'testAddClassMultiple',
+                'testAddClassNoDuplicates',
+                'testAddClassEmpty',
+                'testAddClassWhitespace',
+                'testAddClassSpecialChars',
+                'testRemoveClassSingle',
+                'testRemoveClassMultiple',
+                'testRemoveClassNonExistent',
+                'testRemoveClassEmpty',
+                'testToggleClassAdd',
+                'testToggleClassRemove',
+                'testToggleClassMultiple',
+                'testToggleClassEmpty',
+                'testNonExistentElement',
+                'testInvalidElementId',
+                'testLongClassName',
+                'testUnicodeClassName',
+                'testNumericClassName',
+                'testEscapedClassName',
+                'testClassNameWithOptions'
+            ]);
+            
+            // Attribute Tests
+            await this.runTestSuite('Attribute Tests', this.attributeTests, [
+                'testSetAttrSingle',
+                'testSetAttrMultiple',
+                'testSetAttrDataAttributes',
+                'testSetAttrBoolean',
+                'testSetAttrEmptyValue',
+                'testSetAttrSpecialChars',
+                'testRemoveAttrSingle',
+                'testRemoveAttrDataAttribute',
+                'testRemoveAttrNonExistent',
+                'testRemoveAttrEmpty',
+                'testSetAttrNonExistentElement',
+                'testSetAttrInvalidElementId',
+                'testSetAttrLongValue',
+                'testSetAttrUnicodeValue',
+                'testSetAttrEscapedValue',
+                'testSetAttrWithOptions',
+                'testFormStateManagement',
+                'testAccessibilityAttributes'
+            ]);
+            
+            // Style Tests
+            await this.runTestSuite('Style Tests', this.styleTests, [
+                'testSetStyleSingle',
+                'testSetStyleMultiple',
+                'testSetStyleWithUnits',
+                'testSetStyleWithSpaces',
+                'testSetStyleEmptyValue',
+                'testSetStyleSpecialChars',
+                'testRemoveStyleSingle',
+                'testRemoveStyleMultiple',
+                'testRemoveStyleNonExistent',
+                'testRemoveStyleEmpty',
+                'testSetStyleNonExistentElement',
+                'testSetStyleInvalidElementId',
+                'testSetStyleLongValue',
+                'testSetStyleUnicodeValue',
+                'testSetStyleEscapedValue',
+                'testSetStyleWithOptions',
+                'testAnimationStateManagement',
+                'testResponsiveDesign',
+                'testCssCustomProperties'
+            ]);
+            
+            // Event Tests
+            await this.runTestSuite('Event Tests', this.eventTests, [
+                'testTriggerClickEvent',
+                'testTriggerMultipleEvents',
+                'testTriggerCustomEvent',
+                'testTriggerFormEvents',
+                'testTriggerInputEvents',
+                'testTriggerKeyboardEvents',
+                'testTriggerMouseEvents',
+                'testTriggerFocusEvents',
+                'testTriggerChangeEvents',
+                'testTriggerWithEventData',
+                'testTriggerNonExistentElement',
+                'testTriggerInvalidElementId',
+                'testTriggerEmptyEventType',
+                'testTriggerLongEventData',
+                'testTriggerUnicodeEventData',
+                'testTriggerEscapedEventData',
+                'testTriggerWithOptions',
+                'testFormValidationTrigger',
+                'testAccessibilityTrigger'
+            ]);
+            
+            // Form Tests
+            await this.runTestSuite('Form Tests', this.formTests, [
+                'testSetInputValue',
+                'testSetTextareaValue',
+                'testSetCheckboxChecked',
+                'testSetCheckboxUnchecked',
+                'testSetRadioSelected',
+                'testSetSelectOption',
+                'testSetMultipleSelectOptions',
+                'testSetFileInputValue',
+                'testSetRangeInputValue',
+                'testSetDateInputValue',
+                'testSetTimeInputValue',
+                'testSetColorInputValue',
+                'testSetEmailInputValue',
+                'testSetPasswordInputValue',
+                'testSetNumberInputValue',
+                'testSetUrlInputValue',
+                'testSetSearchInputValue',
+                'testSetTelInputValue',
+                'testSetEmptyValue',
+                'testSetValueWithSpecialChars',
+                'testSetValueNonExistentElement',
+                'testSetValueInvalidElementId',
+                'testSetLongValue',
+                'testSetUnicodeValue',
+                'testSetEscapedValue',
+                'testSetValueWithOptions',
+                'testFormAutoFill',
+                'testFormValidation',
+                'testFormReset'
+            ]);
+            
+            // Animation Tests
+            await this.runTestSuite('Animation Tests', this.animationTests, [
+                'testBasicAnimation',
+                'testAnimationWithDuration',
+                'testAnimationWithEasing',
+                'testAnimationWithDelay',
+                'testMultipleAnimations',
+                'testCssTransition',
+                'testTransitionWithProperties',
+                'testRemoveAnimation',
+                'testPauseAnimation',
+                'testResumeAnimation',
+                'testAnimationState',
+                'testKeyframeAnimation',
+                'testTransformAnimation',
+                'testScaleAnimation',
+                'testColorTransition',
+                'testAnimationLoop',
+                'testAnimationDirection',
+                'testAnimationFillMode',
+                'testAnimationNonExistentElement',
+                'testAnimationInvalidElementId',
+                'testLongAnimationName',
+                'testUnicodeAnimationName',
+                'testEscapedAnimationName',
+                'testAnimationWithOptions',
+                'testAnimationSequence',
+                'testAnimationPerformance',
+                'testAnimationCleanup'
+            ]);
+            
         } catch (error) {
             this.log(`Test runner error: ${error.message}`, 'error');
             throw error;
@@ -290,6 +459,12 @@ class UnifiedTestRunner {
         console.log('  - Use Case Tests: Real-world application scenarios');
         console.log('  - Advanced Protocol Tests: HTMX-inspired actions and advanced features');
         console.log('  - Reconnection Tests: Reconnection strategy and reliability');
+        console.log('  - CSS Class Tests: CSS class manipulation features');
+        console.log('  - Attribute Tests: HTML attribute manipulation features');
+        console.log('  - Style Tests: Inline CSS style manipulation features');
+        console.log('  - Event Tests: Event delegation and triggering features');
+        console.log('  - Form Tests: Form enhancement and value setting features');
+        console.log('  - Animation Tests: Animation and transition features');
     }
 }
 

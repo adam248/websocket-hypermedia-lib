@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Form Enhancement Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #007bff;
+            color: white;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .checkbox-group, .radio-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox-group label, .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        
+        .checkbox-group input[type="checkbox"], .radio-group input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .demo-controls button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        
+        .form-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .form-preview h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .form-preview .field {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .form-preview .field-name {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .form-preview .field-value {
+            color: #6c757d;
+            font-family: monospace;
+        }
+        
+        .input-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .input-type {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .input-type h5 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .input-type input {
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📝 Form Enhancement Demo</h1>
+    <p>This example demonstrates real-time form value setting using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Basic Form Elements</h2>
+        <p>Set values on various form input types:</p>
+        
+        <div class="form-group">
+            <label for="text-input">Text Input:</label>
+            <input type="text" id="text-input" placeholder="Enter text...">
+        </div>
+        
+        <div class="form-group">
+            <label for="textarea-input">Textarea:</label>
+            <textarea id="textarea-input" rows="3" placeholder="Enter multi-line text..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="email-input">Email Input:</label>
+            <input type="email" id="email-input" placeholder="Enter email...">
+        </div>
+        
+        <div class="form-group">
+            <label for="password-input">Password Input:</label>
+            <input type="password" id="password-input" placeholder="Enter password...">
+        </div>
+        
+        <div class="form-group">
+            <label for="number-input">Number Input:</label>
+            <input type="number" id="number-input" placeholder="Enter number...">
+        </div>
+        
+        <div class="form-group">
+            <label for="url-input">URL Input:</label>
+            <input type="url" id="url-input" placeholder="Enter URL...">
+        </div>
+        
+        <div class="form-group">
+            <label for="search-input">Search Input:</label>
+            <input type="search" id="search-input" placeholder="Search...">
+        </div>
+        
+        <div class="form-group">
+            <label for="tel-input">Telephone Input:</label>
+            <input type="tel" id="tel-input" placeholder="Enter phone number...">
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="setTextValue()">Set Text Value</button>
+            <button onclick="setTextareaValue()">Set Textarea Value</button>
+            <button onclick="setEmailValue()">Set Email Value</button>
+            <button onclick="setPasswordValue()">Set Password Value</button>
+            <button onclick="setNumberValue()">Set Number Value</button>
+            <button onclick="setUrlValue()">Set URL Value</button>
+            <button onclick="setSearchValue()">Set Search Value</button>
+            <button onclick="setTelValue()">Set Tel Value</button>
+            <button onclick="clearAllInputs()">Clear All Inputs</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Specialized Input Types</h2>
+        <p>Set values on specialized input types:</p>
+        
+        <div class="input-types">
+            <div class="input-type">
+                <h5>Date Input</h5>
+                <input type="date" id="date-input">
+                <button onclick="setDateValue()">Set Date</button>
+            </div>
+            
+            <div class="input-type">
+                <h5>Time Input</h5>
+                <input type="time" id="time-input">
+                <button onclick="setTimeValue()">Set Time</button>
+            </div>
+            
+            <div class="input-type">
+                <h5>Range Input</h5>
+                <input type="range" id="range-input" min="0" max="100" value="50">
+                <span id="range-value">50</span>
+                <button onclick="setRangeValue()">Set Range</button>
+            </div>
+            
+            <div class="input-type">
+                <h5>Color Input</h5>
+                <input type="color" id="color-input" value="#ff0000">
+                <div class="color-preview" id="color-preview"></div>
+                <button onclick="setColorValue()">Set Color</button>
+            </div>
+            
+            <div class="input-type">
+                <h5>File Input</h5>
+                <input type="file" id="file-input">
+                <button onclick="setFileValue()">Set File Path</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Checkboxes and Radio Buttons</h2>
+        <p>Set checked states on boolean form elements:</p>
+        
+        <div class="checkbox-group">
+            <h4>Checkboxes:</h4>
+            <label><input type="checkbox" id="checkbox1"> Option 1</label>
+            <label><input type="checkbox" id="checkbox2"> Option 2</label>
+            <label><input type="checkbox" id="checkbox3"> Option 3</label>
+            <label><input type="checkbox" id="checkbox4"> Option 4</label>
+        </div>
+        
+        <div class="radio-group">
+            <h4>Radio Buttons:</h4>
+            <label><input type="radio" name="radio-group" id="radio1" value="option1"> Option A</label>
+            <label><input type="radio" name="radio-group" id="radio2" value="option2"> Option B</label>
+            <label><input type="radio" name="radio-group" id="radio3" value="option3"> Option C</label>
+            <label><input type="radio" name="radio-group" id="radio4" value="option4"> Option D</label>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="checkAllBoxes()">Check All Boxes</button>
+            <button onclick="uncheckAllBoxes()">Uncheck All Boxes</button>
+            <button onclick="selectRadio1()">Select Radio A</button>
+            <button onclick="selectRadio2()">Select Radio B</button>
+            <button onclick="selectRadio3()">Select Radio C</button>
+            <button onclick="selectRadio4()">Select Radio D</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Select Elements</h2>
+        <p>Set selected options on dropdown menus:</p>
+        
+        <div class="form-group">
+            <label for="single-select">Single Select:</label>
+            <select id="single-select">
+                <option value="">Choose an option...</option>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <option value="option4">Option 4</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="multi-select">Multi Select:</label>
+            <select id="multi-select" multiple>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <option value="option4">Option 4</option>
+                <option value="option5">Option 5</option>
+            </select>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="selectOption1()">Select Option 1</button>
+            <button onclick="selectOption2()">Select Option 2</button>
+            <button onclick="selectOption3()">Select Option 3</button>
+            <button onclick="selectOption4()">Select Option 4</button>
+            <button onclick="selectMultipleOptions()">Select Multiple</button>
+            <button onclick="clearSelection()">Clear Selection</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Form Automation</h2>
+        <p>Automate entire form interactions:</p>
+        
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter email">
+        </div>
+        
+        <div class="form-group">
+            <label for="country">Country:</label>
+            <select id="country">
+                <option value="">Select country...</option>
+                <option value="us">United States</option>
+                <option value="uk">United Kingdom</option>
+                <option value="ca">Canada</option>
+                <option value="au">Australia</option>
+            </select>
+        </div>
+        
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="newsletter"> Subscribe to newsletter</label>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="autoFillForm()">Auto-fill Form</button>
+            <button onclick="validateForm()">Validate Form</button>
+            <button onclick="resetForm()">Reset Form</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Form Preview</h2>
+        <p>Live preview of form values:</p>
+        
+        <div class="form-preview">
+            <h4>Current Form State:</h4>
+            <div class="field">
+                <span class="field-name">Text Input:</span>
+                <span class="field-value" id="preview-text">(empty)</span>
+            </div>
+            <div class="field">
+                <span class="field-name">Email:</span>
+                <span class="field-value" id="preview-email">(empty)</span>
+            </div>
+            <div class="field">
+                <span class="field-name">Country:</span>
+                <span class="field-value" id="preview-country">(empty)</span>
+            </div>
+            <div class="field">
+                <span class="field-name">Newsletter:</span>
+                <span class="field-value" id="preview-newsletter">(unchecked)</span>
+            </div>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="updatePreview()">Update Preview</button>
+        </div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - Form values will update automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Update range value display
+        document.getElementById('range-input').addEventListener('input', (e) => {
+            document.getElementById('range-value').textContent = e.target.value;
+        });
+        
+        // Update color preview
+        document.getElementById('color-input').addEventListener('input', (e) => {
+            document.getElementById('color-preview').style.backgroundColor = e.target.value;
+        });
+        
+        // Form value setting functions
+        function setTextValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|text-input|Hello from WebSocket!');
+            }
+        }
+        
+        function setTextareaValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|textarea-input|This is a multi-line\ntextarea value\nset via WebSocket!');
+            }
+        }
+        
+        function setEmailValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|email-input|user@example.com');
+            }
+        }
+        
+        function setPasswordValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|password-input|secret123');
+            }
+        }
+        
+        function setNumberValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|number-input|42');
+            }
+        }
+        
+        function setUrlValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|url-input|https://example.com');
+            }
+        }
+        
+        function setSearchValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|search-input|search term');
+            }
+        }
+        
+        function setTelValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|tel-input|+1-555-123-4567');
+            }
+        }
+        
+        function clearAllInputs() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|text-input|');
+                window.wsHypermedia.send('setValue|textarea-input|');
+                window.wsHypermedia.send('setValue|email-input|');
+                window.wsHypermedia.send('setValue|password-input|');
+                window.wsHypermedia.send('setValue|number-input|');
+                window.wsHypermedia.send('setValue|url-input|');
+                window.wsHypermedia.send('setValue|search-input|');
+                window.wsHypermedia.send('setValue|tel-input|');
+            }
+        }
+        
+        // Specialized input functions
+        function setDateValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|date-input|2024-01-15');
+            }
+        }
+        
+        function setTimeValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|time-input|14:30');
+            }
+        }
+        
+        function setRangeValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|range-input|75');
+            }
+        }
+        
+        function setColorValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|color-input|#00ff00');
+            }
+        }
+        
+        function setFileValue() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setValue|file-input|/path/to/file.txt');
+            }
+        }
+        
+        // Checkbox functions
+        function checkAllBoxes() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|checkbox1|true');
+                window.wsHypermedia.send('setChecked|checkbox2|true');
+                window.wsHypermedia.send('setChecked|checkbox3|true');
+                window.wsHypermedia.send('setChecked|checkbox4|true');
+            }
+        }
+        
+        function uncheckAllBoxes() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|checkbox1|false');
+                window.wsHypermedia.send('setChecked|checkbox2|false');
+                window.wsHypermedia.send('setChecked|checkbox3|false');
+                window.wsHypermedia.send('setChecked|checkbox4|false');
+            }
+        }
+        
+        function selectRadio1() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|radio1|true');
+            }
+        }
+        
+        function selectRadio2() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|radio2|true');
+            }
+        }
+        
+        function selectRadio3() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|radio3|true');
+            }
+        }
+        
+        function selectRadio4() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setChecked|radio4|true');
+            }
+        }
+        
+        // Select functions
+        function selectOption1() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|single-select|option1');
+            }
+        }
+        
+        function selectOption2() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|single-select|option2');
+            }
+        }
+        
+        function selectOption3() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|single-select|option3');
+            }
+        }
+        
+        function selectOption4() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|single-select|option4');
+            }
+        }
+        
+        function selectMultipleOptions() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|multi-select|option1,option3,option5');
+            }
+        }
+        
+        function clearSelection() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('setSelected|single-select|');
+                window.wsHypermedia.send('setSelected|multi-select|');
+            }
+        }
+        
+        // Form automation functions
+        function autoFillForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('auto_fill_form|demo-form');
+            }
+        }
+        
+        function validateForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('validate_form|demo-form');
+            }
+        }
+        
+        function resetForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_form|demo-form');
+            }
+        }
+        
+        // Preview functions
+        function updatePreview() {
+            const textValue = document.getElementById('text-input').value || '(empty)';
+            const emailValue = document.getElementById('email').value || '(empty)';
+            const countryValue = document.getElementById('country').value || '(empty)';
+            const newsletterValue = document.getElementById('newsletter').checked ? 'checked' : '(unchecked)';
+            
+            document.getElementById('preview-text').textContent = textValue;
+            document.getElementById('preview-email').textContent = emailValue;
+            document.getElementById('preview-country').textContent = countryValue;
+            document.getElementById('preview-newsletter').textContent = newsletterValue;
+        }
+        
+        // Update preview when form values change
+        document.addEventListener('input', updatePreview);
+        document.addEventListener('change', updatePreview);
+        
+        // Initial preview update
+        updatePreview();
+    </script>
+</body>
+</html> 

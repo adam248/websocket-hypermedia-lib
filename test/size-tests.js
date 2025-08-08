@@ -132,7 +132,7 @@ class SizeTests {
                 
                 // Check that first line is the immutable comment
                 const firstLine = lines[0].trim();
-                const expectedComment = '/* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN WSHM-reference.md */';
+                const expectedComment = '/* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN docs/API.md */';
                 
                 if (firstLine !== expectedComment) {
                     reject(new Error(`First line is not the expected immutable comment. Found: "${firstLine}"`));

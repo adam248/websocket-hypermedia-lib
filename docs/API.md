@@ -29,6 +29,36 @@ Use configurable escape character (default: `~`) to escape content containing pi
 - `update|content|~<p>Hello World | & Good Morning New York!</p>~`
 - `append|log|~<span>Error: File not found | Path: /usr/local/bin</span>~`
 - `element_clicked|content|~<p>Hello world</p>~` (from click-to-send feature)
+- `addClass|button|active|highlight` (add multiple classes)
+- `removeClass|button|inactive` (remove single class)
+- `toggleClass|sidebar|collapsed` (toggle class state)
+- `setAttr|button|disabled|true` (set boolean attribute)
+- `setAttr|input|placeholder|Enter text...` (set text attribute)
+- `setAttr|form|data-valid|true` (set data attribute)
+- `removeAttr|button|disabled` (remove attribute)
+- `setStyle|element|background-color|red` (set CSS property)
+- `setStyle|element|width|100%` (set CSS property with units)
+- `setStyle|element|font-family|Arial, sans-serif` (set CSS property with spaces)
+- `removeStyle|element|background-color` (remove CSS property)
+- `trigger|button|click` (trigger click event)
+- `trigger|input|focus` (trigger focus event)
+- `trigger|form|submit` (trigger form submission)
+- `trigger|element|custom-event|{"data": "value"}` (trigger custom event with data)
+- `setValue|input|Hello World` (set input value)
+- `setValue|textarea|Multi-line text` (set textarea value)
+- `setChecked|checkbox|true` (check checkbox)
+- `setChecked|radio|true` (select radio button)
+- `setSelected|select|option2` (select single option)
+- `setSelected|multi-select|option1,option3` (select multiple options)
+- `animate|element|fadeIn|1s|ease|0s|1|normal|none` (trigger animation with full parameters)
+- `animate|element|slideIn|2.5s|ease-in-out` (trigger animation with duration and easing)
+- `transition|element|all|0.3s|ease` (set CSS transition)
+- `transition|element|opacity,transform|0.5s|ease-in` (set specific property transitions)
+- `removeAnimation|element` (remove running animation)
+- `pauseAnimation|element` (pause animation)
+- `resumeAnimation|element` (resume animation)
+- `getAnimationState|element` (get animation state)
+- `keyframe|element|customAnimation|{"0%": {"opacity": "0"}, "100%": {"opacity": "1"}}|2s` (custom keyframes)
 
 ## Usage
 
@@ -168,6 +198,7 @@ new WebSocketHypermedia(url, options = {})
 
 The library provides these built-in actions:
 
+#### Content Manipulation
 - `update` - Set element's innerHTML
 - `append` - Append content to element
 - `prepend` - Prepend content to element
@@ -176,6 +207,36 @@ The library provides these built-in actions:
 - `swap` - Replace element's outerHTML (alias for replace)
 - `before` - Insert content before element
 - `after` - Insert content after element
+
+#### CSS Class Manipulation
+- `addClass` - Add CSS class(es) to element
+- `removeClass` - Remove CSS class(es) from element
+- `toggleClass` - Toggle CSS class(es) on element
+
+#### Attribute Manipulation
+- `setAttr` - Set HTML attribute on element
+- `removeAttr` - Remove HTML attribute from element
+
+#### Style Manipulation
+- `setStyle` - Set inline CSS style property on element
+- `removeStyle` - Remove inline CSS style property from element
+
+#### Event Delegation
+- `trigger` - Trigger DOM event on element
+
+#### Form Enhancement
+- `setValue` - Set value on form elements (input, textarea, etc.)
+- `setChecked` - Set checked state on checkboxes and radio buttons
+- `setSelected` - Set selected option(s) on select elements
+
+#### Animation & Transitions
+- `animate` - Trigger CSS animations with full control
+- `transition` - Set CSS transition properties
+- `removeAnimation` - Remove/cancel running animations
+- `pauseAnimation` - Pause running animations
+- `resumeAnimation` - Resume paused animations
+- `getAnimationState` - Get current animation state
+- `keyframe` - Create custom keyframe animations
 
 ## Performance Optimizations
 

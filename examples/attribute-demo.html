@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Attribute Manipulation Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #007bff;
+            color: white;
+        }
+        
+        .button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .button[data-processing="true"] {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input[data-valid="true"] {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .form-group input[data-valid="false"] {
+            border-color: #dc3545;
+            background-color: #fff8f8;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal[aria-hidden="false"] {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            background: #e3f2fd;
+        }
+        
+        .notification[data-type="success"] {
+            border-left-color: #28a745;
+            background: #e8f5e8;
+        }
+        
+        .notification[data-type="error"] {
+            border-left-color: #dc3545;
+            background: #fde8e8;
+        }
+        
+        .notification[data-type="warning"] {
+            border-left-color: #ffc107;
+            background: #fff8e1;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .demo-controls button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Attribute Manipulation Demo</h1>
+    <p>This example demonstrates real-time HTML attribute manipulation using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Form State Management</h2>
+        <p>Watch as the server manipulates form attributes in real-time:</p>
+        
+        <form id="demo-form">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter password">
+            </div>
+            
+            <button type="submit" id="submit-btn" class="button">Submit Form</button>
+        </form>
+        
+        <div class="demo-controls">
+            <button onclick="simulateValidation()">Simulate Validation</button>
+            <button onclick="simulateProcessing()">Simulate Processing</button>
+            <button onclick="resetForm()">Reset Form</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Accessibility Features</h2>
+        <p>ARIA attributes will be manipulated for accessibility:</p>
+        
+        <button id="toggle-modal" class="button">Toggle Modal</button>
+        <button id="expand-button" class="button">Toggle Expansion</button>
+        
+        <div id="modal" class="modal" aria-hidden="true">
+            <div class="modal-content">
+                <h3>Modal Content</h3>
+                <p>This modal demonstrates ARIA attribute manipulation.</p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Data Attributes</h2>
+        <p>Custom data attributes will be set and removed:</p>
+        
+        <div id="user-card" class="demo-section">
+            <h3>User Card</h3>
+            <p>Status: <span id="user-status">Unknown</span></p>
+            <p>Last Active: <span id="last-active">Never</span></p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="setUserOnline()">Set Online</button>
+            <button onclick="setUserOffline()">Set Offline</button>
+            <button onclick="updateLastActive()">Update Last Active</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Notifications</h2>
+        <p>Notifications with different types will appear:</p>
+        <div id="notifications"></div>
+        
+        <div class="demo-controls">
+            <button onclick="showSuccessNotification()">Success</button>
+            <button onclick="showErrorNotification()">Error</button>
+            <button onclick="showWarningNotification()">Warning</button>
+        </div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - Attributes will update automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Form validation simulation
+        function simulateValidation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('validate_form|demo-form');
+            }
+        }
+        
+        // Form processing simulation
+        function simulateProcessing() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('process_form|demo-form');
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_form|demo-form');
+            }
+        }
+        
+        // Modal controls
+        document.getElementById('toggle-modal').addEventListener('click', () => {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('toggle_modal|modal');
+            }
+        });
+        
+        document.getElementById('expand-button').addEventListener('click', () => {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('toggle_expansion|expand-button');
+            }
+        });
+        
+        function closeModal() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('close_modal|modal');
+            }
+        }
+        
+        // User status controls
+        function setUserOnline() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_user_online|user-card');
+            }
+        }
+        
+        function setUserOffline() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_user_offline|user-card');
+            }
+        }
+        
+        function updateLastActive() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('update_last_active|user-card');
+            }
+        }
+        
+        // Notification controls
+        function showSuccessNotification() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('show_notification|notifications|success');
+            }
+        }
+        
+        function showErrorNotification() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('show_notification|notifications|error');
+            }
+        }
+        
+        function showWarningNotification() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('show_notification|notifications|warning');
+            }
+        }
+        
+        // Custom message handlers for real-time updates
+        window.wsHypermedia.addMessageHandler('notification', (element, html, elementId) => {
+            element.insertAdjacentHTML('beforeend', html);
+            // Auto-remove notifications after 5 seconds
+            setTimeout(() => {
+                const notifications = element.querySelectorAll('.notification');
+                if (notifications.length > 0) {
+                    notifications[0].remove();
+                }
+            }, 5000);
+        });
+        
+        // Form submission handler
+        document.getElementById('demo-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('form_submitted|demo-form');
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -297,6 +297,519 @@ wss.on('connection', (ws) => {
                 }
                 break;
                 
+            case 'addClass':
+                // Handle CSS class addition
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`addClass|${noun}|${subject}`);
+                }
+                break;
+                
+            case 'removeClass':
+                // Handle CSS class removal
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`removeClass|${noun}|${subject}`);
+                }
+                break;
+                
+            case 'toggleClass':
+                // Handle CSS class toggling
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`toggleClass|${noun}|${subject}`);
+                }
+                break;
+                
+            case 'setAttr':
+                // Handle attribute setting
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const attrName = subject;
+                    const value = options[0] || '';
+                    ws.send(`setAttr|${noun}|${attrName}|${value}`);
+                }
+                break;
+                
+            case 'removeAttr':
+                // Handle attribute removal
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`removeAttr|${noun}|${subject}`);
+                }
+                break;
+                
+            case 'setStyle':
+                // Handle style setting
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const property = subject;
+                    const value = options[0] || '';
+                    ws.send(`setStyle|${noun}|${property}|${value}`);
+                }
+                break;
+                
+            case 'removeStyle':
+                // Handle style removal
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`removeStyle|${noun}|${subject}`);
+                }
+                break;
+                
+            case 'trigger':
+                // Handle event triggering
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const eventType = subject;
+                    const eventData = options[0] || '';
+                    ws.send(`trigger|${noun}|${eventType}|${eventData}`);
+                }
+                break;
+                
+            case 'setValue':
+                // Handle form value setting
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const value = subject;
+                    ws.send(`setValue|${noun}|${value}`);
+                }
+                break;
+                
+            case 'setChecked':
+                // Handle checkbox/radio checked state
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const checked = subject;
+                    ws.send(`setChecked|${noun}|${checked}`);
+                }
+                break;
+                
+            case 'setSelected':
+                // Handle select option selection
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const value = subject;
+                    ws.send(`setSelected|${noun}|${value}`);
+                }
+                break;
+                
+            case 'animate':
+                // Handle animation
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const animationName = subject;
+                    const duration = options[0] || '1s';
+                    const easing = options[1] || 'ease';
+                    const delay = options[2] || '0s';
+                    const iterations = options[3] || '1';
+                    const direction = options[4] || 'normal';
+                    const fillMode = options[5] || 'none';
+                    ws.send(`animate|${noun}|${animationName}|${duration}|${easing}|${delay}|${iterations}|${direction}|${fillMode}`);
+                }
+                break;
+                
+            case 'transition':
+                // Handle CSS transition
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const properties = subject;
+                    const duration = options[0] || '0.3s';
+                    const easing = options[1] || 'ease';
+                    ws.send(`transition|${noun}|${properties}|${duration}|${easing}`);
+                }
+                break;
+                
+            case 'removeAnimation':
+                // Handle animation removal
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`removeAnimation|${noun}`);
+                }
+                break;
+                
+            case 'pauseAnimation':
+                // Handle animation pause
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`pauseAnimation|${noun}`);
+                }
+                break;
+                
+            case 'resumeAnimation':
+                // Handle animation resume
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`resumeAnimation|${noun}`);
+                }
+                break;
+                
+            case 'getAnimationState':
+                // Handle animation state query
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    ws.send(`animationState|${noun}|{"name": "test", "playState": "running", "currentTime": 0}`);
+                }
+                break;
+                
+            case 'keyframe':
+                // Handle keyframe animation
+                if (noun === 'non-existent-element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else if (noun === 'invalid@id') {
+                    ws.send('update|status|<p>Invalid element ID</p>');
+                } else {
+                    const animationName = subject;
+                    const keyframes = options[0] || '{}';
+                    const duration = options[1] || '1s';
+                    ws.send(`keyframe|${noun}|${animationName}|${keyframes}|${duration}`);
+                }
+                break;
+                
+            case 'button_clicked':
+                // Handle button click demo
+                ws.send('addClass|demo-button|active highlight');
+                setTimeout(() => {
+                    ws.send('removeClass|demo-button|active highlight');
+                }, 2000);
+                break;
+                
+            case 'toggle_sidebar':
+                // Handle sidebar toggle demo
+                ws.send('toggleClass|sidebar|collapsed');
+                break;
+                
+            case 'validate_form':
+                // Handle form validation demo
+                ws.send('setValue|username|valid_username');
+                ws.send('setValue|email|valid@email.com');
+                ws.send('setChecked|newsletter|true');
+                break;
+                
+            case 'process_form':
+                // Handle form processing demo
+                ws.send('setAttr|submit-btn|disabled|true');
+                ws.send('setAttr|submit-btn|data-processing|true');
+                setTimeout(() => {
+                    ws.send('removeAttr|submit-btn|disabled');
+                    ws.send('removeAttr|submit-btn|data-processing');
+                }, 3000);
+                break;
+                
+            case 'reset_form':
+                // Handle form reset demo
+                console.log('Handling reset_form request');
+                ws.send('setValue|username|');
+                ws.send('setValue|email|');
+                ws.send('setChecked|newsletter|false');
+                console.log('Sent reset_form responses');
+                break;
+                
+            case 'toggle_modal':
+                // Handle modal toggle demo
+                ws.send('setAttr|modal|aria-hidden|false');
+                break;
+                
+            case 'close_modal':
+                // Handle modal close demo
+                ws.send('setAttr|modal|aria-hidden|true');
+                break;
+                
+            case 'toggle_expansion':
+                // Handle expansion toggle demo
+                ws.send('setAttr|expand-button|aria-expanded|true');
+                break;
+                
+            case 'set_user_online':
+                // Handle user online demo
+                ws.send('setAttr|user-card|data-status|online');
+                break;
+                
+            case 'set_user_offline':
+                // Handle user offline demo
+                ws.send('setAttr|user-card|data-status|offline');
+                break;
+                
+            case 'update_last_active':
+                // Handle last active update demo
+                const now = new Date().toLocaleTimeString();
+                ws.send(`setAttr|user-card|data-last-active|${now}`);
+                break;
+                
+            case 'show_notification':
+                // Handle notification demo
+                const type = subject;
+                const html = `<div class="notification" data-type="${type}">This is a ${type} notification!</div>`;
+                ws.send(`notification|notifications|${html}`);
+                break;
+                
+            case 'change_color':
+                // Handle color change demo
+                const color = subject;
+                ws.send(`setStyle|color-demo|background-color|${color}`);
+                break;
+                
+            case 'reset_color':
+                // Handle color reset demo
+                ws.send('removeStyle|color-demo|background-color');
+                break;
+                
+            case 'random_color':
+                // Handle random color demo
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                ws.send(`setStyle|color-demo|background-color|${randomColor}`);
+                break;
+                
+            case 'gradient_background':
+                // Handle gradient background demo
+                ws.send('setStyle|color-demo|background|linear-gradient(45deg, #ff6b6b, #4ecdc4)');
+                break;
+                
+            case 'start_animation':
+                // Handle animation start demo
+                ws.send('setStyle|animated-box|animation|pulse 2s infinite');
+                break;
+                
+            case 'pause_animation':
+                // Handle animation pause demo
+                ws.send('setStyle|animated-box|animation-play-state|paused');
+                break;
+                
+            case 'stop_animation':
+                // Handle animation stop demo
+                ws.send('removeStyle|animated-box|animation');
+                break;
+                
+            case 'change_animation':
+                // Handle animation change demo
+                ws.send('setStyle|animated-box|animation|bounce 1s infinite');
+                break;
+                
+            case 'set_mobile_size':
+                // Handle mobile size demo
+                ws.send('setStyle|responsive-container|max-width|480px');
+                break;
+                
+            case 'set_tablet_size':
+                // Handle tablet size demo
+                ws.send('setStyle|responsive-container|max-width|768px');
+                break;
+                
+            case 'set_desktop_size':
+                // Handle desktop size demo
+                ws.send('setStyle|responsive-container|max-width|1200px');
+                break;
+                
+            case 'set_full_width':
+                // Handle full width demo
+                ws.send('removeStyle|responsive-container|max-width');
+                break;
+                
+            case 'change_font':
+                // Handle font change demo
+                ws.send('setStyle|typography-demo|font-family|Georgia, serif');
+                break;
+                
+            case 'change_size':
+                // Handle size change demo
+                ws.send('setStyle|typography-demo|font-size|24px');
+                break;
+                
+            case 'change_spacing':
+                // Handle spacing change demo
+                ws.send('setStyle|typography-demo|letter-spacing|2px');
+                break;
+                
+            case 'reset_typography':
+                // Handle typography reset demo
+                ws.send('removeStyle|typography-demo|font-family');
+                ws.send('removeStyle|typography-demo|font-size');
+                ws.send('removeStyle|typography-demo|letter-spacing');
+                break;
+                
+            case 'set_primary_color':
+                // Handle primary color demo
+                ws.send('setStyle|css-vars-demo|--primary-color|#007bff');
+                break;
+                
+            case 'set_secondary_color':
+                // Handle secondary color demo
+                ws.send('setStyle|css-vars-demo|--secondary-color|#6c757d');
+                break;
+                
+            case 'set_spacing':
+                // Handle spacing demo
+                ws.send('setStyle|css-vars-demo|--spacing|2rem');
+                break;
+                
+            case 'reset_css_vars':
+                // Handle CSS vars reset demo
+                ws.send('removeStyle|css-vars-demo|--primary-color');
+                ws.send('removeStyle|css-vars-demo|--secondary-color');
+                ws.send('removeStyle|css-vars-demo|--spacing');
+                break;
+                
+            case 'trigger_click':
+                // Handle click trigger demo
+                ws.send('trigger|demo-button|click');
+                break;
+                
+            case 'trigger_focus':
+                // Handle focus trigger demo
+                ws.send('trigger|demo-input|focus');
+                break;
+                
+            case 'trigger_blur':
+                // Handle blur trigger demo
+                ws.send('trigger|demo-input|blur');
+                break;
+                
+            case 'trigger_input':
+                // Handle input trigger demo
+                ws.send('trigger|demo-input|input');
+                break;
+                
+            case 'trigger_change':
+                // Handle change trigger demo
+                ws.send('trigger|demo-select|change');
+                break;
+                
+
+                
+            case 'trigger_save':
+                // Handle save trigger demo
+                ws.send('trigger|document|keydown|{"key": "s", "ctrlKey": true}');
+                break;
+                
+            case 'trigger_undo':
+                // Handle undo trigger demo
+                ws.send('trigger|document|keydown|{"key": "z", "ctrlKey": true}');
+                break;
+                
+            case 'trigger_escape':
+                // Handle escape trigger demo
+                ws.send('trigger|document|keydown|{"key": "Escape"}');
+                break;
+                
+            case 'trigger_enter':
+                // Handle enter trigger demo
+                ws.send('trigger|demo-form|keydown|{"key": "Enter"}');
+                break;
+                
+            case 'trigger_custom':
+                // Handle custom event trigger demo
+                ws.send('trigger|custom-event-target|custom-event');
+                break;
+                
+            case 'trigger_data':
+                // Handle data event trigger demo
+                ws.send('trigger|custom-event-target|custom-event|{"detail": {"action": "save", "id": 123}}');
+                break;
+                
+            case 'trigger_complex':
+                // Handle complex event trigger demo
+                ws.send('trigger|custom-event-target|custom-event|{"detail": {"user": {"id": 456, "name": "John"}, "action": "update"}}');
+                break;
+                
+            case 'trigger_multiple':
+                // Handle multiple events trigger demo
+                ws.send('trigger|demo-button|click');
+                setTimeout(() => {
+                    ws.send('trigger|demo-button|focus');
+                }, 100);
+                setTimeout(() => {
+                    ws.send('trigger|demo-button|blur');
+                }, 200);
+                break;
+                
+            case 'auto_fill_form':
+                // Handle form auto-fill demo
+                ws.send('setValue|username|john_doe');
+                setTimeout(() => {
+                    ws.send('setValue|email|john@example.com');
+                }, 100);
+                setTimeout(() => {
+                    ws.send('setSelected|country|us');
+                }, 200);
+                break;
+                
+            case 'validate_form':
+                // Handle form validation demo
+                ws.send('setValue|username|valid_username');
+                ws.send('setValue|email|valid@email.com');
+                ws.send('setChecked|newsletter|true');
+                break;
+                
+            case 'sequence_animation':
+                // Handle animation sequence demo
+                ws.send('animate|test-element|fadeIn|1s');
+                setTimeout(() => {
+                    ws.send('animate|test-element|slideIn|1s');
+                }, 100);
+                break;
+                
+            case 'performance_animation':
+                // Handle animation performance demo
+                ws.send('animate|test-element|performance|0.1s');
+                break;
+                
+            case 'cleanup_animation':
+                // Handle animation cleanup demo
+                ws.send('removeAnimation|test-element');
+                break;
+                
             case 'form_submit':
                 // Handle form submission with validation
                 if (options.includes('validate')) {

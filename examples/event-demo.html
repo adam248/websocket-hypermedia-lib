@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Event Delegation Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #007bff;
+            color: white;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .demo-element {
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .demo-element:hover {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+        
+        .demo-element:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .event-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .event-log .event {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .event-log .click { background: #d4edda; color: #155724; }
+        .event-log .focus { background: #d1ecf1; color: #0c5460; }
+        .event-log .input { background: #fff3cd; color: #856404; }
+        .event-log .submit { background: #f8d7da; color: #721c24; }
+        .event-log .custom { background: #e2e3e5; color: #383d41; }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .demo-controls button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        
+        .keyboard-shortcuts {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .keyboard-shortcuts h4 {
+            margin-top: 0;
+        }
+        
+        .keyboard-shortcuts kbd {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Event Delegation Demo</h1>
+    <p>This example demonstrates real-time event triggering using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Interactive Elements</h2>
+        <p>These elements will respond to programmatically triggered events:</p>
+        
+        <button id="demo-button" class="button">Click Me!</button>
+        <input type="text" id="demo-input" placeholder="Type here..." class="form-group">
+        <select id="demo-select" class="form-group">
+            <option value="">Select an option...</option>
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+            <option value="option3">Option 3</option>
+        </select>
+        
+        <div class="demo-controls">
+            <button onclick="triggerClick()">Trigger Click</button>
+            <button onclick="triggerFocus()">Trigger Focus</button>
+            <button onclick="triggerBlur()">Trigger Blur</button>
+            <button onclick="triggerInput()">Trigger Input</button>
+            <button onclick="triggerChange()">Trigger Change</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Form Automation</h2>
+        <p>Automate form interactions via WebSocket:</p>
+        
+        <form id="demo-form">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter email">
+            </div>
+            
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <select id="country" name="country">
+                    <option value="">Select country...</option>
+                    <option value="us">United States</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="ca">Canada</option>
+                    <option value="au">Australia</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="button">Submit Form</button>
+        </form>
+        
+        <div class="demo-controls">
+            <button onclick="autoFillForm()">Auto-fill Form</button>
+            <button onclick="validateForm()">Validate Form</button>
+            <button onclick="submitForm()">Submit Form</button>
+            <button onclick="resetForm()">Reset Form</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Keyboard Shortcuts</h2>
+        <p>Trigger keyboard events for accessibility and shortcuts:</p>
+        
+        <div class="keyboard-shortcuts">
+            <h4>Available Shortcuts:</h4>
+            <p><kbd>Ctrl</kbd> + <kbd>S</kbd> - Save (trigger save event)</p>
+            <p><kbd>Ctrl</kbd> + <kbd>Z</kbd> - Undo (trigger undo event)</p>
+            <p><kbd>Escape</kbd> - Close modal (trigger close event)</p>
+            <p><kbd>Enter</kbd> - Submit (trigger submit event)</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="triggerSave()">Trigger Save (Ctrl+S)</button>
+            <button onclick="triggerUndo()">Trigger Undo (Ctrl+Z)</button>
+            <button onclick="triggerEscape()">Trigger Escape</button>
+            <button onclick="triggerEnter()">Trigger Enter</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Custom Events</h2>
+        <p>Trigger custom events with data:</p>
+        
+        <div id="custom-event-target" class="demo-element">
+            <h3>Custom Event Target</h3>
+            <p>This element will receive custom events with data!</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="triggerCustomEvent()">Trigger Custom Event</button>
+            <button onclick="triggerDataEvent()">Trigger Event with Data</button>
+            <button onclick="triggerComplexEvent()">Trigger Complex Event</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Event Log</h2>
+        <p>Watch events being triggered in real-time:</p>
+        
+        <div id="event-log" class="event-log">
+            <div class="event">Event log will appear here...</div>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="clearEventLog()">Clear Log</button>
+            <button onclick="triggerMultipleEvents()">Trigger Multiple Events</button>
+        </div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - Events will trigger automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Event logging function
+        function logEvent(type, element, data = '') {
+            const log = document.getElementById('event-log');
+            const eventDiv = document.createElement('div');
+            eventDiv.className = `event ${type}`;
+            eventDiv.textContent = `${new Date().toLocaleTimeString()} - ${type.toUpperCase()} on ${element}${data ? ` (${data})` : ''}`;
+            log.appendChild(eventDiv);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Event listeners for demo elements
+        document.getElementById('demo-button').addEventListener('click', () => {
+            logEvent('click', 'demo-button');
+        });
+        
+        document.getElementById('demo-input').addEventListener('focus', () => {
+            logEvent('focus', 'demo-input');
+        });
+        
+        document.getElementById('demo-input').addEventListener('blur', () => {
+            logEvent('blur', 'demo-input');
+        });
+        
+        document.getElementById('demo-input').addEventListener('input', (e) => {
+            logEvent('input', 'demo-input', e.target.value);
+        });
+        
+        document.getElementById('demo-select').addEventListener('change', (e) => {
+            logEvent('change', 'demo-select', e.target.value);
+        });
+        
+        document.getElementById('demo-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            logEvent('submit', 'demo-form');
+        });
+        
+        document.getElementById('custom-event-target').addEventListener('custom-event', (e) => {
+            logEvent('custom', 'custom-event-target', JSON.stringify(e.detail));
+        });
+        
+        // Event triggering functions
+        function triggerClick() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_click|demo-button');
+            }
+        }
+        
+        function triggerFocus() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_focus|demo-input');
+            }
+        }
+        
+        function triggerBlur() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_blur|demo-input');
+            }
+        }
+        
+        function triggerInput() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_input|demo-input');
+            }
+        }
+        
+        function triggerChange() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_change|demo-select');
+            }
+        }
+        
+        // Form automation functions
+        function autoFillForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('auto_fill_form|demo-form');
+            }
+        }
+        
+        function validateForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('validate_form|demo-form');
+            }
+        }
+        
+        function submitForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('submit_form|demo-form');
+            }
+        }
+        
+        function resetForm() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_form|demo-form');
+            }
+        }
+        
+        // Keyboard shortcut functions
+        function triggerSave() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_save|document');
+            }
+        }
+        
+        function triggerUndo() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_undo|document');
+            }
+        }
+        
+        function triggerEscape() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_escape|document');
+            }
+        }
+        
+        function triggerEnter() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_enter|demo-form');
+            }
+        }
+        
+        // Custom event functions
+        function triggerCustomEvent() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_custom|custom-event-target');
+            }
+        }
+        
+        function triggerDataEvent() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_data|custom-event-target');
+            }
+        }
+        
+        function triggerComplexEvent() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_complex|custom-event-target');
+            }
+        }
+        
+        // Utility functions
+        function clearEventLog() {
+            document.getElementById('event-log').innerHTML = '<div class="event">Event log cleared...</div>';
+        }
+        
+        function triggerMultipleEvents() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('trigger_multiple|demo-button');
+            }
+        }
+        
+        // Global event listeners for keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                logEvent('keyboard', 'document', 'Ctrl+S (Save)');
+            } else if (e.ctrlKey && e.key === 'z') {
+                e.preventDefault();
+                logEvent('keyboard', 'document', 'Ctrl+Z (Undo)');
+            } else if (e.key === 'Escape') {
+                logEvent('keyboard', 'document', 'Escape');
+            } else if (e.key === 'Enter') {
+                logEvent('keyboard', 'document', 'Enter');
+            }
+        });
+    </script>
+</body>
+</html> 

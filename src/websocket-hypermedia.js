@@ -1,4 +1,4 @@
-/* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN WSHM-reference.md */
+/* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN docs/API.md */
 
 class WebSocketHypermedia {
     constructor(url, options = {}) {
@@ -30,7 +30,91 @@ class WebSocketHypermedia {
             remove: (el) => el.remove(),
             swap: (el, subject) => el.outerHTML = subject,
             before: (el, subject) => el.insertAdjacentHTML('beforebegin', subject),
-            after: (el, subject) => el.insertAdjacentHTML('afterend', subject)
+            after: (el, subject) => el.insertAdjacentHTML('afterend', subject),
+            addClass: (el, subject) => el.classList.add(subject),
+            removeClass: (el, subject) => el.classList.remove(subject),
+            toggleClass: (el, subject) => el.classList.toggle(subject),
+            setAttr: (el, attrName, value) => el.setAttribute(attrName, value),
+            removeAttr: (el, subject) => el.removeAttribute(subject),
+            setStyle: (el, property, value) => el.style[property] = value,
+            removeStyle: (el, property) => el.style.removeProperty(property),
+            trigger: (el, eventType, eventData) => {
+                const event = new Event(eventType, { bubbles: true, cancelable: true });
+                if (eventData) {
+                    try {
+                        const data = JSON.parse(eventData);
+                        Object.assign(event, data);
+                    } catch (e) {
+                        event.detail = eventData;
+                    }
+                }
+                el.dispatchEvent(event);
+            },
+            setValue: (el, value) => el.value = value,
+            setChecked: (el, checked) => el.checked = checked === 'true',
+            setSelected: (el, value) => {
+                if (el.multiple) {
+                    const values = value.split(',');
+                    Array.from(el.options).forEach(option => {
+                        option.selected = values.includes(option.value);
+                    });
+                } else {
+                    el.value = value;
+                }
+            },
+            animate: (el, animationName, duration, easing, delay, iterations, direction, fillMode, ...options) => {
+                const animation = el.animate([
+                    { opacity: '0', transform: 'translateY(20px)' },
+                    { opacity: '1', transform: 'translateY(0)' }
+                ], {
+                    duration: duration ? parseFloat(duration) * 1000 : 1000,
+                    easing: easing || 'ease',
+                    delay: delay ? parseFloat(delay) * 1000 : 0,
+                    iterations: iterations === 'infinite' ? Infinity : (parseInt(iterations) || 1),
+                    direction: direction || 'normal',
+                    fill: fillMode || 'none'
+                });
+                el.dataset.currentAnimation = animationName;
+                el.dataset.animation = animation;
+            },
+            transition: (el, properties, duration, easing) => {
+                el.style.transition = `${properties || 'all'} ${duration || '0.3s'} ${easing || 'ease'}`;
+            },
+            removeAnimation: (el) => {
+                if (el.dataset.animation) {
+                    el.dataset.animation.cancel();
+                    delete el.dataset.animation;
+                    delete el.dataset.currentAnimation;
+                }
+            },
+            pauseAnimation: (el) => {
+                if (el.dataset.animation) {
+                    el.dataset.animation.pause();
+                }
+            },
+            resumeAnimation: (el) => {
+                if (el.dataset.animation) {
+                    el.dataset.animation.play();
+                }
+            },
+            getAnimationState: (el) => {
+                if (el.dataset.animation) {
+                    return {
+                        name: el.dataset.currentAnimation,
+                        playState: el.dataset.animation.playState,
+                        currentTime: el.dataset.animation.currentTime
+                    };
+                }
+                return null;
+            },
+            keyframe: (el, animationName, keyframes, duration) => {
+                const parsedKeyframes = typeof keyframes === 'string' ? JSON.parse(keyframes) : keyframes;
+                const animation = el.animate(parsedKeyframes, {
+                    duration: duration ? parseFloat(duration) * 1000 : 1000
+                });
+                el.dataset.currentAnimation = animationName;
+                el.dataset.animation = animation;
+            }
         };
         
         this._connect();
@@ -187,7 +271,51 @@ class WebSocketHypermedia {
         
         const action = this.actions[verb];
         if (action) {
-            action(el, subject);
+            if (verb === 'setAttr') {
+                const attrName = subject;
+                const value = options[0] || '';
+                action(el, attrName, value);
+            } else if (verb === 'setStyle') {
+                const property = subject;
+                const value = options[0] || '';
+                action(el, property, value);
+            } else if (verb === 'trigger') {
+                const eventType = subject;
+                const eventData = options[0] || '';
+                action(el, eventType, eventData);
+            } else if (verb === 'setValue' || verb === 'setChecked' || verb === 'setSelected') {
+                const value = subject;
+                action(el, value);
+            } else if (verb === 'animate') {
+                const animationName = subject;
+                const duration = options[0] || '1s';
+                const easing = options[1] || 'ease';
+                const delay = options[2] || '0s';
+                const iterations = options[3] || '1';
+                const direction = options[4] || 'normal';
+                const fillMode = options[5] || 'none';
+                const remainingOptions = options.slice(6);
+                action(el, animationName, duration, easing, delay, iterations, direction, fillMode, ...remainingOptions);
+            } else if (verb === 'transition') {
+                const properties = subject;
+                const duration = options[0] || '0.3s';
+                const easing = options[1] || 'ease';
+                action(el, properties, duration, easing);
+            } else if (verb === 'removeAnimation' || verb === 'pauseAnimation' || verb === 'resumeAnimation') {
+                action(el);
+            } else if (verb === 'getAnimationState') {
+                const state = action(el);
+                if (this.options.enableLogging) {
+                    console.log('Animation state:', state);
+                }
+            } else if (verb === 'keyframe') {
+                const animationName = subject;
+                const keyframes = options[0] || '{}';
+                const duration = options[1] || '1s';
+                action(el, animationName, keyframes, duration);
+            } else {
+                action(el, subject);
+            }
         } else {
             if (this.options.enableLogging) {
                 console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Style Manipulation Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #007bff;
+            color: white;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .demo-element {
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .animated-box {
+            width: 100px;
+            height: 100px;
+            background: #007bff;
+            margin: 20px auto;
+            border-radius: 8px;
+            transition: all 0.5s ease;
+        }
+        
+        .responsive-container {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .demo-controls button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        
+        .animation-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .size-controls {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Style Manipulation Demo</h1>
+    <p>This example demonstrates real-time inline CSS style manipulation using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Dynamic Color Changes</h2>
+        <p>Watch as the server manipulates element colors in real-time:</p>
+        
+        <div id="color-demo" class="demo-element">
+            <h3>Dynamic Color Element</h3>
+            <p>This element's background color will change automatically!</p>
+        </div>
+        
+        <div class="color-palette">
+            <div class="color-swatch" style="background: #ff6b6b;" onclick="changeColor('#ff6b6b')"></div>
+            <div class="color-swatch" style="background: #4ecdc4;" onclick="changeColor('#4ecdc4')"></div>
+            <div class="color-swatch" style="background: #45b7d1;" onclick="changeColor('#45b7d1')"></div>
+            <div class="color-swatch" style="background: #96ceb4;" onclick="changeColor('#96ceb4')"></div>
+            <div class="color-swatch" style="background: #feca57;" onclick="changeColor('#feca57')"></div>
+            <div class="color-swatch" style="background: #ff9ff3;" onclick="changeColor('#ff9ff3')"></div>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="resetColor()">Reset Color</button>
+            <button onclick="randomColor()">Random Color</button>
+            <button onclick="gradientBackground()">Gradient Background</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Animation Control</h2>
+        <p>Control CSS animations via WebSocket:</p>
+        
+        <div id="animated-box" class="animated-box"></div>
+        
+        <div class="animation-controls">
+            <button onclick="startAnimation()">Start Animation</button>
+            <button onclick="pauseAnimation()">Pause Animation</button>
+            <button onclick="stopAnimation()">Stop Animation</button>
+            <button onclick="changeAnimation()">Change Animation</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Responsive Design</h2>
+        <p>Dynamic responsive styling:</p>
+        
+        <div id="responsive-container" class="responsive-container">
+            <h3>Responsive Element</h3>
+            <p>This container will resize dynamically!</p>
+        </div>
+        
+        <div class="size-controls">
+            <button onclick="setMobileSize()">Mobile Size</button>
+            <button onclick="setTabletSize()">Tablet Size</button>
+            <button onclick="setDesktopSize()">Desktop Size</button>
+            <button onclick="setFullWidth()">Full Width</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Typography & Layout</h2>
+        <p>Dynamic typography and layout changes:</p>
+        
+        <div id="typography-demo" class="demo-element">
+            <h3>Dynamic Typography</h3>
+            <p>This text will change font, size, and spacing dynamically!</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="changeFont()">Change Font</button>
+            <button onclick="changeSize()">Change Size</button>
+            <button onclick="changeSpacing()">Change Spacing</button>
+            <button onclick="resetTypography()">Reset Typography</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>CSS Custom Properties</h2>
+        <p>Dynamic CSS custom properties (CSS variables):</p>
+        
+        <div id="css-vars-demo" class="demo-element">
+            <h3>CSS Variables Demo</h3>
+            <p>This element uses CSS custom properties that can be changed dynamically!</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="setPrimaryColor()">Set Primary Color</button>
+            <button onclick="setSecondaryColor()">Set Secondary Color</button>
+            <button onclick="setSpacing()">Set Spacing</button>
+            <button onclick="resetCSSVars()">Reset CSS Variables</button>
+        </div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - Styles will update automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Color manipulation functions
+        function changeColor(color) {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send(`change_color|color-demo|${color}`);
+            }
+        }
+        
+        function resetColor() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_color|color-demo');
+            }
+        }
+        
+        function randomColor() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('random_color|color-demo');
+            }
+        }
+        
+        function gradientBackground() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('gradient_background|color-demo');
+            }
+        }
+        
+        // Animation control functions
+        function startAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('start_animation|animated-box');
+            }
+        }
+        
+        function pauseAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('pause_animation|animated-box');
+            }
+        }
+        
+        function stopAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('stop_animation|animated-box');
+            }
+        }
+        
+        function changeAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('change_animation|animated-box');
+            }
+        }
+        
+        // Responsive design functions
+        function setMobileSize() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_mobile_size|responsive-container');
+            }
+        }
+        
+        function setTabletSize() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_tablet_size|responsive-container');
+            }
+        }
+        
+        function setDesktopSize() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_desktop_size|responsive-container');
+            }
+        }
+        
+        function setFullWidth() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_full_width|responsive-container');
+            }
+        }
+        
+        // Typography functions
+        function changeFont() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('change_font|typography-demo');
+            }
+        }
+        
+        function changeSize() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('change_size|typography-demo');
+            }
+        }
+        
+        function changeSpacing() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('change_spacing|typography-demo');
+            }
+        }
+        
+        function resetTypography() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_typography|typography-demo');
+            }
+        }
+        
+        // CSS Variables functions
+        function setPrimaryColor() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_primary_color|css-vars-demo');
+            }
+        }
+        
+        function setSecondaryColor() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_secondary_color|css-vars-demo');
+            }
+        }
+        
+        function setSpacing() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('set_spacing|css-vars-demo');
+            }
+        }
+        
+        function resetCSSVars() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('reset_css_vars|css-vars-demo');
+            }
+        }
+    </script>
+</body>
+</html> 

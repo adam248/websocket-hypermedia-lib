@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Animation & Transitions Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #007bff;
+            color: white;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .demo-controls button {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        
+        .animation-target {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            margin: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .animation-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .animation-group {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .animation-group h4 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        
+        .transition-target {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            margin: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .keyframe-target {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border-radius: 50%;
+            margin: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .animation-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .animation-info h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .animation-info .field {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .animation-info .field-name {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .animation-info .field-value {
+            color: #6c757d;
+            font-family: monospace;
+        }
+        
+        .parameter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .parameter-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .parameter-group h5 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .parameter-group input, .parameter-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .parameter-group input:focus, .parameter-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .animation-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .preset-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .preset-card h5 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .preset-card p {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .preset-card button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .preset-card button:hover {
+            background: #007bff;
+            color: white;
+        }
+        
+        .performance-monitor {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .performance-monitor h4 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .metric {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Animation & Transitions Demo</h1>
+    <p>This example demonstrates real-time animation and transition control using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Basic Animations</h2>
+        <p>Trigger various CSS animations with different parameters:</p>
+        
+        <div class="animation-container">
+            <div class="animation-group">
+                <h4>Animation Target</h4>
+                <div class="animation-target" id="animation-target">Animate Me!</div>
+            </div>
+            
+            <div class="animation-group">
+                <h4>Animation Controls</h4>
+                <div class="demo-controls">
+                    <button onclick="triggerFadeIn()">Fade In</button>
+                    <button onclick="triggerSlideIn()">Slide In</button>
+                    <button onclick="triggerBounce()">Bounce</button>
+                    <button onclick="triggerRotate()">Rotate</button>
+                    <button onclick="triggerScale()">Scale</button>
+                    <button onclick="triggerPulse()">Pulse</button>
+                    <button onclick="removeCurrentAnimation()">Remove</button>
+                    <button onclick="pauseAnimation()">Pause</button>
+                    <button onclick="resumeAnimation()">Resume</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Animation Parameters</h2>
+        <p>Fine-tune animation parameters for precise control:</p>
+        
+        <div class="parameter-controls">
+            <div class="parameter-group">
+                <h5>Duration</h5>
+                <input type="range" id="duration-slider" min="0.1" max="5" step="0.1" value="1">
+                <span id="duration-value">1s</span>
+            </div>
+            
+            <div class="parameter-group">
+                <h5>Easing</h5>
+                <select id="easing-select">
+                    <option value="ease">ease</option>
+                    <option value="ease-in">ease-in</option>
+                    <option value="ease-out">ease-out</option>
+                    <option value="ease-in-out">ease-in-out</option>
+                    <option value="linear">linear</option>
+                </select>
+            </div>
+            
+            <div class="parameter-group">
+                <h5>Delay</h5>
+                <input type="range" id="delay-slider" min="0" max="2" step="0.1" value="0">
+                <span id="delay-value">0s</span>
+            </div>
+            
+            <div class="parameter-group">
+                <h5>Iterations</h5>
+                <select id="iterations-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="infinite">Infinite</option>
+                </select>
+            </div>
+            
+            <div class="parameter-group">
+                <h5>Direction</h5>
+                <select id="direction-select">
+                    <option value="normal">normal</option>
+                    <option value="reverse">reverse</option>
+                    <option value="alternate">alternate</option>
+                    <option value="alternate-reverse">alternate-reverse</option>
+                </select>
+            </div>
+            
+            <div class="parameter-group">
+                <h5>Fill Mode</h5>
+                <select id="fill-mode-select">
+                    <option value="none">none</option>
+                    <option value="forwards">forwards</option>
+                    <option value="backwards">backwards</option>
+                    <option value="both">both</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="triggerCustomAnimation()">Trigger Custom Animation</button>
+            <button onclick="getAnimationState()">Get Animation State</button>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>CSS Transitions</h2>
+        <p>Set CSS transition properties for smooth property changes:</p>
+        
+        <div class="animation-container">
+            <div class="animation-group">
+                <h4>Transition Target</h4>
+                <div class="transition-target" id="transition-target">Hover Me!</div>
+            </div>
+            
+            <div class="animation-group">
+                <h4>Transition Controls</h4>
+                <div class="demo-controls">
+                    <button onclick="setAllTransition()">All Properties</button>
+                    <button onclick="setOpacityTransition()">Opacity Only</button>
+                    <button onclick="setTransformTransition()">Transform Only</button>
+                    <button onclick="setColorTransition()">Color Only</button>
+                    <button onclick="setCustomTransition()">Custom Properties</button>
+                    <button onclick="removeTransition()">Remove Transition</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Custom Keyframes</h2>
+        <p>Create and trigger custom keyframe animations:</p>
+        
+        <div class="animation-container">
+            <div class="animation-group">
+                <h4>Keyframe Target</h4>
+                <div class="keyframe-target" id="keyframe-target">Custom!</div>
+            </div>
+            
+            <div class="animation-group">
+                <h4>Keyframe Controls</h4>
+                <div class="demo-controls">
+                    <button onclick="triggerFadeKeyframe()">Fade Keyframe</button>
+                    <button onclick="triggerBounceKeyframe()">Bounce Keyframe</button>
+                    <button onclick="triggerRotateKeyframe()">Rotate Keyframe</button>
+                    <button onclick="triggerScaleKeyframe()">Scale Keyframe</button>
+                    <button onclick="triggerComplexKeyframe()">Complex Keyframe</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Animation Presets</h2>
+        <p>Quick access to common animation combinations:</p>
+        
+        <div class="animation-presets">
+            <div class="preset-card">
+                <h5>Entrance Animations</h5>
+                <p>Make elements appear with style</p>
+                <button onclick="entranceSequence()">Play Sequence</button>
+            </div>
+            
+            <div class="preset-card">
+                <h5>Attention Animations</h5>
+                <p>Draw attention to important elements</p>
+                <button onclick="attentionSequence()">Play Sequence</button>
+            </div>
+            
+            <div class="preset-card">
+                <h5>Exit Animations</h5>
+                <p>Graceful element removal</p>
+                <button onclick="exitSequence()">Play Sequence</button>
+            </div>
+            
+            <div class="preset-card">
+                <h5>Performance Test</h5>
+                <p>Test animation performance</p>
+                <button onclick="performanceTest()">Run Test</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Animation State Monitor</h2>
+        <p>Monitor current animation state and performance:</p>
+        
+        <div class="animation-info">
+            <h4>Current Animation State:</h4>
+            <div class="field">
+                <span class="field-name">Animation Name:</span>
+                <span class="field-value" id="current-animation-name">None</span>
+            </div>
+            <div class="field">
+                <span class="field-name">Play State:</span>
+                <span class="field-value" id="current-play-state">None</span>
+            </div>
+            <div class="field">
+                <span class="field-name">Current Time:</span>
+                <span class="field-value" id="current-time">0ms</span>
+            </div>
+        </div>
+        
+        <div class="performance-monitor">
+            <h4>Performance Metrics</h4>
+            <div class="performance-metrics">
+                <div class="metric">
+                    <div class="metric-value" id="fps-value">60</div>
+                    <div class="metric-label">FPS</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="memory-value">0</div>
+                    <div class="metric-label">Memory (KB)</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="duration-value">0</div>
+                    <div class="metric-label">Duration (ms)</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="smoothness-value">100%</div>
+                    <div class="metric-label">Smoothness</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="updateAnimationInfo()">Update Info</button>
+            <button onclick="startPerformanceMonitoring()">Start Monitoring</button>
+            <button onclick="stopPerformanceMonitoring()">Stop Monitoring</button>
+        </div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - Animations will trigger automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Parameter controls
+        document.getElementById('duration-slider').addEventListener('input', (e) => {
+            document.getElementById('duration-value').textContent = e.target.value + 's';
+        });
+        
+        document.getElementById('delay-slider').addEventListener('input', (e) => {
+            document.getElementById('delay-value').textContent = e.target.value + 's';
+        });
+        
+        // Basic animation functions
+        function triggerFadeIn() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|fadeIn|1s');
+            }
+        }
+        
+        function triggerSlideIn() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|slideIn|1s|ease-out');
+            }
+        }
+        
+        function triggerBounce() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|bounce|1s|ease-in-out');
+            }
+        }
+        
+        function triggerRotate() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|rotate|1s|ease|0s|1|normal|none|360deg');
+            }
+        }
+        
+        function triggerScale() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|scale|0.5s|ease-out|0s|1.2');
+            }
+        }
+        
+        function triggerPulse() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|pulse|1s|ease-in-out|0s|infinite');
+            }
+        }
+        
+        function removeCurrentAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('removeAnimation|animation-target');
+            }
+        }
+        
+        function pauseAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('pauseAnimation|animation-target');
+            }
+        }
+        
+        function resumeAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('resumeAnimation|animation-target');
+            }
+        }
+        
+        // Custom animation function
+        function triggerCustomAnimation() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const duration = document.getElementById('duration-slider').value + 's';
+                const easing = document.getElementById('easing-select').value;
+                const delay = document.getElementById('delay-slider').value + 's';
+                const iterations = document.getElementById('iterations-select').value;
+                const direction = document.getElementById('direction-select').value;
+                const fillMode = document.getElementById('fill-mode-select').value;
+                
+                window.wsHypermedia.send(`animate|animation-target|custom|${duration}|${easing}|${delay}|${iterations}|${direction}|${fillMode}`);
+            }
+        }
+        
+        function getAnimationState() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('getAnimationState|animation-target');
+            }
+        }
+        
+        // Transition functions
+        function setAllTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target|all|0.3s|ease');
+            }
+        }
+        
+        function setOpacityTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target|opacity|0.3s|ease');
+            }
+        }
+        
+        function setTransformTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target|transform|0.3s|ease');
+            }
+        }
+        
+        function setColorTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target|background-color|0.3s|ease');
+            }
+        }
+        
+        function setCustomTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target|opacity,transform,background-color|0.5s|ease-in');
+            }
+        }
+        
+        function removeTransition() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('transition|transition-target||0s');
+            }
+        }
+        
+        // Keyframe functions
+        function triggerFadeKeyframe() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const keyframes = '{"0%": {"opacity": "0", "transform": "scale(0.5)"}, "100%": {"opacity": "1", "transform": "scale(1)"}}';
+                window.wsHypermedia.send(`keyframe|keyframe-target|fadeIn|${keyframes}|1s`);
+            }
+        }
+        
+        function triggerBounceKeyframe() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const keyframes = '{"0%": {"transform": "translateY(0)"}, "50%": {"transform": "translateY(-20px)"}, "100%": {"transform": "translateY(0)"}}';
+                window.wsHypermedia.send(`keyframe|keyframe-target|bounce|${keyframes}|1s`);
+            }
+        }
+        
+        function triggerRotateKeyframe() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const keyframes = '{"0%": {"transform": "rotate(0deg)"}, "100%": {"transform": "rotate(360deg)"}}';
+                window.wsHypermedia.send(`keyframe|keyframe-target|rotate|${keyframes}|2s`);
+            }
+        }
+        
+        function triggerScaleKeyframe() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const keyframes = '{"0%": {"transform": "scale(1)"}, "50%": {"transform": "scale(1.2)"}, "100%": {"transform": "scale(1)"}}';
+                window.wsHypermedia.send(`keyframe|keyframe-target|scale|${keyframes}|1s`);
+            }
+        }
+        
+        function triggerComplexKeyframe() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                const keyframes = '{"0%": {"opacity": "0", "transform": "translateX(-50px) rotate(0deg) scale(0.5)"}, "50%": {"opacity": "0.5", "transform": "translateX(0px) rotate(180deg) scale(1.2)"}, "100%": {"opacity": "1", "transform": "translateX(0px) rotate(360deg) scale(1)"}}';
+                window.wsHypermedia.send(`keyframe|keyframe-target|complex|${keyframes}|3s`);
+            }
+        }
+        
+        // Animation sequences
+        function entranceSequence() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('sequence_animation|animation-target');
+            }
+        }
+        
+        function attentionSequence() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|pulse|0.5s|ease-in-out|0s|3');
+                setTimeout(() => {
+                    window.wsHypermedia.send('animate|animation-target|scale|0.3s|ease-out|0s|1.1');
+                }, 1500);
+            }
+        }
+        
+        function exitSequence() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('animate|animation-target|fadeOut|0.5s|ease-in');
+                setTimeout(() => {
+                    window.wsHypermedia.send('animate|animation-target|slideOut|0.3s|ease-out');
+                }, 500);
+            }
+        }
+        
+        function performanceTest() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('performance_animation|animation-target');
+            }
+        }
+        
+        // Animation info functions
+        function updateAnimationInfo() {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('getAnimationState|animation-target');
+            }
+        }
+        
+        function startPerformanceMonitoring() {
+            // Simulate performance monitoring
+            const fpsElement = document.getElementById('fps-value');
+            const memoryElement = document.getElementById('memory-value');
+            const durationElement = document.getElementById('duration-value');
+            const smoothnessElement = document.getElementById('smoothness-value');
+            
+            let frameCount = 0;
+            let lastTime = performance.now();
+            
+            function updateMetrics() {
+                frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime - lastTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                    fpsElement.textContent = fps;
+                    
+                    // Simulate memory usage
+                    const memory = Math.round(Math.random() * 100 + 50);
+                    memoryElement.textContent = memory;
+                    
+                    // Simulate duration
+                    const duration = Math.round(Math.random() * 1000 + 500);
+                    durationElement.textContent = duration;
+                    
+                    // Simulate smoothness
+                    const smoothness = Math.round(Math.random() * 20 + 80);
+                    smoothnessElement.textContent = smoothness + '%';
+                    
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                requestAnimationFrame(updateMetrics);
+            }
+            
+            updateMetrics();
+        }
+        
+        function stopPerformanceMonitoring() {
+            // Stop monitoring (in a real implementation, you'd clear the interval)
+            document.getElementById('fps-value').textContent = '--';
+            document.getElementById('memory-value').textContent = '--';
+            document.getElementById('duration-value').textContent = '--';
+            document.getElementById('smoothness-value').textContent = '--';
+        }
+        
+        // Hover effects for transition target
+        document.getElementById('transition-target').addEventListener('mouseenter', () => {
+            document.getElementById('transition-target').style.transform = 'scale(1.1) rotate(5deg)';
+            document.getElementById('transition-target').style.background = 'linear-gradient(135deg, #ff6b6b, #4ecdc4)';
+        });
+        
+        document.getElementById('transition-target').addEventListener('mouseleave', () => {
+            document.getElementById('transition-target').style.transform = 'scale(1) rotate(0deg)';
+            document.getElementById('transition-target').style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+        });
+        
+        // Initial animation info update
+        updateAnimationInfo();
+    </script>
+</body>
+</html> 

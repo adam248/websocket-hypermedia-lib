@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - CSS Class Manipulation Demo</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .primary { background: #007bff; color: white; }
+        .secondary { background: #6c757d; color: white; }
+        .success { background: #28a745; color: white; }
+        .danger { background: #dc3545; color: white; }
+        
+        .active { 
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .highlight { 
+            background: #ffeb3b !important;
+            color: #333 !important;
+        }
+        
+        .disabled { 
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .sidebar {
+            width: 200px;
+            height: 300px;
+            background: #343a40;
+            color: white;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .collapsed {
+            width: 50px;
+            overflow: hidden;
+        }
+        
+        .notification {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            background: #e3f2fd;
+        }
+        
+        .notification.success {
+            border-left-color: #28a745;
+            background: #e8f5e8;
+        }
+        
+        .notification.error {
+            border-left-color: #dc3545;
+            background: #fde8e8;
+        }
+        
+        .notification.warning {
+            border-left-color: #ffc107;
+            background: #fff8e1;
+        }
+        
+        #status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🎨 CSS Class Manipulation Demo</h1>
+    <p>This example demonstrates real-time CSS class manipulation using WebSocket Hypermedia.</p>
+    
+    <div id="status" class="disconnected">Connecting...</div>
+    
+    <div class="demo-section">
+        <h2>Button State Management</h2>
+        <p>Watch as the server manipulates button classes in real-time:</p>
+        <button id="demo-button" class="button primary">Click me!</button>
+        <button id="toggle-button" class="button secondary">Toggle Classes</button>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Sidebar Collapse/Expand</h2>
+        <p>The sidebar will collapse and expand automatically:</p>
+        <div id="sidebar" class="sidebar">
+            <h3>Sidebar Content</h3>
+            <p>This sidebar demonstrates the toggleClass feature.</p>
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>Notification System</h2>
+        <p>Notifications will appear with different styles:</p>
+        <div id="notifications"></div>
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Update status based on connection
+        window.wsHypermedia.options.onConnect = () => {
+            document.getElementById('status').textContent = 'Connected - CSS classes will update automatically!';
+            document.getElementById('status').className = 'connected';
+        };
+        
+        window.wsHypermedia.options.onDisconnect = () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'disconnected';
+        };
+        
+        // Add click handlers for interactive demo
+        document.getElementById('demo-button').addEventListener('click', () => {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('button_clicked|demo-button');
+            }
+        });
+        
+        document.getElementById('toggle-button').addEventListener('click', () => {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('toggle_sidebar|sidebar');
+            }
+        });
+        
+        // Custom message handler for notifications
+        window.wsHypermedia.addMessageHandler('notification', (element, html, elementId) => {
+            element.insertAdjacentHTML('beforeend', html);
+            // Auto-remove notifications after 5 seconds
+            setTimeout(() => {
+                const notifications = element.querySelectorAll('.notification');
+                if (notifications.length > 0) {
+                    notifications[0].remove();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 
