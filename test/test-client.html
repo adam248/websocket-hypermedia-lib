@@ -66,6 +66,16 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .priority-high {
+            border: 2px solid #dc3545;
+            background: #fff5f5;
+        }
+        .code-black {
+            background: #000;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +117,7 @@
         <button onclick="ws.send('add_message')">Add Message</button>
         <button onclick="ws.send('clear_messages')">Clear Messages</button>
         <button onclick="sendEcho()">Send Echo</button>
+        <button onclick="ws.send('special_update|breaking-news|Breaking news content|priority-high|code-black')">Special Update</button>
         <input type="text" id="echo-input" placeholder="Type message to echo..." style="padding: 8px; margin: 5px;">
     </div>
     
@@ -132,6 +143,23 @@
                 console.error('Connection error:', error);
                 document.getElementById('connection-status').textContent = 'Error: ' + error.message;
                 document.getElementById('connection-status').className = 'connection-status disconnected';
+            }
+        });
+        
+        // Add custom handler to demonstrate options passing
+        ws.addMessageHandler('update', (element, subject, noun, options) => {
+            element.innerHTML = subject;
+            
+            // Handle options for styling
+            if (options && options.length > 0) {
+                console.log('Received update with options:', options);
+                
+                if (options.includes('priority-high')) {
+                    element.classList.add('priority-high');
+                }
+                if (options.includes('code-black')) {
+                    element.classList.add('code-black');
+                }
             }
         });
         

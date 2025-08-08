@@ -19,8 +19,15 @@ wss.on('connection', (ws) => {
         const action = message.toString();
         console.log('Received:', action);
         
+        // Parse action with potential options
+        const parts = action.split('|');
+        const verb = parts[0];
+        const noun = parts[1] || '';
+        const subject = parts[2] || '';
+        const options = parts.slice(3);
+        
         // Handle different actions
-        switch (action) {
+        switch (verb) {
             case 'ping':
                 ws.send('update|status|<p>Pong! Server is alive.</p>');
                 break;
@@ -42,12 +49,30 @@ wss.on('connection', (ws) => {
                 ws.send('remove|status|');
                 break;
                 
+            case 'special_update':
+                // Demonstrate options passing
+                const priority = options.includes('priority-high') ? 'high' : 'normal';
+                const code = options.find(param => param.startsWith('code-'))?.substring(5) || 'default';
+                ws.send(`update|${noun}|<p class="${code}">Special update with ${priority} priority!</p>|processed|${priority}|${code}`);
+                break;
+                
+            case 'form_submit':
+                // Handle form submission with validation
+                if (options.includes('validate')) {
+                    ws.send('update|form-data|<p>Form submitted successfully</p>|validated|success');
+                } else {
+                    ws.send('update|form-data|<p>Form submitted</p>');
+                }
+                break;
+                
             default:
-                if (action.startsWith('echo:')) {
-                    const text = action.substring(5);
+                if (verb.startsWith('echo:')) {
+                    const text = verb.substring(5);
                     ws.send(`append|messages|<p>Echo: ${text}</p>`);
                 } else {
-                    ws.send(`update|status|<p>Unknown action: ${action}</p>`);
+                    // Echo back the action with options for demonstration
+                    const optionsStr = options.length > 0 ? '|' + options.join('|') : '';
+                    ws.send(`update|status|<p>Unknown action: ${verb}${optionsStr}</p>|received|${verb}${optionsStr}`);
                 }
         }
     });
@@ -63,4 +88,5 @@ wss.on('connection', (ws) => {
 });
 
 console.log('Test server ready!');
-console.log('Available actions: ping, get_time, add_message, clear_messages, remove_status, echo:text'); 
+console.log('Available actions: ping, get_time, add_message, clear_messages, remove_status, echo:text');
+console.log('Options passing demo: special_update|breaking-news|content|priority-high|code-black'); 
