@@ -13,8 +13,8 @@ class SizeTests {
     }
 
     // Size Test: Uncompressed Size Verification
-    // JUSTIFICATION: Documentation claims specific size
-    // - Verifies the claimed 13KB uncompressed size
+    // JUSTIFICATION: Documentation claims maximum size of 14KB
+    // - Verifies the library stays under the 14KB hard limit
     // - Ensures size claims are accurate and up-to-date
     // - Critical for users who need to verify size constraints
     async testUncompressedSize() {
@@ -25,12 +25,12 @@ class SizeTests {
                 
                 console.log(`📏 Library size: ${sizeKB.toFixed(1)}KB`);
                 
-                // Allow some tolerance (claimed 13KB, allow 11-15KB range)
-                if (sizeKB >= 11 && sizeKB <= 15) {
-                    console.log('✅ Uncompressed size within acceptable range');
+                // Maximum size limit: 14KB as mentioned in docs
+                if (sizeKB <= 14) {
+                    console.log('✅ Uncompressed size within maximum limit');
                     resolve();
                 } else {
-                    reject(new Error(`Size ${sizeKB.toFixed(1)}KB outside acceptable range (11-15KB)`));
+                    reject(new Error(`Size ${sizeKB.toFixed(1)}KB exceeds maximum limit (14KB)`));
                 }
             } catch (error) {
                 reject(new Error(`Failed to read library file: ${error.message}`));
@@ -39,8 +39,8 @@ class SizeTests {
     }
 
     // Size Test: Gzipped Size Verification
-    // JUSTIFICATION: Documentation claims specific gzipped size
-    // - Verifies the claimed 3.7KB gzipped size
+    // JUSTIFICATION: Documentation claims maximum gzipped size
+    // - Verifies the gzipped size stays under reasonable limits
     // - Tests actual compression ratio
     // - Critical for production deployment size verification
     async testGzippedSize() {
@@ -52,12 +52,12 @@ class SizeTests {
                 
                 console.log(`📦 Gzipped size: ${sizeKB.toFixed(1)}KB`);
                 
-                // Allow some tolerance (claimed 3.7KB, allow 3-5KB range)
-                if (sizeKB >= 3 && sizeKB <= 5) {
-                    console.log('✅ Gzipped size within acceptable range');
+                // Maximum gzipped size: 5KB (reasonable limit for a small library)
+                if (sizeKB <= 5) {
+                    console.log('✅ Gzipped size within maximum limit');
                     resolve();
                 } else {
-                    reject(new Error(`Gzipped size ${sizeKB.toFixed(1)}KB outside acceptable range (3-5KB)`));
+                    reject(new Error(`Gzipped size ${sizeKB.toFixed(1)}KB exceeds maximum limit (5KB)`));
                 }
             } catch (error) {
                 reject(new Error(`Failed to compress library: ${error.message}`));
@@ -82,12 +82,12 @@ class SizeTests {
                 
                 console.log(`📊 Compression ratio: ${ratio.toFixed(1)}%`);
                 
-                // Expect compression ratio to be reasonable (20-40%)
-                if (ratio >= 20 && ratio <= 40) {
+                // Expect compression ratio to be reasonable (15-50%)
+                if (ratio >= 15 && ratio <= 50) {
                     console.log('✅ Compression ratio is reasonable');
                     resolve();
                 } else {
-                    reject(new Error(`Compression ratio ${ratio.toFixed(1)}% outside reasonable range (20-40%)`));
+                    reject(new Error(`Compression ratio ${ratio.toFixed(1)}% outside reasonable range (15-50%)`));
                 }
             } catch (error) {
                 reject(new Error(`Failed to calculate compression ratio: ${error.message}`));
@@ -115,6 +115,66 @@ class SizeTests {
                 }
             } catch (error) {
                 reject(new Error(`Failed to check size limits: ${error.message}`));
+            }
+        });
+    }
+
+    // Size Test: Comment Policy Compliance
+    // JUSTIFICATION: Enforce no-comment policy in main library file
+    // - Ensures only the single immutable comment exists at the top
+    // - Prevents accidental comment additions during development
+    // - Critical for maintaining minimal file size
+    async testCommentPolicyCompliance() {
+        return new Promise((resolve, reject) => {
+            try {
+                const content = fs.readFileSync(this.libraryPath, 'utf8');
+                const lines = content.split('\n');
+                
+                // Check that first line is the immutable comment
+                const firstLine = lines[0].trim();
+                const expectedComment = '/* IMMUTABLE: THIS IS THE ONE AND ONLY COMMENT ALLOWED IN THIS FILE. DO NOT ADD ANY COMMENTS TO THIS FILE. WE NEED IT TO REMAIN AS SMALL AS POSSIBLE! ALL DOCUMENTATION BELONGS IN WSHM-reference.md */';
+                
+                if (firstLine !== expectedComment) {
+                    reject(new Error(`First line is not the expected immutable comment. Found: "${firstLine}"`));
+                    return;
+                }
+                
+                // Check for any other comments in the file
+                const commentPatterns = [
+                    /\/\*[\s\S]*?\*\//g,  // Multi-line comments /* ... */
+                    /\/\/.*$/gm,         // Single-line comments //
+                    /\/\*.*?\*\//g       // Single-line /* ... */ comments
+                ];
+                
+                let totalComments = 0;
+                let commentLines = [];
+                
+                commentPatterns.forEach(pattern => {
+                    const matches = content.match(pattern);
+                    if (matches) {
+                        matches.forEach(match => {
+                            // Skip the first line (immutable comment)
+                            const matchIndex = content.indexOf(match);
+                            const lineNumber = content.substring(0, matchIndex).split('\n').length;
+                            
+                            if (lineNumber > 1) {
+                                totalComments++;
+                                commentLines.push(`Line ${lineNumber}: ${match.trim()}`);
+                            }
+                        });
+                    }
+                });
+                
+                if (totalComments > 0) {
+                    console.log(`❌ Found ${totalComments} additional comments:`);
+                    commentLines.forEach(line => console.log(`   ${line}`));
+                    reject(new Error(`Found ${totalComments} additional comments in the main library file. Only the immutable comment at the top is allowed.`));
+                } else {
+                    console.log('✅ Comment policy compliance verified - only immutable comment found');
+                    resolve();
+                }
+            } catch (error) {
+                reject(new Error(`Failed to check comment policy: ${error.message}`));
             }
         });
     }

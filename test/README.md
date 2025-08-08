@@ -70,7 +70,7 @@ You can run individual test modules by modifying the `unified-test-runner.js` fi
 
 ## What Gets Tested
 
-The automated test suite covers all the core WebSocket Hypermedia functionality:
+The automated test suite covers all the core WebSocket Hypermedia functionality (71 total tests):
 
 ### **Core Functionality** (3 tests)
 - **WebSocket Connection** - Basic connection establishment
@@ -114,6 +114,23 @@ The automated test suite covers all the core WebSocket Hypermedia functionality:
 - **Data-URL Error Handling** - Graceful error handling with invalid URLs
 - **Data-URL Multiple Script Tags** - Proper handling of duplicate script tags
 - **Data-URL Different Formats** - URL format parsing and validation
+
+### **Size Verification** (5 tests)
+- **Uncompressed Size** - Verifies library stays under 14KB limit
+- **Gzipped Size** - Verifies gzipped size stays under 5KB limit
+- **Compression Ratio** - Ensures reasonable compression (15-50%)
+- **Size Growth Monitoring** - Prevents unexpected size increases
+- **Comment Policy Compliance** - Enforces no-comment policy in main file
+
+#### Comment Policy Enforcement
+
+The test suite includes a dedicated test (`testCommentPolicyCompliance`) that:
+- Verifies only the single immutable comment exists at the top of the main file
+- Detects any additional comments (single-line `//` or multi-line `/* */`)
+- Reports specific line numbers and content of any violations
+- Ensures the no-comment policy is maintained during development
+
+This test prevents accidental comment additions that would increase the library size unnecessarily.
 
 ## Manual Testing
 

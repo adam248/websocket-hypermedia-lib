@@ -177,7 +177,8 @@ class UnifiedTestRunner {
                 'testUncompressedSize',
                 'testGzippedSize',
                 'testCompressionRatio',
-                'testSizeGrowthMonitoring'
+                'testSizeGrowthMonitoring',
+                'testCommentPolicyCompliance'
             ]);
             
             // Browser Compatibility Tests

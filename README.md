@@ -1,7 +1,7 @@
 # WebSocket Hypermedia Library
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Size](https://img.shields.io/badge/size-13KB%20uncompressed%20%7C%203.7KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Size](https://img.shields.io/badge/size-10.2KB%20uncompressed%20%7C%202.8KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Browser Support](https://img.shields.io/badge/browsers-modern%20browsers-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![WebSocket](https://img.shields.io/badge/websocket-supported-brightgreen.svg)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
@@ -22,7 +22,7 @@ That's it! Your page is now ready for real-time updates from the server. The lib
 ## ✨ Features
 
 - **🔥 Real-time Updates**: Instant HTML updates from server
-- **📦 Tiny Size**: Only 13KB uncompressed, 3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>
+- **📦 Tiny Size**: Only 10.2KB uncompressed, 2.8KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>
 - **🔄 Auto-reconnection**: Handles connection drops gracefully
 - **🎯 Simple Protocol**: `action|elementId|html` format
 - **⚡ Zero Dependencies**: Pure JavaScript, no frameworks needed
@@ -32,12 +32,15 @@ That's it! Your page is now ready for real-time updates from the server. The lib
 ## 📖 Documentation
 
 📚 **[Complete Documentation](websocket-hypermedia.md)** - Everything you need to know
+📖 **[API Reference](WSHM-reference.md)** - Complete API documentation
 
 The documentation includes:
 - **Tutorials**: Step-by-step guides to get started
 - **Guides**: Advanced patterns and problem-solving
 - **Reference**: Complete API documentation
 - **Concepts**: Deep dive into WebSocket Hypermedia philosophy
+
+**Important Development Note**: The main library file (`websocket-hypermedia.js`) contains NO COMMENTS to keep it as small as possible. All documentation and comments belong in the reference files. The main file has a single immutable comment at the top stating this policy.
 
 ## 🎯 Examples
 
