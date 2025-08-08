@@ -29,6 +29,13 @@ Our development philosophy focuses on:
 - [ ] **Live Demo Environment**: Interactive demonstration environment showcasing all library capabilities
 - [ ] **Quick Start Server**: Zero-configuration development server for immediate testing
 
+#### **Real-World Application Development**
+- [ ] **Odoo-Style Accounting App**: Complete accounting application built with WebSocket Hypermedia library as dog fooding project
+  - **Goal**: 100x faster and more user-friendly than Odoo's accounting module
+  - **Features**: Real-time financial data, live collaboration, instant updates, modern UI/UX
+  - **Technology**: Pure WebSocket Hypermedia implementation to demonstrate library capabilities
+  - **Purpose**: Validate library performance and usability in complex real-world scenarios
+
 ### **v1.2.0 - Enhanced Protocol & Developer Tools** 🚧 *In Progress*
 
 **Target Release:** Q1 2026
