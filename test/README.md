@@ -90,4 +90,5 @@ The `shell.nix` file provides a reproducible development environment with:
 - Check browser console for any JavaScript errors
 - Verify the WebSocket connection in browser dev tools
 - Ensure `websocket-hypermedia.js` is in the parent directory (../websocket-hypermedia.js)
+- **Repository**: [https://github.com/adam248/websocket-hypermedia-lib](https://github.com/adam248/websocket-hypermedia-lib)
 - If using Nix, make sure you're in the nix-shell environment 
