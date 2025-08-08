@@ -83,11 +83,6 @@ curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/main/
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@main/websocket-hypermedia.js"></script>
 ```
 
-### npm (coming soon)
-```bash
-npm install websocket-hypermedia
-```
-
 ## 🔧 Configuration
 
 ### Manual Initialization (Advanced)
