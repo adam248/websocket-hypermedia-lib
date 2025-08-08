@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Hypermedia Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+        #status {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        #time {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        #messages {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .connection-status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Hypermedia Test</h1>
+    
+    <div id="connection-status" class="connection-status disconnected">
+        Disconnected
+    </div>
+    
+    <div class="section">
+        <h3>Content Area</h3>
+        <div id="content">
+            <p>Waiting for server content...</p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h3>Status Area</h3>
+        <div id="status">
+            <p>Status will appear here</p>
+        </div>
+        <button onclick="ws.send('ping')">Ping Server</button>
+        <button onclick="ws.send('remove_status')">Remove Status</button>
+    </div>
+    
+    <div class="section">
+        <h3>Time Area</h3>
+        <div id="time">
+            <p>Time will appear here</p>
+        </div>
+        <button onclick="ws.send('get_time')">Get Current Time</button>
+    </div>
+    
+    <div class="section">
+        <h3>Messages Area</h3>
+        <div id="messages">
+            <p>Messages will appear here</p>
+        </div>
+        <button onclick="ws.send('add_message')">Add Message</button>
+        <button onclick="ws.send('clear_messages')">Clear Messages</button>
+        <button onclick="sendEcho()">Send Echo</button>
+        <input type="text" id="echo-input" placeholder="Type message to echo..." style="padding: 8px; margin: 5px;">
+    </div>
+    
+    <div class="section">
+        <h3>Connection Controls</h3>
+        <button onclick="ws.connect()">Connect</button>
+        <button onclick="ws.disconnect()">Disconnect</button>
+    </div>
+
+    <script src="../websocket-hypermedia.js"></script>
+    <script>
+        // Initialize WebSocket connection
+        const ws = new WebSocketHypermedia("ws://localhost:8765", {
+            onConnect: () => {
+                document.getElementById('connection-status').textContent = 'Connected';
+                document.getElementById('connection-status').className = 'connection-status connected';
+            },
+            onDisconnect: () => {
+                document.getElementById('connection-status').textContent = 'Disconnected';
+                document.getElementById('connection-status').className = 'connection-status disconnected';
+            },
+            onError: (error) => {
+                console.error('Connection error:', error);
+                document.getElementById('connection-status').textContent = 'Error: ' + error.message;
+                document.getElementById('connection-status').className = 'connection-status disconnected';
+            }
+        });
+        
+        function sendEcho() {
+            const input = document.getElementById('echo-input');
+            const text = input.value.trim();
+            if (text) {
+                ws.send(`echo:${text}`);
+                input.value = '';
+            }
+        }
+        
+        // Allow Enter key to send echo
+        document.getElementById('echo-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendEcho();
+            }
+        });
+    </script>
+</body>
+</html> 

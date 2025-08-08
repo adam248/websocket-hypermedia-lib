@@ -58,10 +58,10 @@ class WebSocketHypermedia {
         this.isConnecting = false;
         this.messageHandlers = new Map();
         
-        this.connect();
+        this._connect();
     }
     
-    connect() {
+    _connect() {
         if (this.isConnecting) return;
         this.isConnecting = true;
         
@@ -112,7 +112,7 @@ class WebSocketHypermedia {
         
         setTimeout(() => {
             if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-                this.connect();
+                this._connect();
             }
         }, delay);
     }
@@ -209,6 +209,11 @@ class WebSocketHypermedia {
         if (this.ws) {
             this.ws.close();
         }
+    }
+    
+    connect() {
+        // Public method to manually connect
+        this._connect();
     }
     
     get readyState() {

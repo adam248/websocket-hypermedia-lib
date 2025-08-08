@@ -15,6 +15,16 @@ const ws = new WebSocketHypermedia("ws://localhost:8765");
 </script>
 ```
 
+### Auto-Initialization
+
+You can also auto-initialize the library by adding a `data-url` attribute to the script tag:
+
+```html
+<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+```
+
+This creates a global `window.wsHypermedia` instance automatically.
+
 ---
 
 # 📚 Tutorials

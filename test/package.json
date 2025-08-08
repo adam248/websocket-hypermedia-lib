@@ -1,0 +1,16 @@
+{
+  "name": "websocket-hypermedia-test",
+  "version": "1.0.0",
+  "description": "Simple test for WebSocket Hypermedia library",
+  "main": "test-server.js",
+  "scripts": {
+    "start": "node test-server.js",
+    "test": "echo \"Open test-client.html in your browser\""
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "keywords": ["websocket", "hypermedia", "test"],
+  "author": "",
+  "license": "MIT"
+} 
