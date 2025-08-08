@@ -25,7 +25,7 @@ That's it! Your page is now ready for real-time updates from the server.
 ## ✨ Features
 
 - **🔥 Real-time Updates**: Instant HTML updates from server
-- **📦 Tiny Size**: Only 13KB uncompressed, 3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2024-08-15)</span>
+- **📦 Tiny Size**: Only 13KB uncompressed, 3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>
 - **🔄 Auto-reconnection**: Handles connection drops gracefully
 - **🎯 Simple Protocol**: `action|elementId|html` format
 - **⚡ Zero Dependencies**: Pure JavaScript, no frameworks needed
@@ -180,7 +180,7 @@ We welcome contributions! However, this library prioritizes **leanness, size, sp
 
 ### Contribution Guidelines
 
-- **Size Limit**: This library can **never exceed 14KB gzipped** - this is a hard line in the sand <span style="color: #888; font-size: 0.8em;">(updated 2024-08-15)</span>
+- **Size Limit**: This library can **never exceed 14KB gzipped** - this is a hard line in the sand <span style="color: #888; font-size: 0.8em;">(updated 2025-08-08)</span>
 - **Bug Fixes**: All bug reports and fixes are welcome and will be considered
 - **New Features**: Must pass a very high bar to be added. We prioritize core functionality over feature bloat
 - **Extensions**: If you need to extend this library, please create code in a separate repository. We may add a plugin/extension system in the future if necessary

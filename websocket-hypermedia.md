@@ -2,7 +2,7 @@
 
 A minimal, powerful library for building real-time hypermedia applications using WebSockets. Transform your static HTML into dynamic, interactive experiences with just a few lines of JavaScript.
 
-**Size**: ~13KB uncompressed, ~3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2024-08-15)</span>  
+**Size**: ~13KB uncompressed, ~3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>  
 **Protocol**: Simple action-based messaging  
 **Browser Support**: All modern browsers with WebSocket support
 
