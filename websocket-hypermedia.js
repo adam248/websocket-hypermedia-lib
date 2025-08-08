@@ -36,7 +36,7 @@
  * });
  * ```
  * 
- * Size: ~6.2KB uncompressed, ~1.7KB gzipped
+ * Size: ~6.0KB uncompressed, ~1.8KB gzipped
  */
 
 class WebSocketHypermedia {
@@ -74,21 +74,19 @@ class WebSocketHypermedia {
     }
     
     setupEventHandlers() {
+        const { onConnect, onDisconnect, onError, onMessage } = this.options;
+        
         this.ws.onopen = () => {
             console.log('WebSocket connected');
             this.isConnecting = false;
             this.reconnectAttempts = 0;
-            if (this.options.onConnect) {
-                this.options.onConnect();
-            }
+            onConnect?.();
         };
         
         this.ws.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
             this.isConnecting = false;
-            if (this.options.onDisconnect) {
-                this.options.onDisconnect(event);
-            }
+            onDisconnect?.(event);
             
             if (this.options.autoReconnect && this.reconnectAttempts < this.options.maxReconnectAttempts) {
                 this.scheduleReconnect();
@@ -102,6 +100,7 @@ class WebSocketHypermedia {
         
         this.ws.onmessage = (event) => {
             this.handleMessage(event.data);
+            onMessage?.(event.data);
         };
     }
     
@@ -121,24 +120,14 @@ class WebSocketHypermedia {
         console.log('Received message:', data);
         
         try {
-            let parts = data.split("|");
+            const parts = data.split("|");
             
-            // Protocol: action|elementId|html (3 parts)
             if (parts.length >= 3) {
-                let action = parts[0];
-                let elementId = parts[1];
-                let html = parts[2];
-                
+                const [action, elementId, html] = parts;
                 this.processAction(action, elementId, html);
             } else {
                 console.warn('Invalid message format. Expected: action|elementId|html, got:', data);
             }
-            
-            // Call custom message handler if provided
-            if (this.options.onMessage) {
-                this.options.onMessage(data);
-            }
-            
         } catch (error) {
             console.error('Error processing message:', error);
         }
@@ -152,37 +141,25 @@ class WebSocketHypermedia {
             return;
         }
         
-        // Check for custom handler first
         const customHandler = this.messageHandlers.get(action);
         if (customHandler) {
             customHandler(element, html, elementId);
             return;
         }
         
-        // Default action handlers
-        switch (action) {
-            case "update":
-                element.innerHTML = html;
-                break;
-            case "append":
-                element.insertAdjacentHTML('beforeend', html);
-                break;
-            case "prepend":
-                element.insertAdjacentHTML('afterbegin', html);
-                break;
-            case "replace":
-                element.outerHTML = html;
-                break;
-            case "remove":
-                element.remove();
-                break;
-            default:
-                console.warn('Unknown action:', action);
-        }
+        const actions = {
+            update: () => element.innerHTML = html,
+            append: () => element.insertAdjacentHTML('beforeend', html),
+            prepend: () => element.insertAdjacentHTML('afterbegin', html),
+            replace: () => element.outerHTML = html,
+            remove: () => element.remove()
+        };
+        
+        actions[action]?.() || console.warn('Unknown action:', action);
     }
     
     send(action) {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        if (this.ws?.readyState === WebSocket.OPEN) {
             console.log('Sending action:', action);
             this.ws.send(action);
         } else {
@@ -200,33 +177,27 @@ class WebSocketHypermedia {
     
     handleError(error) {
         console.error('WebSocket Hypermedia error:', error);
-        if (this.options.onError) {
-            this.options.onError(error);
-        }
+        this.options.onError?.(error);
     }
     
     disconnect() {
-        if (this.ws) {
-            this.ws.close();
-        }
+        this.ws?.close();
     }
     
     connect() {
-        // Public method to manually connect
         this._connect();
     }
     
     get readyState() {
-        return this.ws ? this.ws.readyState : WebSocket.CLOSED;
+        return this.ws?.readyState ?? WebSocket.CLOSED;
     }
 }
 
 // Auto-initialize if script is loaded directly
 if (typeof window !== 'undefined') {
-    // Create a global instance if URL is provided via data attribute
     document.addEventListener('DOMContentLoaded', () => {
         const script = document.currentScript || document.querySelector('script[src*="websocket-hypermedia.js"]');
-        if (script && script.dataset.url) {
+        if (script?.dataset.url) {
             window.wsHypermedia = new WebSocketHypermedia(script.dataset.url);
         }
     });
