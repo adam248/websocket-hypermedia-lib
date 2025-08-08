@@ -2,7 +2,7 @@
 
 A minimal, powerful library for building real-time hypermedia applications using WebSockets. Transform your static HTML into dynamic, interactive experiences with just a few lines of JavaScript.
 
-**Size**: ~13KB uncompressed, ~3.7KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>  
+**Size**: ~13.5KB uncompressed, ~3.1KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>  
 **Protocol**: Simple action-based messaging  
 **Browser Support**: All modern browsers with WebSocket support
 
@@ -748,6 +748,214 @@ Insert HTML after the target element.
 after|content|<div class="footer">Additional content</div>
 ```
 
+### CSS Class Manipulation
+
+#### `addClass`
+Add CSS class(es) to an element.
+
+**Format:** `addClass|elementId|className[|extraClasses...]`
+
+**Example:**
+```
+addClass|button|active
+addClass|sidebar|collapsed|hidden|mobile
+```
+
+#### `removeClass`
+Remove CSS class(es) from an element.
+
+**Format:** `removeClass|elementId|className[|extraClasses...]`
+
+**Example:**
+```
+removeClass|button|inactive
+removeClass|sidebar|expanded|visible
+```
+
+#### `toggleClass`
+Toggle CSS class(es) on an element.
+
+**Format:** `toggleClass|elementId|className[|extraClasses...]`
+
+**Example:**
+```
+toggleClass|sidebar|collapsed
+toggleClass|theme|dark|light
+```
+
+### HTML Attribute Manipulation
+
+#### `setAttr`
+Set HTML attribute on an element.
+
+**Format:** `setAttr|elementId|attributeName|value`
+
+**Example:**
+```
+setAttr|button|disabled|true
+setAttr|input|placeholder|Enter your name...
+setAttr|form|data-valid|true
+```
+
+#### `removeAttr`
+Remove HTML attribute from an element.
+
+**Format:** `removeAttr|elementId|attributeName`
+
+**Example:**
+```
+removeAttr|button|disabled
+removeAttr|input|readonly
+```
+
+### Inline Style Manipulation
+
+#### `setStyle`
+Set inline CSS style property on an element.
+
+**Format:** `setStyle|elementId|propertyName|value`
+
+**Example:**
+```
+setStyle|element|background-color|red
+setStyle|element|width|100%
+setStyle|element|font-family|Arial, sans-serif
+```
+
+#### `removeStyle`
+Remove inline CSS style property from an element.
+
+**Format:** `removeStyle|elementId|propertyName`
+
+**Example:**
+```
+removeStyle|element|background-color
+removeStyle|element|width
+```
+
+### Event Delegation
+
+#### `trigger`
+Trigger DOM event on an element.
+
+**Format:** `trigger|elementId|eventType[|eventData]`
+
+**Example:**
+```
+trigger|button|click
+trigger|input|focus
+trigger|form|submit
+trigger|element|custom-event|{"data": "value"}
+```
+
+### Form Enhancement
+
+#### `setValue`
+Set value on form elements (input, textarea, etc.).
+
+**Format:** `setValue|elementId|value`
+
+**Example:**
+```
+setValue|input|Hello World
+setValue|textarea|Multi-line text
+```
+
+#### `setChecked`
+Set checked state on checkboxes and radio buttons.
+
+**Format:** `setChecked|elementId|checked`
+
+**Example:**
+```
+setChecked|checkbox|true
+setChecked|radio|false
+```
+
+#### `setSelected`
+Set selected option(s) on select elements.
+
+**Format:** `setSelected|elementId|value[|extraValues...]`
+
+**Example:**
+```
+setSelected|select|option2
+setSelected|multi-select|option1|option3
+```
+
+### Animation & Transitions
+
+#### `animate`
+Trigger CSS animations with full control.
+
+**Format:** `animate|elementId|animationName|duration|easing|delay|iterations|direction|fillMode`
+
+**Example:**
+```
+animate|element|fadeIn|1s|ease|0s|1|normal|none
+animate|element|slideIn|2.5s|ease-in-out
+```
+
+#### `transition`
+Set CSS transition properties.
+
+**Format:** `transition|elementId|properties|duration|easing`
+
+**Example:**
+```
+transition|element|all|0.3s|ease
+transition|element|opacity,transform|0.5s|ease-in
+```
+
+#### `removeAnimation`
+Remove/cancel running animations.
+
+**Format:** `removeAnimation|elementId`
+
+**Example:**
+```
+removeAnimation|element
+```
+
+#### `pauseAnimation`
+Pause running animations.
+
+**Format:** `pauseAnimation|elementId`
+
+**Example:**
+```
+pauseAnimation|element
+```
+
+#### `resumeAnimation`
+Resume paused animations.
+
+**Format:** `resumeAnimation|elementId`
+
+**Example:**
+```
+resumeAnimation|element
+```
+
+#### `getAnimationState`
+Get current animation state.
+
+**Format:** `getAnimationState|elementId`
+
+**Example:**
+```
+getAnimationState|element
+```
+
+#### `keyframe`
+Create custom keyframe animations.
+
+**Format:** `keyframe|elementId|animationName|keyframes|duration`
+
+**Example:**
+```
+keyframe|element|customAnimation|{"0%": {"opacity": "0"}, "100%": {"opacity": "1"}}|2s
+```
 
 
 ## Error Handling
@@ -1178,4 +1386,59 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ## Examples
 
-Check out the demo application in this repository for complete examples of all the patterns discussed in this documentation. 
+The repository includes comprehensive examples demonstrating all WebSocket Hypermedia features:
+
+### Interactive Examples
+
+- **`examples/animation-demo.html`** - CSS animations and transitions
+  - Real-time animation triggering
+  - Custom keyframe animations
+  - Animation state management
+  - Transition effects
+
+- **`examples/attribute-demo.html`** - HTML attribute manipulation
+  - Setting and removing attributes
+  - Data attribute management
+  - Boolean attribute handling
+  - Accessibility attributes
+
+- **`examples/css-class-demo.html`** - CSS class management
+  - Adding, removing, and toggling classes
+  - Multiple class handling
+  - Dynamic styling updates
+  - State-based class changes
+
+- **`examples/event-demo.html`** - Event delegation and triggering
+  - DOM event triggering
+  - Custom event handling
+  - Form event simulation
+  - Interactive element events
+
+- **`examples/form-demo.html`** - Form enhancement and validation
+  - Real-time form validation
+  - Auto-fill functionality
+  - Form state management
+  - Multi-select handling
+
+- **`examples/style-demo.html`** - Inline style manipulation
+  - CSS property setting
+  - Dynamic styling
+  - Responsive design updates
+  - Style state management
+
+### Running the Examples
+
+1. Start the test server:
+   ```bash
+   cd test
+   npm start
+   ```
+
+2. Open any example file in your browser:
+   ```bash
+   open examples/animation-demo.html
+   ```
+
+3. Interact with the examples to see real-time updates in action!
+
+Each example demonstrates specific features and includes detailed comments explaining the implementation patterns. 

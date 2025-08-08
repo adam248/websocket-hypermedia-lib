@@ -1,11 +1,11 @@
 # ⚡ WebSocket Hypermedia Library
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Size](https://img.shields.io/badge/size-7.6KB%20uncompressed%20%7C%201.4KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Size](https://img.shields.io/badge/size-13.5KB%20uncompressed%20%7C%203.1KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
-[![Tests](https://img.shields.io/badge/tests-71%2F71%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Tests](https://img.shields.io/badge/tests-204%2F204%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Performance](https://img.shields.io/badge/performance-50K%20msg%2Fs-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
-[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.1.0)
 [![Stars](https://img.shields.io/github/stars/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Forks](https://img.shields.io/github/forks/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Issues](https://img.shields.io/github/issues/adam248/websocket-hypermedia-lib)](https://github.com/adam248/websocket-hypermedia-lib/issues)
@@ -20,7 +20,7 @@
 
 Transform your static HTML into dynamic, interactive experiences with just **one line of JavaScript**. No frameworks, no dependencies, no bloat - just pure, lightning-fast real-time updates.
 
-**✨ Production Ready v1.0.0** - Tested, optimized, and battle-hardened with comprehensive security patches!
+**✨ Production Ready v1.1.0** - Tested, optimized, and battle-hardened with comprehensive security patches!
 
 **Note:** This library requires JavaScript to function. The "progressive enhancement" approach means you can build traditional HTML forms first, then enhance them with real-time capabilities.
 
@@ -35,18 +35,37 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 **🎯 Server sends:** `update|content|<p>Hello World!</p>`  
 **⚡ Page updates:** Instantly, no JavaScript needed!
 
+## 🆕 **New in v1.1.0 - Major Feature Expansion!**
+
+### ✨ **Advanced DOM Manipulation**
+- **CSS Classes**: `addClass|button|active`, `removeClass|sidebar|collapsed`, `toggleClass|theme|dark`
+- **HTML Attributes**: `setAttr|button|disabled|true`, `removeAttr|input|readonly`
+- **Inline Styles**: `setStyle|element|background-color|red`, `removeStyle|element|width`
+- **Event Delegation**: `trigger|button|click`, `trigger|form|submit`
+
+### 📝 **Form Enhancement**
+- **Input Values**: `setValue|input|Hello World`
+- **Checkboxes/Radio**: `setChecked|checkbox|true`
+- **Select Options**: `setSelected|select|option2`, `setSelected|multi-select|option1|option3`
+
+### 🎨 **Animation System**
+- **CSS Animations**: `animate|element|fadeIn|1s|ease`
+- **Transitions**: `transition|element|all|0.3s|ease`
+- **Custom Keyframes**: `keyframe|element|customAnimation|{"0%": {"opacity": "0"}}|2s`
+- **Animation Control**: `pauseAnimation|element`, `resumeAnimation|element`, `removeAnimation|element`
+
 ## ✨ Why WebSocket Hypermedia?
 
 ### 🚀 **Performance That Blows Minds**
 - **⚡ Lightning Fast**: 50,000+ messages per second
-- **📦 Ultra Tiny**: 7.6KB source, 1.4KB gzipped (81% compression!)
+- **📦 Ultra Tiny**: 13.5KB source, 3.1KB gzipped (77% compression!)
 - **🎯 Zero Bloat**: No dependencies, no frameworks, no overhead
 
 ### 🔒 **Production-Ready Security**
 - **🛡️ SSRF Protection**: WebSocket URL validation
 - **🔐 Safe DOM**: Element ID validation
 - **🚫 No Data Leaks**: Removed click-to-send vulnerabilities
-- **✅ Battle-Tested**: 71/71 tests passing (100%)
+- **✅ Battle-Tested**: 204/204 tests passing (100%)
 
 ### 🎯 **Developer Experience**
 - **⚡ One-Line Setup**: Auto-initialization with data-url
@@ -60,6 +79,9 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 - **🎮 Multiplayer Games**: Real-time game state
 - **📝 Collaborative Editing**: Live document editing
 - **🛒 E-commerce**: Live inventory and pricing
+- **🎨 Dynamic UI**: CSS animations and transitions
+- **📝 Form Enhancement**: Real-time validation and auto-fill
+- **🔧 DOM Manipulation**: Attributes, styles, and classes
 
 ## 📁 Project Structure
 
@@ -98,6 +120,18 @@ The documentation includes:
 ```
 **Server sends:** `append|messages|<p><strong>Alice:</strong> Hello world!</p>`  
 **Result:** Message appears instantly! ✨
+
+### 🎨 **Interactive Examples**
+Check out the comprehensive examples in the `examples/` directory:
+
+- **`animation-demo.html`** - CSS animations and transitions
+- **`attribute-demo.html`** - HTML attribute manipulation  
+- **`css-class-demo.html`** - CSS class management
+- **`event-demo.html`** - Event delegation and triggering
+- **`form-demo.html`** - Form enhancement and validation
+- **`style-demo.html`** - Inline style manipulation
+
+**Run examples:** `cd test && npm start` then open any example file in your browser!
 
 ### 🔧 **Custom Chat with Auto-Scroll**
 ```javascript
