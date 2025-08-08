@@ -12,6 +12,17 @@ class DataUrlTests {
         this.ws = null;
         this.testHtmlPath = path.join(__dirname, 'data-url-test.html');
     }
+    
+    // Helper method to safely clean up test files
+    safeCleanup() {
+        try {
+            if (fs.existsSync(this.testHtmlPath)) {
+                fs.unlinkSync(this.testHtmlPath);
+            }
+        } catch (error) {
+            // Ignore cleanup errors
+        }
+    }
 
     // Test: Basic Data-URL Auto-Initialization
     // JUSTIFICATION: Primary showcased feature must work reliably
@@ -54,18 +65,30 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('Pong! Server is alive')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                try {
+                    if (fs.existsSync(this.testHtmlPath)) {
+                        fs.unlinkSync(this.testHtmlPath);
+                    }
+                } catch (cleanupError) {
+                    // Ignore cleanup errors
+                }
                 reject(new Error(`Data-URL connection failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                try {
+                    if (fs.existsSync(this.testHtmlPath)) {
+                        fs.unlinkSync(this.testHtmlPath);
+                    }
+                } catch (error) {
+                    // Ignore cleanup errors
+                }
                 reject(new Error('Data-URL test timeout'));
             }, 5000);
         });
@@ -115,18 +138,18 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('Current time:')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error(`Custom config test failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error('Custom config test timeout'));
             }, 5000);
         });
@@ -171,18 +194,18 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('New message added!')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error(`Message handlers test failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error('Message handlers test timeout'));
             }, 5000);
         });
@@ -228,18 +251,18 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('refresh')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error(`Interactive test failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error('Interactive test timeout'));
             }, 5000);
         });
@@ -276,7 +299,7 @@ class DataUrlTests {
             // This test should pass even with connection errors
             // because the library should handle them gracefully
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 resolve();
             }, 2000);
         });
@@ -322,18 +345,18 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('Pong! Server is alive')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error(`Multiple scripts test failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error('Multiple scripts test timeout'));
             }, 5000);
         });
@@ -378,18 +401,18 @@ class DataUrlTests {
                 const message = data.toString();
                 if (message.includes('Current time:')) {
                     this.ws.close();
-                    fs.unlinkSync(this.testHtmlPath);
+                    this.safeCleanup();
                     resolve();
                 }
             });
             
             this.ws.on('error', (error) => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error(`URL formats test failed: ${error.message}`));
             });
             
             setTimeout(() => {
-                fs.unlinkSync(this.testHtmlPath);
+                this.safeCleanup();
                 reject(new Error('URL formats test timeout'));
             }, 5000);
         });

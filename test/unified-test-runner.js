@@ -18,6 +18,12 @@ const EdgeCaseTests = require('./edge-case-tests');
 const EscapeTests = require('./escape-tests');
 const ClickToSendTests = require('./click-to-send-tests');
 const DataUrlTests = require('./data-url-tests');
+const SizeTests = require('./size-tests');
+const BrowserCompatibilityTests = require('./browser-compatibility-tests');
+const PerformanceTests = require('./performance-tests');
+const UseCaseTests = require('./use-case-tests');
+const AdvancedProtocolTests = require('./advanced-protocol-tests');
+const ReconnectionTests = require('./reconnection-tests');
 
 class UnifiedTestRunner {
     constructor() {
@@ -32,6 +38,12 @@ class UnifiedTestRunner {
         this.escapeTests = new EscapeTests();
         this.clickToSendTests = new ClickToSendTests();
         this.dataUrlTests = new DataUrlTests();
+        this.sizeTests = new SizeTests();
+        this.browserCompatibilityTests = new BrowserCompatibilityTests();
+        this.performanceTests = new PerformanceTests();
+        this.useCaseTests = new UseCaseTests();
+        this.advancedProtocolTests = new AdvancedProtocolTests();
+        this.reconnectionTests = new ReconnectionTests();
     }
 
     log(message, type = 'info') {
@@ -160,6 +172,70 @@ class UnifiedTestRunner {
                 'testDataUrlDifferentFormats'
             ]);
             
+            // Size Tests
+            await this.runTestSuite('Size Tests', this.sizeTests, [
+                'testUncompressedSize',
+                'testGzippedSize',
+                'testCompressionRatio',
+                'testSizeGrowthMonitoring'
+            ]);
+            
+            // Browser Compatibility Tests
+            await this.runTestSuite('Browser Compatibility Tests', this.browserCompatibilityTests, [
+                'testWebSocketAPISupport',
+                'testES5Compatibility',
+                'testDOMAPICompatibility',
+                'testNoExternalDependencies',
+                'testGlobalObjectCompatibility',
+                'testErrorHandlingCompatibility'
+            ]);
+            
+            // Performance Tests
+            await this.runTestSuite('Performance Tests', this.performanceTests, [
+                'testMessageProcessingSpeed',
+                'testLargePayloadHandling',
+                'testConcurrentConnections',
+                'testMemoryUsage',
+                'testLatencyMeasurement',
+                'testStressTest'
+            ]);
+            
+            // Use Case Tests
+            await this.runTestSuite('Use Case Tests', this.useCaseTests, [
+                'testChatApplication',
+                'testLiveDashboard',
+                'testNewsFeed',
+                'testCollaborativeEditor',
+                'testEcommerceLiveUpdates',
+                'testMultiplayerGame',
+                'testAnalyticsDashboard',
+                'testFormValidation'
+            ]);
+            
+            // Advanced Protocol Tests
+            await this.runTestSuite('Advanced Protocol Tests', this.advancedProtocolTests, [
+                'testSwapAction',
+                'testBeforeAction',
+                'testAfterAction',
+                'testCustomVerbHandling',
+                'testComplexOptionsPassing',
+                'testBatchOperations',
+                'testConditionalUpdates',
+                'testStateManagement'
+            ]);
+            
+            // Reconnection Tests
+            await this.runTestSuite('Reconnection Tests', this.reconnectionTests, [
+                'testExponentialBackoffStrategy',
+                'testMaximumReconnectionAttempts',
+                'testConnectionRecovery',
+                'testManualReconnection',
+                'testReconnectionDelayConfiguration',
+                'testReconnectionEventHandling',
+                'testNetworkInterruptionRecovery',
+                'testReconnectionStateManagement'
+            ]);
+            
         } catch (error) {
             this.log(`Test runner error: ${error.message}`, 'error');
             throw error;
@@ -207,6 +283,12 @@ class UnifiedTestRunner {
         console.log('  - Escape Tests: Content escaping and parsing');
         console.log('  - Click-to-Send Tests: Element interaction feature');
         console.log('  - Data-URL Tests: Auto-initialization via data-url attribute');
+        console.log('  - Size Tests: Library size verification and compression');
+        console.log('  - Browser Compatibility Tests: Browser support validation');
+        console.log('  - Performance Tests: Performance benchmarks and load testing');
+        console.log('  - Use Case Tests: Real-world application scenarios');
+        console.log('  - Advanced Protocol Tests: HTMX-inspired actions and advanced features');
+        console.log('  - Reconnection Tests: Reconnection strategy and reliability');
     }
 }
 
