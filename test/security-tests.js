@@ -17,6 +17,18 @@ class SecurityTests {
         this.testInputSanitizationHooks();
         this.testProtocolVersionValidation();
         
+        // NEW SECURITY TESTS - Testing the 10 most obvious security concerns
+        this.testXssVulnerabilityExposure();
+        this.testJsonParseWithoutValidation();
+        this.testObjectAssignPrototypePollution();
+        this.testUnlimitedMessageSize();
+        this.testElementIdInjection();
+        this.testWebSocketUrlInjection();
+        this.testEventDataInjection();
+        this.testAnimationKeyframeInjection();
+        this.testStylePropertyInjection();
+        this.testAttributeValueInjection();
+        
         this.printResults();
     }
 
@@ -142,6 +154,220 @@ class SecurityTests {
         
         this.assert('Protocol validation method exists', hasProtocolValidationMethod,
                    'Should have _vProto, _validateProtocolVersion or validateProtocolVersion method');
+    }
+
+    // NEW SECURITY TESTS - Testing the 10 most obvious security concerns
+
+    testXssVulnerabilityExposure() {
+        console.log('  🚨 Testing XSS Vulnerability Exposure...');
+        
+        // Test 1: Check if innerHTML is used without sanitization
+        const usesInnerHTML = this.libraryContent.includes('innerHTML') &&
+                             (this.libraryContent.includes('el.innerHTML = subject') ||
+                              this.libraryContent.includes('innerHTML = subject'));
+        
+        this.assert('XSS vulnerability: innerHTML usage without sanitization', usesInnerHTML,
+                   'Library uses innerHTML directly - this is a known XSS vulnerability if server doesn\'t sanitize');
+        
+        // Test 2: Check if outerHTML is used without sanitization
+        const usesOuterHTML = this.libraryContent.includes('outerHTML') &&
+                             (this.libraryContent.includes('el.outerHTML = subject') ||
+                              this.libraryContent.includes('outerHTML = subject'));
+        
+        this.assert('XSS vulnerability: outerHTML usage without sanitization', usesOuterHTML,
+                   'Library uses outerHTML directly - this is a known XSS vulnerability if server doesn\'t sanitize');
+        
+        // Test 3: Check if insertAdjacentHTML is used without sanitization
+        const usesInsertAdjacentHTML = this.libraryContent.includes('insertAdjacentHTML') &&
+                                      (this.libraryContent.includes('insertAdjacentHTML(\'beforeend\'') ||
+                                       this.libraryContent.includes('insertAdjacentHTML(\'afterbegin\'') ||
+                                       this.libraryContent.includes('insertAdjacentHTML(\'beforebegin\'') ||
+                                       this.libraryContent.includes('insertAdjacentHTML(\'afterend\''));
+        
+        this.assert('XSS vulnerability: insertAdjacentHTML usage without sanitization', usesInsertAdjacentHTML,
+                   'Library uses insertAdjacentHTML directly - this is a known XSS vulnerability if server doesn\'t sanitize');
+    }
+
+    testJsonParseWithoutValidation() {
+        console.log('  🔓 Testing JSON.parse() Without Validation...');
+        
+        // Test 1: Check if JSON.parse is used without size validation
+        const usesJsonParse = this.libraryContent.includes('JSON.parse(');
+        
+        this.assert('JSON.parse() used without size validation', usesJsonParse,
+                   'JSON.parse() is used - could lead to memory exhaustion with large payloads');
+        
+        // Test 2: Check if JSON.parse is used without prototype pollution protection
+        const jsonParseWithoutProtection = this.libraryContent.includes('JSON.parse(') &&
+                                          !this.libraryContent.includes('__proto__') &&
+                                          !this.libraryContent.includes('constructor');
+        
+        this.assert('JSON.parse() used without prototype pollution protection', jsonParseWithoutProtection,
+                   'JSON.parse() used without checking for __proto__ or constructor - prototype pollution risk');
+        
+        // Test 3: Check if JSON.parse is used in trigger action
+        const triggerUsesJsonParse = this.libraryContent.includes('trigger:') &&
+                                   this.libraryContent.includes('JSON.parse(');
+        
+        this.assert('Trigger action uses JSON.parse() without validation', triggerUsesJsonParse,
+                   'Trigger action uses JSON.parse() - could be exploited with malicious event data');
+    }
+
+    testObjectAssignPrototypePollution() {
+        console.log('  🦠 Testing Object.assign() Prototype Pollution...');
+        
+        // Test 1: Check if Object.assign is used without protection
+        const usesObjectAssign = this.libraryContent.includes('Object.assign(');
+        
+        this.assert('Object.assign() used without prototype pollution protection', usesObjectAssign,
+                   'Object.assign() is used - could lead to prototype pollution if data contains __proto__ or constructor');
+        
+        // Test 2: Check if Object.assign is used with untrusted data
+        const objectAssignWithUntrustedData = this.libraryContent.includes('Object.assign(') &&
+                                             this.libraryContent.includes('event,') &&
+                                             this.libraryContent.includes('data');
+        
+        this.assert('Object.assign() used with untrusted event data', objectAssignWithUntrustedData,
+                   'Object.assign(event, data) used - prototype pollution risk if data is malicious');
+    }
+
+    testUnlimitedMessageSize() {
+        console.log('  📏 Testing Unlimited Message Size...');
+        
+        // Test 1: Check if parseMessage method has no size limits
+        const parseMessageNoSizeChecks = this.libraryContent.includes('parseMessage') &&
+                                       !this.libraryContent.includes('maxMessageSize') &&
+                                       !this.libraryContent.includes('data.length >');
+        
+        this.assert('parseMessage() has no message size limits', parseMessageNoSizeChecks,
+                   'parseMessage method processes messages without size limits - DoS vulnerability');
+        
+        // Test 2: Check if message parts are unlimited
+        const unlimitedParts = this.libraryContent.includes('parseMessage') &&
+                             !this.libraryContent.includes('maxParts') &&
+                             !this.libraryContent.includes('parts.length >');
+        
+        this.assert('parseMessage() has no parts limit', unlimitedParts,
+                   'parseMessage method processes unlimited parts - DoS vulnerability');
+    }
+
+    testElementIdInjection() {
+        console.log('  🎯 Testing Element ID Injection...');
+        
+        // Test 1: Check if element ID validation is bypassed
+        const elementIdValidation = this.libraryContent.includes('_validateElementId') ||
+                                  this.libraryContent.includes('validateElementId');
+        
+        this.assert('Element ID validation exists', elementIdValidation,
+                   'Element ID validation should exist to prevent injection attacks');
+        
+        // Test 2: Check if getElementById is used without validation
+        const getElementByIdWithoutValidation = this.libraryContent.includes('getElementById') &&
+                                              !this.libraryContent.includes('_validateElementId') &&
+                                              !this.libraryContent.includes('validateElementId');
+        
+        this.assert('getElementById used without ID validation', getElementByIdWithoutValidation,
+                   'getElementById used without validation - could be exploited with malicious IDs');
+    }
+
+    testWebSocketUrlInjection() {
+        console.log('  🌐 Testing WebSocket URL Injection...');
+        
+        // Test 1: Check if WebSocket URL validation exists
+        const urlValidation = this.libraryContent.includes('_validateWebSocketUrl') ||
+                            this.libraryContent.includes('validateWebSocketUrl');
+        
+        this.assert('WebSocket URL validation exists', urlValidation,
+                   'WebSocket URL validation should exist to prevent SSRF attacks');
+        
+        // Test 2: Check if WebSocket constructor is used without validation
+        const wsConstructorWithoutValidation = this.libraryContent.includes('new WebSocket(') &&
+                                             !this.libraryContent.includes('_validateWebSocketUrl') &&
+                                             !this.libraryContent.includes('validateWebSocketUrl');
+        
+        this.assert('WebSocket constructor used without URL validation', wsConstructorWithoutValidation,
+                   'WebSocket constructor used without validation - SSRF vulnerability');
+    }
+
+    testEventDataInjection() {
+        console.log('  ⚡ Testing Event Data Injection...');
+        
+        // Test 1: Check if event data is used without sanitization
+        const eventDataWithoutSanitization = this.libraryContent.includes('eventData') &&
+                                           !this.libraryContent.includes('_san') &&
+                                           !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('Event data used without sanitization', eventDataWithoutSanitization,
+                   'Event data used without sanitization - injection vulnerability');
+        
+        // Test 2: Check if event type is used without validation
+        const eventTypeWithoutValidation = this.libraryContent.includes('eventType') &&
+                                         !this.libraryContent.includes('_san') &&
+                                         !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('Event type used without validation', eventTypeWithoutValidation,
+                   'Event type used without validation - could be exploited with malicious event types');
+    }
+
+    testAnimationKeyframeInjection() {
+        console.log('  🎬 Testing Animation Keyframe Injection...');
+        
+        // Test 1: Check if animation keyframes use JSON.parse without validation
+        const keyframeJsonParse = this.libraryContent.includes('animate') &&
+                                this.libraryContent.includes('JSON.parse(');
+        
+        this.assert('Animation keyframes use JSON.parse() without validation', keyframeJsonParse,
+                   'Animation keyframes parsed with JSON.parse() - injection vulnerability');
+        
+        // Test 2: Check if animation properties are used without sanitization
+        const animationPropsWithoutSanitization = this.libraryContent.includes('animationName') &&
+                                                !this.libraryContent.includes('_san') &&
+                                                !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('Animation properties used without sanitization', animationPropsWithoutSanitization,
+                   'Animation properties used without sanitization - injection vulnerability');
+    }
+
+    testStylePropertyInjection() {
+        console.log('  🎨 Testing Style Property Injection...');
+        
+        // Test 1: Check if style properties are set without validation
+        const stylePropertyWithoutValidation = this.libraryContent.includes('el.style[') &&
+                                             !this.libraryContent.includes('_san') &&
+                                             !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('Style properties set without validation', stylePropertyWithoutValidation,
+                   'Style properties set without validation - CSS injection vulnerability');
+        
+        // Test 2: Check if setStyle action uses untrusted input
+        const setStyleUsesUntrustedInput = this.libraryContent.includes('setStyle:') &&
+                                         this.libraryContent.includes('property,') &&
+                                         this.libraryContent.includes('value');
+        
+        this.assert('setStyle action uses untrusted input', setStyleUsesUntrustedInput,
+                   'setStyle action uses untrusted property and value - CSS injection risk');
+    }
+
+    testAttributeValueInjection() {
+        console.log('  🏷️ Testing Attribute Value Injection...');
+        
+        // Test 1: Check if setAttr uses untrusted input without validation
+        const setAttrUsesUntrustedInput = this.libraryContent.includes('setAttr:') &&
+                                        this.libraryContent.includes('attrName,') &&
+                                        this.libraryContent.includes('value') &&
+                                        !this.libraryContent.includes('_san') &&
+                                        !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('setAttr action uses untrusted input without validation', setAttrUsesUntrustedInput,
+                   'setAttr action uses untrusted attrName and value - attribute injection vulnerability');
+        
+        // Test 2: Check if setAttribute is used without sanitization
+        const setAttributeWithoutSanitization = this.libraryContent.includes('setAttribute(') &&
+                                              !this.libraryContent.includes('_san') &&
+                                              !this.libraryContent.includes('_sanitizeInput');
+        
+        this.assert('setAttribute used without sanitization', setAttributeWithoutSanitization,
+                   'setAttribute used without sanitization - attribute injection vulnerability');
     }
 
     assert(testName, condition, message) {

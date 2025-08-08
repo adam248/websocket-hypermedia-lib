@@ -30,6 +30,7 @@ const StyleTests = require('./style-tests');
 const EventTests = require('./event-tests');
 const FormTests = require('./form-tests');
 const AnimationTests = require('./animation-tests');
+const SecurityTests = require('./security-tests');
 
 class UnifiedTestRunner {
     constructor() {
@@ -56,6 +57,7 @@ class UnifiedTestRunner {
         this.eventTests = new EventTests();
         this.formTests = new FormTests();
         this.animationTests = new AnimationTests();
+        this.securityTests = new SecurityTests();
     }
 
     log(message, type = 'info') {
@@ -395,6 +397,11 @@ class UnifiedTestRunner {
                 'testAnimationSequence',
                 'testAnimationPerformance',
                 'testAnimationCleanup'
+            ]);
+
+            // Security Tests
+            await this.runTestSuite('Security Tests', this.securityTests, [
+                'runAllTests'
             ]);
             
         } catch (error) {
