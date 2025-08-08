@@ -9,6 +9,8 @@
 
 A minimal, powerful library for building real-time hypermedia applications using WebSockets. Transform your static HTML into dynamic, interactive experiences with just a few lines of JavaScript.
 
+**Note:** This library requires JavaScript to function. The "progressive enhancement" approach means you can build traditional HTML forms first, then enhance them with real-time capabilities.
+
 ## 🚀 Quick Start
 
 ```html
@@ -118,7 +120,7 @@ Options are transparently passed through to handlers in both directions.
 ### Design Principles
 
 - **Server-Driven**: Server controls what gets updated and when
-- **Progressive Enhancement**: Works without JavaScript, enhances with real-time features
+- **Progressive Enhancement**: Can be built on traditional HTML foundations, enhanced with real-time features
 - **Declarative**: HTML describes the desired state
 - **Extensible**: New actions can be added server-side without client changes
 - **Simple**: Easy to understand and implement

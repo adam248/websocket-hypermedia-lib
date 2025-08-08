@@ -828,7 +828,7 @@ ws.addMessageHandler('update_form', (element, html, elementId) => {
 
 2. **Include Metadata**: Use data attributes to include state and context in your HTML.
 
-3. **Graceful Degradation**: Ensure your application works without JavaScript.
+3. **Graceful Degradation**: Ensure your application can function with traditional HTTP requests as a fallback.
 
 4. **Error Boundaries**: Implement proper error handling for missing elements or failed updates.
 
@@ -928,6 +928,15 @@ ws.send('user-action|profile|update|user-id-456|timestamp-1234567890');
 
 WebSocket Hypermedia is an architectural pattern that combines the real-time capabilities of WebSockets with the simplicity and flexibility of hypermedia. It extends the traditional request-response model of the web to support bidirectional, real-time communication while maintaining the declarative nature of HTML.
 
+### Important Clarification: JavaScript Requirement
+
+**This library requires JavaScript to function.** The "progressive enhancement" mentioned throughout this documentation refers to the architectural approach of building applications that can be enhanced with real-time features, not literal JavaScript-free operation.
+
+- **WebSocket connections require JavaScript** - This is a fundamental browser limitation
+- **Real-time updates require JavaScript** - The library itself is pure JavaScript
+- **Progressive enhancement means** - You can build traditional HTML forms first, then enhance them with real-time capabilities
+- **Graceful degradation means** - Your application can fall back to traditional HTTP requests if WebSockets fail
+
 ### Core Principles
 
 #### 1. **HTML as the Message Format**
@@ -935,7 +944,7 @@ Unlike traditional WebSocket applications that send JSON or custom protocols, We
 
 - **Leverages existing knowledge**: Developers already know HTML
 - **Maintains consistency**: Same markup language for static and dynamic content
-- **Enables progressive enhancement**: Works without JavaScript for basic functionality
+- **Enables architectural simplicity**: Can be built on traditional HTML foundations
 - **Simplifies debugging**: HTML is human-readable and inspectable
 
 #### 2. **Action-Based Protocol**
@@ -978,7 +987,7 @@ The server controls what gets updated and when:
 
 #### 4. **WebSocket Hypermedia (Emerging)**
 - **Real-time + Simplicity**: WebSocket power with HTML simplicity
-- **Progressive enhancement**: Works with or without JavaScript
+- **Progressive enhancement**: Can be built on traditional HTML foundations
 - **Server-driven**: Server controls the experience
 - **Declarative**: HTML describes the desired state
 
@@ -1029,7 +1038,7 @@ socket.onmessage = (event) => {
 
 4. **Enhanced Accessibility**
    - Works with screen readers
-   - Progressive enhancement friendly
+   - Can be built on traditional HTML foundations
    - Semantic HTML preserved
 
 ## Design Patterns
@@ -1063,16 +1072,16 @@ ws.send('add_todo:Buy groceries');
 ```
 
 ### 3. **Progressive Enhancement Pattern**
-Applications work without JavaScript, then enhance with real-time features.
+Applications can be built with traditional HTML forms as a foundation, then enhanced with real-time features using JavaScript.
 
 ```html
-<!-- Works without JavaScript -->
+<!-- Traditional form that works with standard HTTP POST -->
 <form action="/add-todo" method="POST">
     <input name="todo" placeholder="Add todo...">
     <button type="submit">Add</button>
 </form>
 
-<!-- Enhanced with WebSocket Hypermedia -->
+<!-- Enhanced with WebSocket Hypermedia for real-time updates -->
 <script>
 const ws = new WebSocketHypermedia("ws://localhost:8765");
 // Same form now works in real-time
