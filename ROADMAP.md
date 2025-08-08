@@ -17,7 +17,7 @@ Our development philosophy focuses on:
 
 ### **🚨 ASAP - Critical Infrastructure & Developer Experience** ⚡ *Immediate Priority*
 
-**Target Release:** Q1 2024
+**Target Release:** Q1 2025
 
 #### **Plugin Architecture & Extensibility**
 - [ ] **Pre/Post Callback System**: Extensible plugin architecture allowing custom code execution before and after library operations
@@ -31,7 +31,7 @@ Our development philosophy focuses on:
 
 ### **v1.2.0 - Enhanced Protocol & Developer Tools** 🚧 *In Progress*
 
-**Target Release:** Q2 2024
+**Target Release:** Q2 2025
 
 #### **Core Protocol Enhancements**
 - [ ] **Protocol Extensions**: Custom protocol verb registration system
@@ -56,7 +56,7 @@ Our development philosophy focuses on:
 
 ### **v1.3.0 - Advanced Features & Ecosystem** 📋 *Planned*
 
-**Target Release:** Q3 2024
+**Target Release:** Q3 2025
 
 #### **Advanced DOM Manipulation**
 - [ ] **Virtual DOM Integration**: Lightweight virtual DOM for complex updates
@@ -81,7 +81,7 @@ Our development philosophy focuses on:
 
 ### **v2.0.0 - Major Architecture Evolution** 🎯 *Future*
 
-**Target Release:** Q4 2024
+**Target Release:** Q4 2025
 
 #### **Plugin Architecture**
 - [ ] **Plugin System**: Extensible plugin architecture
@@ -282,4 +282,4 @@ We welcome feedback and suggestions for the roadmap! Here's how to contribute:
 
 **This roadmap is a living document that evolves based on community feedback and project needs. We're committed to building the best real-time hypermedia library possible!** 🚀
 
-*Last updated: January 2024* 
+*Last updated: August 2025* 
