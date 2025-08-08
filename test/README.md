@@ -54,11 +54,25 @@ Then open `test-client.html` in your web browser.
    npm start
    ```
 
+### Test Structure
+
+The test suite is organized into modular test files:
+
+- **`core-tests.js`** - Basic WebSocket functionality
+- **`edge-case-tests.js`** - Unusual scenarios and robustness
+- **`escape-tests.js`** - Content escaping and parsing
+- **`click-to-send-tests.js`** - Element interaction feature
+- **`unified-test-runner.js`** - Main test runner that executes all modules
+
+### Running Specific Test Modules
+
+You can run individual test modules by modifying the `unified-test-runner.js` file or by creating custom test runners.
+
 ## What Gets Tested
 
 The automated test suite covers all the core WebSocket Hypermedia functionality:
 
-### **Core Functionality**
+### **Core Functionality** (3 tests)
 - **WebSocket Connection** - Basic connection establishment
 - **Options Passing** - Extra parameter handling (`verb|noun|subject|options`)
 - **Standard Actions** - `get_time`, `add_message`, `clear_messages`
@@ -66,17 +80,31 @@ The automated test suite covers all the core WebSocket Hypermedia functionality:
 - **Error Handling** - Connection errors and timeouts
 - **Cleanup** - Automatic server shutdown
 
-### **Edge Cases & Hypermedia Patterns**
+### **Edge Cases & Hypermedia Patterns** (9 tests)
 - **Empty Content** - Handling empty HTML content gracefully
 - **Large Content** - Processing large HTML payloads efficiently
 - **Special Characters** - Unicode, HTML entities, and special chars
 - **Nested HTML** - Complex HTML structures and DOM manipulation
 - **Form Submission** - Form data handling and validation
-- **Concurrent Updates** - Multiple simultaneous message processing
 - **Invalid Element ID** - Graceful handling of missing elements
 - **Malformed Messages** - Robust parsing of invalid message formats
 - **Rapid Fire Messages** - High-frequency message handling
 - **Connection Recovery** - Reconnection and state recovery
+
+### **Escape Character Tests** (4 tests)
+- **Default Escape Character** - Basic tilde (~) escaping
+- **Custom Escape Character** - Configurable escape characters
+- **Escape with Pipes** - Content containing pipe characters
+- **Helper Methods** - sendEscaped() convenience methods
+
+### **Click-to-Send Feature** (7 tests)
+- **Element Click Detection** - Automatic detection of clicked elements
+- **Interactive Element Skipping** - Smart filtering of buttons, links, forms
+- **HTML Content Escaping** - Proper escaping of HTML content with pipes
+- **Custom Click Verbs** - Configurable verbs for different click types
+- **Runtime Enable/Disable** - Dynamic enabling and disabling of the feature
+- **Event Delegation** - Efficient event handling for all elements
+- **Content Integrity** - Proper HTML content transmission
 
 ## Manual Testing
 
@@ -98,6 +126,14 @@ Click the buttons to test different functionality:
 - **Clear Messages** - Tests update functionality
 - **Remove Status** - Tests remove functionality
 - **Send Echo** - Tests custom action handling
+
+### **Click-to-Send Testing**
+- **Enable Click-to-Send** - Enable the click-to-send feature
+- **Disable Click-to-Send** - Disable the click-to-send feature
+- **Test Custom Click Verb** - Test with custom click verb
+- **Test Server Click Handling** - Test server-side click handling
+- **Click Test Elements** - Click on paragraph, div, span elements to test
+- **Interactive Elements** - Verify buttons and links don't trigger click-to-send
 - **Connect/Disconnect** - Tests connection management
 
 ## Expected Behavior

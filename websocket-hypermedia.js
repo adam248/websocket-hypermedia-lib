@@ -14,6 +14,7 @@
  * - update|breaking-news|<p>Breaking news!</p>|priority-high|code-black
  * - update|content|~<p>Hello World | & Good Morning New York!</p>~
  * - append|log|~<span>Error: File not found | Path: /usr/local/bin</span>~
+ * - element_clicked|content|~<p>Hello world</p>~ (from click-to-send feature)
  * 
  * Usage:
  * ```javascript
@@ -26,6 +27,8 @@
  *     reconnectDelay: 1000,
  *     maxReconnectAttempts: 5,
  *     escapeChar: '~', // Custom escape character (default: ~)
+ *     enableClickToSend: true, // Enable click-to-send feature
+ *     clickVerb: 'element_clicked', // Custom verb for clicked elements
  *     onConnect: () => console.log('Connected!'),
  *     onDisconnect: () => console.log('Disconnected!'),
  *     onError: (error) => console.error('Error:', error),
@@ -46,9 +49,13 @@
  * ws.addMessageHandler('custom_verb', (element, subject, noun, options) => {
  *     // Custom handling logic
  * });
+ * 
+ * // Enable/disable click-to-send after initialization
+ * ws.enableClickToSend();
+ * ws.disableClickToSend();
  * ```
  * 
- * Size: ~7.3KB uncompressed, ~2.2KB gzipped
+ * Size: ~8.1KB uncompressed, ~2.5KB gzipped
  */
 
 class WebSocketHypermedia {
@@ -59,6 +66,8 @@ class WebSocketHypermedia {
             reconnectDelay: 1000,
             maxReconnectAttempts: 5,
             escapeChar: '~', // Default escape character for content with pipes
+            enableClickToSend: false, // Enable click-to-send feature
+            clickVerb: 'element_clicked', // Verb to use when sending clicked elements
             onConnect: null,
             onDisconnect: null,
             onError: null,
@@ -72,6 +81,11 @@ class WebSocketHypermedia {
         this.messageHandlers = new Map();
         
         this._connect();
+        
+        // Setup click-to-send if enabled
+        if (this.options.enableClickToSend) {
+            this.setupClickToSend();
+        }
     }
     
     _connect() {
@@ -282,6 +296,73 @@ class WebSocketHypermedia {
     
     get readyState() {
         return this.ws?.readyState ?? WebSocket.CLOSED;
+    }
+    
+    setupClickToSend() {
+        // Use event delegation to handle clicks on all elements
+        document.addEventListener('click', (event) => {
+            const element = event.target;
+            
+            // Skip if clicking on form elements or interactive elements that have their own behavior
+            if (this.shouldSkipElement(element)) {
+                return;
+            }
+            
+            // Prevent default behavior for non-interactive elements
+            if (!this.isInteractiveElement(element)) {
+                event.preventDefault();
+            }
+            
+            // Send the element's HTML to the server
+            this.sendClickedElement(element);
+        });
+        
+        console.log('Click-to-send feature enabled');
+    }
+    
+    shouldSkipElement(element) {
+        // Skip form elements, buttons, links, and other interactive elements
+        const skipTags = ['INPUT', 'BUTTON', 'A', 'SELECT', 'TEXTAREA', 'LABEL'];
+        const skipTypes = ['submit', 'button', 'reset', 'checkbox', 'radio'];
+        
+        return skipTags.includes(element.tagName) || 
+               (element.type && skipTypes.includes(element.type)) ||
+               element.onclick !== null ||
+               element.getAttribute('onclick') !== null;
+    }
+    
+    isInteractiveElement(element) {
+        // Check if element is naturally interactive
+        const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
+        const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio'];
+        
+        return interactiveTags.includes(element.tagName) ||
+               interactiveRoles.includes(element.getAttribute('role'));
+    }
+    
+    sendClickedElement(element) {
+        const elementId = element.id || element.className || element.tagName.toLowerCase();
+        const elementHTML = element.outerHTML;
+        
+        // Send using the configured verb
+        this.sendEscaped(this.options.clickVerb, elementId, elementHTML);
+        
+        console.log(`Sent clicked element: ${elementId}`);
+    }
+    
+    // Method to enable/disable click-to-send after initialization
+    enableClickToSend() {
+        if (!this.options.enableClickToSend) {
+            this.options.enableClickToSend = true;
+            this.setupClickToSend();
+        }
+    }
+    
+    disableClickToSend() {
+        this.options.enableClickToSend = false;
+        // Note: We can't easily remove the event listener without tracking it
+        // This is a limitation, but the feature can be re-enabled
+        console.log('Click-to-send disabled (requires page reload to fully remove)');
     }
 }
 

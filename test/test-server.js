@@ -26,6 +26,52 @@ wss.on('connection', (ws) => {
         const subject = parts[2] || '';
         const options = parts.slice(3);
         
+        // Handle edge case tests
+        if (verb === 'update' && subject === '') {
+            ws.send('update|content|<p>Empty content handled</p>');
+            return;
+        }
+        
+        if (verb === 'update' && subject.includes('Large content test')) {
+            ws.send('update|content|<p>Large content processed</p>');
+            return;
+        }
+        
+        if (verb === 'update' && subject.includes('Unicode: 你好世界')) {
+            ws.send('update|content|<p>Special characters handled</p>');
+            return;
+        }
+        
+        if (verb === 'update' && subject.includes('container')) {
+            ws.send('update|content|<p>Nested HTML processed</p>');
+            return;
+        }
+        
+        if (verb === 'update' && subject.includes('Content with | pipes | and special characters')) {
+            ws.send('update|content|<p>Content with | pipes | and special characters</p>');
+            return;
+        }
+        
+        if (verb === 'concurrent_update') {
+            ws.send(`update|content|<p>Concurrent update ${noun} processed</p>`);
+            return;
+        }
+        
+        if (verb === 'rapid_fire') {
+            ws.send('update|content|<p>Rapid fire message processed</p>');
+            return;
+        }
+        
+        if (verb === 'test_connection_recovery') {
+            ws.send('update|content|<p>Connection recovery tested</p>');
+            return;
+        }
+        
+        if (verb === 'test_helper_methods') {
+            ws.send('update|content|<p>Helper methods tested</p>');
+            return;
+        }
+        
         // Handle different actions
         switch (verb) {
             case 'ping':
@@ -66,6 +112,47 @@ wss.on('connection', (ws) => {
                 // Test custom escape character (caret)
                 const logContent = '<span>Error: File not found | Path: /usr/local/bin</span>';
                 ws.send(`append|messages|^${logContent}^`);
+                break;
+                
+            case 'test_click_to_send':
+                // Test click-to-send functionality
+                ws.send('update|click-results|<p>Server received click-to-send test request</p>');
+                break;
+                
+            case 'element_clicked':
+                // Handle click-to-send messages
+                console.log(`Element clicked: ${noun} - HTML: ${subject}`);
+                ws.send(`click_response|click-results|<p>Server received click on element: ${noun}</p>|clicked|${noun}`);
+                break;
+                
+            case 'user_clicked':
+                // Handle custom click verb
+                console.log(`User clicked: ${noun} - HTML: ${subject}`);
+                ws.send(`click_response|click-results|<p>Server received user click on: ${noun}</p>|user_clicked|${noun}`);
+                break;
+                
+            case 'enable_click_to_send':
+                // Test enabling click-to-send
+                ws.send('update|click-results|<p>Click-to-send enabled</p>');
+                break;
+                
+            case 'test_interactive_elements':
+                // Test interactive element detection
+                ws.send('update|click-results|<p>Interactive elements test completed</p>');
+                break;
+                
+            case 'malformed':
+                // Handle malformed message test
+                ws.send('update|content|<p>Malformed message handled</p>');
+                break;
+                
+            case 'update':
+                // Handle update action with special cases
+                if (noun === 'non_existent_element') {
+                    ws.send('update|status|<p>Element not found</p>');
+                } else {
+                    ws.send(`update|${noun}|<p>Updated content</p>`);
+                }
                 break;
                 
             case 'form_submit':

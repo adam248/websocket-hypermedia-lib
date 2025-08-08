@@ -5,7 +5,9 @@
   "main": "test-server.js",
   "scripts": {
     "start": "node test-server.js",
-    "test": "node run-tests.js"
+    "test": "node unified-test-runner.js",
+    "test:core": "node -e \"const runner = require('./unified-test-runner'); const r = new runner(); r.runAllTests().then(() => r.printSummary()).catch(console.error);\"",
+    "test:legacy": "node run-tests.js"
   },
   "dependencies": {
     "ws": "^8.14.2"
