@@ -69,7 +69,7 @@ class WebSocketHypermedia {
     }
     
     setupEventHandlers() {
-        const { onConnect, onDisconnect, onError, onMessage } = this.options;
+        const { onConnect, onDisconnect, onMessage } = this.options;
         
         this.ws.onopen = () => {
             this.isConnecting = false;

@@ -31,8 +31,8 @@ That's it! Your page is now ready for real-time updates from the server. The lib
 
 ## 📖 Documentation
 
-📚 **[Complete Documentation](websocket-hypermedia.md)** - Everything you need to know
-📖 **[API Reference](WSHM-reference.md)** - Complete API documentation
+📚 **[Complete Documentation](docs/websocket-hypermedia.md)** - Everything you need to know
+📖 **[API Reference](docs/WSHM-reference.md)** - Complete API documentation
 
 The documentation includes:
 - **Tutorials**: Step-by-step guides to get started
@@ -233,7 +233,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **📧 Email**: 85082674+adam248@users.noreply.github.com
 - **🐛 Issues**: [GitHub Issues](https://github.com/adam248/websocket-hypermedia-lib/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/adam248/websocket-hypermedia-lib/discussions)
-- **📖 Documentation**: [Complete Docs](websocket-hypermedia.md)
+- **📖 Documentation**: [Complete Docs](docs/websocket-hypermedia.md)
 
 ## ⭐ Star History
 

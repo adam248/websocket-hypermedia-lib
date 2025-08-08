@@ -125,6 +125,10 @@ build/
 dist/
 out/
 
+# Node modules (root level)
+node_modules/
+package-lock.json
+
 # Test artifacts
 test-results/
 coverage/

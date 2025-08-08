@@ -1,0 +1,50 @@
+{
+  "name": "websocket-hypermedia",
+  "version": "1.0.0",
+  "description": "A minimal, powerful library for building real-time hypermedia applications using WebSockets",
+  "main": "dist/websocket-hypermedia.min.js",
+  "files": [
+    "dist/",
+    "websocket-hypermedia.js"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run minify && npm run gzip && npm run size",
+    "clean": "rm -rf dist && mkdir dist",
+    "minify": "terser websocket-hypermedia.js -o dist/websocket-hypermedia.min.js --compress --mangle",
+    "gzip": "gzip -c dist/websocket-hypermedia.min.js > dist/websocket-hypermedia.min.js.gz",
+    "size": "echo '📏 Library sizes:' && wc -c websocket-hypermedia.js dist/websocket-hypermedia.min.js dist/websocket-hypermedia.min.js.gz",
+    "test": "cd test && npm test",
+    "test:local": "bash test.sh",
+    "lint": "eslint websocket-hypermedia.js",
+    "format": "prettier --write websocket-hypermedia.js",
+    "prepublishOnly": "npm run build && npm run test"
+  },
+  "keywords": [
+    "websocket",
+    "hypermedia",
+    "real-time",
+    "dom",
+    "html",
+    "javascript",
+    "library",
+    "minimal"
+  ],
+  "author": "Adam J. Butler",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adam248/websocket-hypermedia-lib.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adam248/websocket-hypermedia-lib/issues"
+  },
+  "homepage": "https://github.com/adam248/websocket-hypermedia-lib#readme",
+  "devDependencies": {
+    "terser": "^5.24.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+} 
