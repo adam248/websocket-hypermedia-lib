@@ -48,6 +48,7 @@ const ws = new WebSocketHypermedia("ws://localhost:8765", {
     escapeChar: '~', // Custom escape character (default: ~)
     enableClickToSend: true, // Enable click-to-send feature
     clickVerb: 'element_clicked', // Custom verb for clicked elements
+    enableLogging: false, // Disable console logging in production
     onConnect: () => console.log('Connected!'),
     onDisconnect: () => console.log('Disconnected!'),
     onError: (error) => console.error('Error:', error),

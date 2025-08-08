@@ -8,12 +8,11 @@ class WebSocketHypermedia {
             reconnectDelay: 1000,
             maxReconnectAttempts: 5,
             escapeChar: '~',
-            enableClickToSend: false,
-            clickVerb: 'element_clicked',
             onConnect: null,
             onDisconnect: null,
             onError: null,
             onMessage: null,
+            enableLogging: true,
             ...options
         };
         
@@ -35,10 +34,6 @@ class WebSocketHypermedia {
         };
         
         this._connect();
-        
-        if (this.options.enableClickToSend) {
-            this.setupClickToSend();
-        }
     }
     
     _connect() {
@@ -46,11 +41,31 @@ class WebSocketHypermedia {
         this.isConnecting = true;
         
         try {
+            this._validateWebSocketUrl(this.url);
             this.ws = new WebSocket(this.url);
             this.setupEventHandlers();
         } catch (error) {
             this.handleError(error);
         }
+    }
+    
+    _validateWebSocketUrl(url) {
+        try {
+            const urlObj = new URL(url);
+            if (!['ws:', 'wss:'].includes(urlObj.protocol)) {
+                throw new Error('Invalid WebSocket protocol');
+            }
+            return true;
+        } catch (error) {
+            throw new Error('Invalid WebSocket URL');
+        }
+    }
+    
+    _validateElementId(id) {
+        if (typeof id !== 'string' || id.length === 0 || id.length > 100) {
+            return false;
+        }
+        return /^[a-zA-Z0-9_-]+$/.test(id);
     }
     
     setupEventHandlers() {
@@ -101,7 +116,9 @@ class WebSocketHypermedia {
                 await this.processAction(verb, noun, subject, options);
             }
         } catch (error) {
-            console.error('Error processing message:', error);
+            if (this.options.enableLogging) {
+                console.error('Error processing message:', error);
+            }
         }
     }
     
@@ -143,10 +160,19 @@ class WebSocketHypermedia {
     }
     
     async processAction(verb, noun, subject, options = []) {
+        if (!this._validateElementId(noun)) {
+            if (this.options.enableLogging) {
+                console.warn('Invalid element ID:', noun);
+            }
+            return;
+        }
+        
         const el = document.getElementById(noun);
         
         if (!el) {
-            console.warn('Element not found:', noun);
+            if (this.options.enableLogging) {
+                console.warn('Element not found:', noun);
+            }
             return;
         }
         
@@ -163,7 +189,9 @@ class WebSocketHypermedia {
         if (action) {
             action(el, subject);
         } else {
-            console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');
+            if (this.options.enableLogging) {
+                console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');
+            }
         }
     }
     
@@ -171,7 +199,9 @@ class WebSocketHypermedia {
         if (this.ws?.readyState === WebSocket.OPEN) {
             this.ws.send(action);
         } else {
-            console.warn('WebSocket not ready, state:', this.ws?.readyState);
+            if (this.options.enableLogging) {
+                console.warn('WebSocket not ready, state:', this.ws?.readyState);
+            }
         }
     }
     
@@ -194,7 +224,9 @@ class WebSocketHypermedia {
     }
     
     handleError(error) {
-        console.error('WebSocket Hypermedia error:', error);
+        if (this.options.enableLogging) {
+            console.error('WebSocket Hypermedia error:', error);
+        }
         this.options.onError?.(error);
     }
     
@@ -208,57 +240,6 @@ class WebSocketHypermedia {
     
     get readyState() {
         return this.ws?.readyState ?? WebSocket.CLOSED;
-    }
-    
-    setupClickToSend() {
-        document.addEventListener('click', (event) => {
-            const el = event.target;
-            
-            if (this.shouldSkipElement(el)) {
-                return;
-            }
-            
-            if (!this.isInteractiveElement(el)) {
-                event.preventDefault();
-            }
-            
-            this.sendClickedElement(el);
-        });
-    }
-    
-    shouldSkipElement(el) {
-        const skipTags = ['INPUT', 'BUTTON', 'A', 'SELECT', 'TEXTAREA', 'LABEL'];
-        const skipTypes = ['submit', 'button', 'reset', 'checkbox', 'radio'];
-        
-        return skipTags.includes(el.tagName) || 
-               (el.type && skipTypes.includes(el.type)) ||
-               el.onclick !== null ||
-               el.getAttribute('onclick') !== null;
-    }
-    
-    isInteractiveElement(el) {
-        const interactiveTags = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
-        const interactiveRoles = ['button', 'link', 'menuitem', 'tab', 'checkbox', 'radio'];
-        
-        return interactiveTags.includes(el.tagName) ||
-               interactiveRoles.includes(el.getAttribute('role'));
-    }
-    
-    sendClickedElement(el) {
-        const id = el.id || el.className || el.tagName.toLowerCase();
-        this.sendEscaped(this.options.clickVerb, id, el.outerHTML);
-    }
-    
-    enableClickToSend() {
-        if (!this.options.enableClickToSend) {
-            this.options.enableClickToSend = true;
-            this.setupClickToSend();
-        }
-    }
-    
-    disableClickToSend() {
-        this.options.enableClickToSend = false;
-        console.log('Click-to-send disabled (requires page reload to fully remove)');
     }
 }
 

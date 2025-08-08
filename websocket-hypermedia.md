@@ -6,6 +6,50 @@ A minimal, powerful library for building real-time hypermedia applications using
 **Protocol**: Simple action-based messaging  
 **Browser Support**: All modern browsers with WebSocket support
 
+## ⚠️ **CRITICAL: Production Security Considerations**
+
+**IMPORTANT**: This library directly inserts HTML content into the DOM using `innerHTML` and `outerHTML`. This creates XSS (Cross-Site Scripting) vulnerabilities if untrusted content is processed.
+
+### Security Requirements for Production
+
+1. **Server-Side HTML Sanitization**: ALL HTML content sent to clients MUST be sanitized on the server side before transmission.
+
+2. **Content Security Policy**: Implement CSP headers to restrict script execution:
+   ```http
+   Content-Security-Policy: script-src 'self'; object-src 'none';
+   ```
+
+3. **WebSocket URL Validation**: Validate WebSocket URLs to prevent SSRF attacks.
+
+4. **Click-to-Send Security**: The click-to-send feature sends element HTML to the server. Ensure this doesn't expose sensitive data.
+
+### Recommended Security Practices
+
+```javascript
+// Server-side HTML sanitization (example with DOMPurify)
+const DOMPurify = require('dompurify');
+
+function sanitizeHTML(html) {
+    return DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['p', 'div', 'span', 'strong', 'em', 'ul', 'li'],
+        ALLOWED_ATTR: ['class', 'id']
+    });
+}
+
+// Always sanitize before sending
+websocket.send(`update|content|${sanitizeHTML(userContent)}`);
+```
+
+### Security Checklist for Production Deployment
+
+- [ ] Implement server-side HTML sanitization
+- [ ] Configure Content Security Policy headers
+- [ ] Validate WebSocket URLs
+- [ ] Review click-to-send data exposure
+- [ ] Test with malicious HTML content
+- [ ] Monitor for XSS attempts
+- [ ] Implement rate limiting on WebSocket connections
+
 ## Quick Start
 
 ```html
