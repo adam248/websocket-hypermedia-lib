@@ -176,9 +176,21 @@ ws.send('update|content|^<p>Hello World | & Good Morning New York!</p>^');
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! However, this library prioritizes **leanness, size, speed, and simplicity** above everything else.
 
-**Note:** CONTRIBUTING.md file is not yet created. For now, please create an issue or discussion in the repository.
+### Contribution Guidelines
+
+- **Size Limit**: This library can **never exceed 10KB** - this is a hard line in the sand
+- **Bug Fixes**: All bug reports and fixes are welcome and will be considered
+- **New Features**: Must pass a very high bar to be added. We prioritize core functionality over feature bloat
+- **Extensions**: If you need to extend this library, please create code in a separate repository. We may add a plugin/extension system in the future if necessary
+
+### How to Contribute
+
+1. **Report Bugs**: Create an issue with clear reproduction steps
+2. **Suggest Features**: Open a discussion to gauge community interest
+3. **Submit Fixes**: Fork the repo, make minimal changes, and submit a pull request
+4. **Create Extensions**: Build separate libraries that work with this core library
 
 ### Development Setup
 ```bash
