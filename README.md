@@ -1,7 +1,7 @@
 # WebSocket Hypermedia Library
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Size](https://img.shields.io/badge/size-10.2KB%20uncompressed%20%7C%202.8KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Size](https://img.shields.io/badge/size-7.6KB%20uncompressed%20%7C%201.4KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Browser Support](https://img.shields.io/badge/browsers-modern%20browsers-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![WebSocket](https://img.shields.io/badge/websocket-supported-brightgreen.svg)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
@@ -22,7 +22,7 @@ That's it! Your page is now ready for real-time updates from the server. The lib
 ## ✨ Features
 
 - **🔥 Real-time Updates**: Instant HTML updates from server
-- **📦 Tiny Size**: Only 10.2KB uncompressed, 2.8KB gzipped <span style="color: #888; font-size: 0.8em;">(verified 2025-08-08)</span>
+- **📦 Tiny Size**: Only 7.6KB uncompressed, 1.4KB gzipped <span style="color: #888; font-size: 0.8em;">(v1.0.0)</span>
 - **🔄 Auto-reconnection**: Handles connection drops gracefully
 - **🎯 Simple Protocol**: `action|elementId|html` format
 - **⚡ Zero Dependencies**: Pure JavaScript, no frameworks needed
@@ -83,7 +83,14 @@ curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/main/
 
 ### CDN
 ```html
+<!-- Latest version -->
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@main/websocket-hypermedia.js"></script>
+
+<!-- Specific version (v1.0.0) -->
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.0.0/websocket-hypermedia.js"></script>
+
+<!-- Minified version (v1.0.0) -->
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.0.0/dist/websocket-hypermedia.min.js"></script>
 ```
 
 ## 🔧 Configuration
