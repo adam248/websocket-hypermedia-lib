@@ -1,7 +1,7 @@
 # WebSocket Hypermedia Library
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Size](https://img.shields.io/badge/size-6.0KB%20uncompressed%20%7C%201.8KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Size](https://img.shields.io/badge/size-7.3KB%20uncompressed%20%7C%202.2KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Browser Support](https://img.shields.io/badge/browsers-modern%20browsers-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![WebSocket](https://img.shields.io/badge/websocket-supported-brightgreen.svg)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
@@ -23,7 +23,7 @@ That's it! Your page is now ready for real-time updates from the server.
 ## ✨ Features
 
 - **🔥 Real-time Updates**: Instant HTML updates from server
-- **📦 Tiny Size**: Only 6.0KB uncompressed, 1.8KB gzipped
+- **📦 Tiny Size**: Only 7.3KB uncompressed, 2.2KB gzipped
 - **🔄 Auto-reconnection**: Handles connection drops gracefully
 - **🎯 Simple Protocol**: `action|elementId|html` format
 - **⚡ Zero Dependencies**: Pure JavaScript, no frameworks needed
@@ -107,11 +107,21 @@ const ws = new WebSocketHypermedia("ws://localhost:8765", {
 
 ## 📡 Protocol
 
-The library uses a simple action-based protocol:
+The library uses a simple action-based protocol following the `verb|noun|subject` pattern:
 
 ```
-action|elementId|html
+action|elementId|html[|extraParams...]
 ```
+
+Options are transparently passed through to handlers in both directions.
+
+### Design Principles
+
+- **Server-Driven**: Server controls what gets updated and when
+- **Progressive Enhancement**: Works without JavaScript, enhances with real-time features
+- **Declarative**: HTML describes the desired state
+- **Extensible**: New actions can be added server-side without client changes
+- **Simple**: Easy to understand and implement
 
 ### Standard Actions
 - `update` - Replace element content
@@ -119,6 +129,9 @@ action|elementId|html
 - `prepend` - Add to beginning of element
 - `replace` - Replace entire element
 - `remove` - Remove element
+- `swap` - Replace entire element (HTMX-inspired)
+- `before` - Insert before element (HTMX-inspired)
+- `after` - Insert after element (HTMX-inspired)
 
 ### Examples
 ```
@@ -127,6 +140,10 @@ append|messages|<li>New message</li>
 prepend|notifications|<div>Alert!</div>
 replace|form|<form>New form</form>
 remove|old_element|
+swap|form|<form>New form</form>
+before|content|<div>Warning</div>
+after|content|<div>Footer</div>
+update|breaking-news|<p>Breaking news!</p>|priority-high|code-black
 ```
 
 ## 🌟 Use Cases
@@ -149,15 +166,29 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ```bash
 git clone https://github.com/adam248/websocket-hypermedia-lib.git
 cd websocket-hypermedia-lib
-# Open test/test-client.html in your browser to see the demo
+# Run tests to verify everything works
+./test.sh
 ```
 
 ### Running Tests
+
+#### Quick Test (Recommended)
+```bash
+# From project root
+./test.sh
+
+# Or from test directory
+cd test
+npm test
+```
+
+This runs comprehensive automated tests (15 test cases) covering core functionality and edge cases with clear results.
+
+#### Manual Testing (Optional)
 ```bash
 cd test
-npm install
 npm start
-# Then open test-client.html in your browser
+# Then open test-client.html in your browser for interactive testing
 ```
 
 ## 📄 License

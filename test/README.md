@@ -4,44 +4,83 @@ A simple test setup to verify the WebSocket Hypermedia library works correctly.
 
 ## Quick Start
 
-### Option 1: Using Nix (Recommended)
+### Option 1: Automated Testing (Recommended)
 
-If you have Nix installed, this is the easiest way:
+Run all tests with a single command:
 
 ```bash
 cd test
-nix-shell
+nix-shell --run "test"
 ```
 
-This will automatically:
-- Set up a Node.js 20 environment
-- Install dependencies
-- Start the test server
+Or with npm:
+```bash
+cd test
+npm test
+```
 
-### Option 2: Manual Setup
+This will:
+- Set up the environment automatically
+- Start the WebSocket server
+- Run comprehensive automated tests
+- Show clear pass/fail results
+- Clean up automatically
+
+### Option 2: Manual Testing
+
+If you want to test manually in a browser:
+
+```bash
+cd test
+nix-shell --run "run-test"
+```
+
+Then open `test-client.html` in your web browser.
+
+### Option 3: Manual Setup
 
 1. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Start the test server:**
+2. **Run automated tests:**
+   ```bash
+   npm test
+   ```
+
+3. **Or start the test server manually:**
    ```bash
    npm start
    ```
-   or
-   ```bash
-   node test-server.js
-   ```
 
-3. **Open the test client:**
-   Open `test-client.html` in your web browser
-   
-   **Note:** Make sure you're running the server from the `test/` directory, or the client won't be able to find the WebSocket Hypermedia library.
+## What Gets Tested
 
-## What to Test
+The automated test suite covers all the core WebSocket Hypermedia functionality:
 
-The test demonstrates all the core WebSocket Hypermedia actions:
+### **Core Functionality**
+- **WebSocket Connection** - Basic connection establishment
+- **Options Passing** - Extra parameter handling (`verb|noun|subject|options`)
+- **Standard Actions** - `get_time`, `add_message`, `clear_messages`
+- **Server Communication** - Bidirectional message passing
+- **Error Handling** - Connection errors and timeouts
+- **Cleanup** - Automatic server shutdown
+
+### **Edge Cases & Hypermedia Patterns**
+- **Empty Content** - Handling empty HTML content gracefully
+- **Large Content** - Processing large HTML payloads efficiently
+- **Special Characters** - Unicode, HTML entities, and special chars
+- **Nested HTML** - Complex HTML structures and DOM manipulation
+- **Form Submission** - Form data handling and validation
+- **Concurrent Updates** - Multiple simultaneous message processing
+- **Invalid Element ID** - Graceful handling of missing elements
+- **Malformed Messages** - Robust parsing of invalid message formats
+- **Rapid Fire Messages** - High-frequency message handling
+- **Connection Recovery** - Reconnection and state recovery
+
+## Manual Testing
+
+If you want to test manually in a browser, the test demonstrates:
 
 - **update** - Replace content in elements
 - **append** - Add content to the end of elements  
@@ -80,9 +119,11 @@ The `shell.nix` file provides a reproducible development environment with:
 
 ### Available Commands in Nix Shell
 
-- `run-test` - Start the WebSocket server and run tests
+- `test` - Run automated test suite (recommended)
+- `run-test` - Start the WebSocket server for manual testing
 - `npm install` - Install dependencies
 - `npm start` - Start the server manually
+- `npm test` - Run automated test suite
 
 ## Troubleshooting
 
