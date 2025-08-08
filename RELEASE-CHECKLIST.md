@@ -37,6 +37,7 @@
 
 ### **1. Final Testing**
 ```bash
+nix-shell
 npm run build
 npm run test:local
 npm run lint
