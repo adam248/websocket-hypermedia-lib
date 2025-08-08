@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Live Dashboard Example</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric { font-size: 2em; font-weight: bold; color: #007bff; }
+        .label { color: #666; margin-bottom: 10px; }
+        .status { padding: 5px 10px; border-radius: 4px; display: inline-block; }
+        .status.online { background: #d4edda; color: #155724; }
+        .status.offline { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        #controls { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>📊 Live Dashboard Example</h1>
+    <p>This example demonstrates real-time data visualization using WebSocket Hypermedia.</p>
+    
+    <div id="controls">
+        <h3>Controls</h3>
+        <button onclick="sendCommand('refresh_metrics')">🔄 Refresh Metrics</button>
+        <button onclick="sendCommand('simulate_traffic')">🚗 Simulate Traffic</button>
+        <button onclick="sendCommand('generate_alert')">🚨 Generate Alert</button>
+        <button onclick="sendCommand('update_time')">⏰ Update Time</button>
+    </div>
+    
+    <div class="dashboard">
+        <div class="card">
+            <div class="label">Active Users</div>
+            <div class="metric" id="active-users">0</div>
+        </div>
+        
+        <div class="card">
+            <div class="label">Server Status</div>
+            <div id="server-status">
+                <span class="status offline">Offline</span>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="label">Response Time</div>
+            <div class="metric" id="response-time">0ms</div>
+        </div>
+        
+        <div class="card">
+            <div class="label">Current Time</div>
+            <div class="metric" id="current-time">--:--:--</div>
+        </div>
+        
+        <div class="card">
+            <div class="label">System Load</div>
+            <div class="metric" id="system-load">0%</div>
+        </div>
+        
+        <div class="card">
+            <div class="label">Alerts</div>
+            <div id="alerts">No alerts</div>
+        </div>
+    </div>
+    
+    <div id="connection-status" style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+        Connection Status: Connecting...
+    </div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        function sendCommand(command) {
+            if (window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send(command);
+            }
+        }
+        
+        // Update connection status
+        window.wsHypermedia.addEventListener('open', () => {
+            document.getElementById('connection-status').textContent = 'Connection Status: Connected';
+            document.getElementById('connection-status').style.background = '#d4edda';
+        });
+        
+        window.wsHypermedia.addEventListener('close', () => {
+            document.getElementById('connection-status').textContent = 'Connection Status: Disconnected';
+            document.getElementById('connection-status').style.background = '#f8d7da';
+        });
+        
+        // Custom handler for alerts
+        window.wsHypermedia.addMessageHandler('alerts', (element, html, elementId) => {
+            element.innerHTML = html;
+            // Add some visual feedback
+            element.style.animation = 'pulse 0.5s';
+            setTimeout(() => element.style.animation = '', 500);
+        });
+        
+        // Add CSS animation for alerts
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html> 

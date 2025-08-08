@@ -5,18 +5,18 @@
   "main": "dist/websocket-hypermedia.min.js",
   "files": [
     "dist/",
-    "websocket-hypermedia.js"
+    "src/websocket-hypermedia.js"
   ],
   "scripts": {
     "build": "npm run clean && npm run minify && npm run gzip && npm run size",
     "clean": "rm -rf dist && mkdir dist",
-    "minify": "terser websocket-hypermedia.js -o dist/websocket-hypermedia.min.js --compress --mangle",
+    "minify": "terser src/websocket-hypermedia.js -o dist/websocket-hypermedia.min.js --compress --mangle",
     "gzip": "gzip -c dist/websocket-hypermedia.min.js > dist/websocket-hypermedia.min.js.gz",
-    "size": "echo '📏 Library sizes:' && wc -c websocket-hypermedia.js dist/websocket-hypermedia.min.js dist/websocket-hypermedia.min.js.gz",
+    "size": "echo '📏 Library sizes:' && wc -c src/websocket-hypermedia.js dist/websocket-hypermedia.min.js dist/websocket-hypermedia.min.js.gz",
     "test": "cd test && npm test",
-    "test:local": "bash test.sh",
-    "lint": "eslint websocket-hypermedia.js",
-    "format": "prettier --write websocket-hypermedia.js",
+    "test:local": "bash scripts/test.sh",
+    "lint": "eslint src/websocket-hypermedia.js",
+    "format": "prettier --write src/websocket-hypermedia.js",
     "prepublishOnly": "npm run build && npm run test"
   },
   "keywords": [

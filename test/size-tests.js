@@ -9,7 +9,7 @@ const { gzipSync } = require('zlib');
 
 class SizeTests {
     constructor() {
-        this.libraryPath = path.join(__dirname, '..', 'websocket-hypermedia.js');
+        this.libraryPath = path.join(__dirname, '..', 'src', 'websocket-hypermedia.js');
     }
 
     // Size Test: Uncompressed Size Verification

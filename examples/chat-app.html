@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Hypermedia - Chat App Example</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+        #message-form { display: flex; gap: 10px; }
+        #message-input { flex: 1; padding: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .message { margin: 5px 0; padding: 5px; border-radius: 5px; }
+        .user-message { background: #e3f2fd; }
+        .system-message { background: #f5f5f5; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>💬 Real-Time Chat App</h1>
+    <p>This example demonstrates real-time messaging using WebSocket Hypermedia.</p>
+    
+    <div id="messages">
+        <div class="message system-message">Welcome to the chat! Messages will appear here in real-time.</div>
+    </div>
+    
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+    
+    <div id="status">Connecting...</div>
+    
+    <!-- One line to enable real-time updates! -->
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    
+    <script>
+        // Auto-scroll to bottom when new messages arrive
+        window.wsHypermedia.addMessageHandler('messages', (element, html, elementId) => {
+            element.insertAdjacentHTML('beforeend', html);
+            element.scrollTop = element.scrollHeight;
+        });
+        
+        // Handle form submission
+        document.getElementById('message-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (message && window.wsHypermedia.readyState === WebSocket.OPEN) {
+                window.wsHypermedia.send('chat_message', message);
+                input.value = '';
+            }
+        });
+        
+        // Update status based on connection
+        window.wsHypermedia.addEventListener('open', () => {
+            document.getElementById('status').textContent = 'Connected';
+            document.getElementById('status').style.color = 'green';
+        });
+        
+        window.wsHypermedia.addEventListener('close', () => {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').style.color = 'red';
+        });
+    </script>
+</body>
+</html> 

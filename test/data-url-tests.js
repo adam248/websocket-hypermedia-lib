@@ -40,7 +40,7 @@ class DataUrlTests {
 </head>
 <body>
     <div id="content">Waiting for connection...</div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Check if global instance was created
         if (window.wsHypermedia && window.wsHypermedia.readyState === WebSocket.CONNECTING) {
@@ -109,7 +109,7 @@ class DataUrlTests {
 </head>
 <body>
     <div id="content">Testing custom config...</div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Override with custom configuration
         if (window.wsHypermedia) {
@@ -171,7 +171,7 @@ class DataUrlTests {
 <body>
     <div id="content">Testing message handlers...</div>
     <div id="messages"></div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Add custom message handler to auto-initialized instance
         window.wsHypermedia.addMessageHandler('test_handler', (element, html, elementId) => {
@@ -227,7 +227,7 @@ class DataUrlTests {
 <body>
     <div id="content">Testing interactions...</div>
     <button data-action="refresh">Refresh</button>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Test interaction with auto-initialized instance
         document.body.addEventListener('click', (e) => {
@@ -283,7 +283,7 @@ class DataUrlTests {
 </head>
 <body>
     <div id="content">Testing error handling...</div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:9999"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:9999"></script>
     <script>
         // Test error handling with invalid URL
         if (window.wsHypermedia) {
@@ -320,8 +320,8 @@ class DataUrlTests {
 </head>
 <body>
     <div id="content">Testing multiple scripts...</div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Should only have one instance
         if (window.wsHypermedia && typeof window.wsHypermedia === 'object') {
@@ -377,7 +377,7 @@ class DataUrlTests {
 </head>
 <body>
     <div id="content">Testing URL formats...</div>
-    <script src="../websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+    <script src="../src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
     <script>
         // Test that the URL was parsed correctly
         if (window.wsHypermedia && window.wsHypermedia.url === 'ws://localhost:8765') {

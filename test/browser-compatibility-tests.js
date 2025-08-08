@@ -8,7 +8,7 @@ const path = require('path');
 
 class BrowserCompatibilityTests {
     constructor() {
-        this.libraryPath = path.join(__dirname, '..', 'websocket-hypermedia.js');
+        this.libraryPath = path.join(__dirname, '..', 'src', 'websocket-hypermedia.js');
     }
 
     // Browser Test: WebSocket API Support

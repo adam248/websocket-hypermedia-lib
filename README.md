@@ -18,7 +18,7 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 ## 🚀 Quick Start - One Line to Real-Time!
 
 ```html
-<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+<script src="src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
 ```
 
 **That's it!** Your page is now ready for real-time updates from the server. The library auto-initializes and creates a global `window.wsHypermedia` instance.
@@ -52,10 +52,25 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 - **📝 Collaborative Editing**: Live document editing
 - **🛒 E-commerce**: Live inventory and pricing
 
+## 📁 Project Structure
+
+```
+websocket-hypermedia-lib/
+├── 📁 src/                          # Source code
+│   └── websocket-hypermedia.js      # Main library file
+├── 📁 dist/                         # Built/compiled files
+├── 📁 docs/                         # User documentation
+├── 📁 examples/                     # Code examples
+├── 📁 test/                         # Test suite
+├── 📁 changelog/                    # Version history
+├── 📁 security/                     # Security documentation
+└── 📁 scripts/                      # Build scripts
+```
+
 ## 📖 Documentation
 
-📚 **[Complete Documentation](docs/websocket-hypermedia.md)** - Everything you need to know
-📖 **[API Reference](docs/WSHM-reference.md)** - Complete API documentation
+📚 **[Complete Documentation](docs/README.md)** - Everything you need to know
+📖 **[API Reference](docs/API.md)** - Complete API documentation
 
 The documentation includes:
 - **Tutorials**: Step-by-step guides to get started
@@ -70,7 +85,7 @@ The documentation includes:
 ### ⚡ **One-Line Real-Time Chat**
 ```html
 <div id="messages"></div>
-<script src="websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
+<script src="src/websocket-hypermedia.js" data-url="ws://localhost:8765"></script>
 ```
 **Server sends:** `append|messages|<p><strong>Alice:</strong> Hello world!</p>`  
 **Result:** Message appears instantly! ✨
@@ -111,10 +126,10 @@ document.body.addEventListener('click', (e) => {
 ### ⚡ **CDN (Recommended)**
 ```html
 <!-- Latest version -->
-<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@main/websocket-hypermedia.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@main/src/websocket-hypermedia.js"></script>
 
 <!-- Production-ready v1.0.0 -->
-<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.0.0/websocket-hypermedia.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.0.0/src/websocket-hypermedia.js"></script>
 
 <!-- Ultra-compressed v1.0.0 (1.4KB gzipped!) -->
 <script src="https://cdn.jsdelivr.net/gh/adam248/websocket-hypermedia-lib@v1.0.0/dist/websocket-hypermedia.min.js"></script>
@@ -123,7 +138,7 @@ document.body.addEventListener('click', (e) => {
 ### 📦 **Direct Download**
 ```bash
 # Source file (7.6KB)
-curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.0.0/websocket-hypermedia.js
+curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.0.0/src/websocket-hypermedia.js
 
 # Minified version (3.7KB)
 curl -O https://raw.githubusercontent.com/adam248/websocket-hypermedia-lib/v1.0.0/dist/websocket-hypermedia.min.js
