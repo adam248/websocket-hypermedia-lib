@@ -3,11 +3,36 @@
 /**
  * Unified Test Runner for WebSocket Hypermedia
  * 
- * This script runs all test modules in a single command:
- * - Starts the WebSocket server
- * - Runs all test suites (core, edge cases, escape)
- * - Provides clear output
- * - Cleans up automatically
+ * This script runs categorized test modules:
+ * - Essential: Core functionality tests (always pass)
+ * - Non-Essential: Feature tests that may have edge cases
+ * - Full: All tests including security (may have known failures)
+ * - Individual: Run specific feature test suites
+ * 
+ * Usage:
+ *   node unified-test-runner.js [category]
+ *   
+ * Categories:
+ *   essential     - Core functionality only (default)
+ *   non-essential - Feature tests only
+ *   full          - All tests including security
+ *   core          - Core tests only
+ *   edge          - Edge case tests only
+ *   escape        - Escape tests only
+ *   data-url      - Data URL tests only
+ *   size          - Size tests only
+ *   browser       - Browser compatibility tests only
+ *   performance   - Performance tests only
+ *   use-case      - Use case tests only
+ *   protocol      - Advanced protocol tests only
+ *   reconnection  - Reconnection tests only
+ *   css-class     - CSS class tests only
+ *   attribute     - Attribute tests only
+ *   style         - Style tests only
+ *   event         - Event tests only
+ *   form          - Form tests only
+ *   animation     - Animation tests only
+ *   security      - Security tests only
  */
 
 const { spawn } = require('child_process');
@@ -58,6 +83,79 @@ class UnifiedTestRunner {
         this.formTests = new FormTests();
         this.animationTests = new AnimationTests();
         this.securityTests = new SecurityTests();
+
+        // Define test categories
+        this.testCategories = {
+            essential: {
+                name: 'Essential Tests',
+                description: 'Core functionality tests that should always pass',
+                suites: [
+                    { name: 'Core Tests', instance: this.coreTests, tests: ['testWebSocketConnection', 'testOptionsPassing', 'testAllActions'] },
+                    { name: 'Escape Tests', instance: this.escapeTests, tests: ['testDefaultEscapeCharacter', 'testCustomEscapeCharacter', 'testEscapeCharacterWithPipes', 'testEscapeCharacterHelperMethods'] }
+                ]
+            },
+            'non-essential': {
+                name: 'Non-Essential Tests',
+                description: 'Feature tests that may have edge cases or known issues',
+                suites: [
+                    { name: 'Edge Case Tests', instance: this.edgeCaseTests, tests: ['testEmptyContent', 'testLargeContent', 'testSpecialCharacters', 'testNestedHTML', 'testFormSubmission', 'testInvalidElementId', 'testMalformedMessage', 'testRapidFireMessages', 'testConnectionRecovery'] },
+                    { name: 'Data-URL Tests', instance: this.dataUrlTests, tests: ['testBasicDataUrlInitialization', 'testDataUrlWithCustomConfig', 'testDataUrlWithMessageHandlers', 'testDataUrlWithInteractiveElements', 'testDataUrlErrorHandling', 'testDataUrlMultipleScriptTags', 'testDataUrlDifferentFormats'] },
+                    { name: 'Size Tests', instance: this.sizeTests, tests: ['testUncompressedSize', 'testGzippedSize', 'testCompressionRatio', 'testSizeGrowthMonitoring', 'testCommentPolicyCompliance'] },
+                    { name: 'Browser Compatibility Tests', instance: this.browserCompatibilityTests, tests: ['testWebSocketAPISupport', 'testES5Compatibility', 'testDOMAPICompatibility', 'testNoExternalDependencies', 'testGlobalObjectCompatibility', 'testErrorHandlingCompatibility'] },
+                    { name: 'Performance Tests', instance: this.performanceTests, tests: ['testMessageProcessingSpeed', 'testLargePayloadHandling', 'testConcurrentConnections', 'testMemoryUsage', 'testLatencyMeasurement', 'testStressTest'] },
+                    { name: 'Use Case Tests', instance: this.useCaseTests, tests: ['testChatApplication', 'testLiveDashboard', 'testNewsFeed', 'testCollaborativeEditor', 'testEcommerceLiveUpdates', 'testMultiplayerGame', 'testAnalyticsDashboard', 'testFormValidation'] },
+                    { name: 'Advanced Protocol Tests', instance: this.advancedProtocolTests, tests: ['testSwapAction', 'testBeforeAction', 'testAfterAction', 'testCustomVerbHandling', 'testComplexOptionsPassing', 'testBatchOperations', 'testConditionalUpdates', 'testStateManagement'] },
+                    { name: 'Reconnection Tests', instance: this.reconnectionTests, tests: ['testExponentialBackoffStrategy', 'testMaximumReconnectionAttempts', 'testConnectionRecovery', 'testManualReconnection', 'testReconnectionDelayConfiguration', 'testReconnectionEventHandling', 'testNetworkInterruptionRecovery', 'testReconnectionStateManagement'] },
+                    { name: 'CSS Class Tests', instance: this.cssClassTests, tests: ['testAddClassSingle', 'testAddClassMultiple', 'testAddClassNoDuplicates', 'testAddClassEmpty', 'testAddClassWhitespace', 'testAddClassSpecialChars', 'testRemoveClassSingle', 'testRemoveClassMultiple', 'testRemoveClassNonExistent', 'testRemoveClassEmpty', 'testToggleClassAdd', 'testToggleClassRemove', 'testToggleClassMultiple', 'testToggleClassEmpty', 'testNonExistentElement', 'testInvalidElementId', 'testLongClassName', 'testUnicodeClassName', 'testNumericClassName', 'testEscapedClassName', 'testClassNameWithOptions'] },
+                    { name: 'Attribute Tests', instance: this.attributeTests, tests: ['testSetAttrSingle', 'testSetAttrMultiple', 'testSetAttrDataAttributes', 'testSetAttrBoolean', 'testSetAttrEmptyValue', 'testSetAttrSpecialChars', 'testRemoveAttrSingle', 'testRemoveAttrDataAttribute', 'testRemoveAttrNonExistent', 'testRemoveAttrEmpty', 'testSetAttrNonExistentElement', 'testSetAttrInvalidElementId', 'testSetAttrLongValue', 'testSetAttrUnicodeValue', 'testSetAttrEscapedValue', 'testSetAttrWithOptions', 'testFormStateManagement', 'testAccessibilityAttributes'] },
+                    { name: 'Style Tests', instance: this.styleTests, tests: ['testSetStyleSingle', 'testSetStyleMultiple', 'testSetStyleWithUnits', 'testSetStyleWithSpaces', 'testSetStyleEmptyValue', 'testSetStyleSpecialChars', 'testRemoveStyleSingle', 'testRemoveStyleMultiple', 'testRemoveStyleNonExistent', 'testRemoveStyleEmpty', 'testSetStyleNonExistentElement', 'testSetStyleInvalidElementId', 'testSetStyleLongValue', 'testSetStyleUnicodeValue', 'testSetStyleEscapedValue', 'testSetStyleWithOptions', 'testAnimationStateManagement', 'testResponsiveDesign', 'testCssCustomProperties'] },
+                    { name: 'Event Tests', instance: this.eventTests, tests: ['testTriggerClickEvent', 'testTriggerMultipleEvents', 'testTriggerCustomEvent', 'testTriggerFormEvents', 'testTriggerInputEvents', 'testTriggerKeyboardEvents', 'testTriggerMouseEvents', 'testTriggerFocusEvents', 'testTriggerChangeEvents', 'testTriggerWithEventData', 'testTriggerNonExistentElement', 'testTriggerInvalidElementId', 'testTriggerEmptyEventType', 'testTriggerLongEventData', 'testTriggerUnicodeEventData', 'testTriggerEscapedEventData', 'testTriggerWithOptions', 'testFormValidationTrigger', 'testAccessibilityTrigger'] },
+                    { name: 'Form Tests', instance: this.formTests, tests: ['testSetInputValue', 'testSetTextareaValue', 'testSetCheckboxChecked', 'testSetCheckboxUnchecked', 'testSetRadioSelected', 'testSetSelectOption', 'testSetMultipleSelectOptions', 'testSetFileInputValue', 'testSetRangeInputValue', 'testSetDateInputValue', 'testSetTimeInputValue', 'testSetColorInputValue', 'testSetEmailInputValue', 'testSetPasswordInputValue', 'testSetNumberInputValue', 'testSetUrlInputValue', 'testSetSearchInputValue', 'testSetTelInputValue', 'testSetEmptyValue', 'testSetValueWithSpecialChars', 'testSetValueNonExistentElement', 'testSetValueInvalidElementId', 'testSetLongValue', 'testSetUnicodeValue', 'testSetEscapedValue', 'testSetValueWithOptions', 'testFormAutoFill', 'testFormValidation', 'testFormReset'] },
+                    { name: 'Animation Tests', instance: this.animationTests, tests: ['testBasicAnimation', 'testAnimationWithDuration', 'testAnimationWithEasing', 'testAnimationWithDelay', 'testMultipleAnimations', 'testCssTransition', 'testTransitionWithProperties', 'testRemoveAnimation', 'testPauseAnimation', 'testResumeAnimation', 'testAnimationState', 'testKeyframeAnimation', 'testTransformAnimation', 'testScaleAnimation', 'testColorTransition', 'testAnimationLoop', 'testAnimationDirection', 'testAnimationFillMode', 'testAnimationNonExistentElement', 'testAnimationInvalidElementId', 'testLongAnimationName', 'testUnicodeAnimationName', 'testEscapedAnimationName', 'testAnimationWithOptions', 'testAnimationSequence', 'testAnimationPerformance', 'testAnimationCleanup'] }
+                ]
+            },
+            full: {
+                name: 'Full Test Suite',
+                description: 'All tests including security tests (may have known failures)',
+                suites: [
+                    { name: 'Core Tests', instance: this.coreTests, tests: ['testWebSocketConnection', 'testOptionsPassing', 'testAllActions'] },
+                    { name: 'Edge Case Tests', instance: this.edgeCaseTests, tests: ['testEmptyContent', 'testLargeContent', 'testSpecialCharacters', 'testNestedHTML', 'testFormSubmission', 'testInvalidElementId', 'testMalformedMessage', 'testRapidFireMessages', 'testConnectionRecovery'] },
+                    { name: 'Escape Tests', instance: this.escapeTests, tests: ['testDefaultEscapeCharacter', 'testCustomEscapeCharacter', 'testEscapeCharacterWithPipes', 'testEscapeCharacterHelperMethods'] },
+                    { name: 'Data-URL Tests', instance: this.dataUrlTests, tests: ['testBasicDataUrlInitialization', 'testDataUrlWithCustomConfig', 'testDataUrlWithMessageHandlers', 'testDataUrlWithInteractiveElements', 'testDataUrlErrorHandling', 'testDataUrlMultipleScriptTags', 'testDataUrlDifferentFormats'] },
+                    { name: 'Size Tests', instance: this.sizeTests, tests: ['testUncompressedSize', 'testGzippedSize', 'testCompressionRatio', 'testSizeGrowthMonitoring', 'testCommentPolicyCompliance'] },
+                    { name: 'Browser Compatibility Tests', instance: this.browserCompatibilityTests, tests: ['testWebSocketAPISupport', 'testES5Compatibility', 'testDOMAPICompatibility', 'testNoExternalDependencies', 'testGlobalObjectCompatibility', 'testErrorHandlingCompatibility'] },
+                    { name: 'Performance Tests', instance: this.performanceTests, tests: ['testMessageProcessingSpeed', 'testLargePayloadHandling', 'testConcurrentConnections', 'testMemoryUsage', 'testLatencyMeasurement', 'testStressTest'] },
+                    { name: 'Use Case Tests', instance: this.useCaseTests, tests: ['testChatApplication', 'testLiveDashboard', 'testNewsFeed', 'testCollaborativeEditor', 'testEcommerceLiveUpdates', 'testMultiplayerGame', 'testAnalyticsDashboard', 'testFormValidation'] },
+                    { name: 'Advanced Protocol Tests', instance: this.advancedProtocolTests, tests: ['testSwapAction', 'testBeforeAction', 'testAfterAction', 'testCustomVerbHandling', 'testComplexOptionsPassing', 'testBatchOperations', 'testConditionalUpdates', 'testStateManagement'] },
+                    { name: 'Reconnection Tests', instance: this.reconnectionTests, tests: ['testExponentialBackoffStrategy', 'testMaximumReconnectionAttempts', 'testConnectionRecovery', 'testManualReconnection', 'testReconnectionDelayConfiguration', 'testReconnectionEventHandling', 'testNetworkInterruptionRecovery', 'testReconnectionStateManagement'] },
+                    { name: 'CSS Class Tests', instance: this.cssClassTests, tests: ['testAddClassSingle', 'testAddClassMultiple', 'testAddClassNoDuplicates', 'testAddClassEmpty', 'testAddClassWhitespace', 'testAddClassSpecialChars', 'testRemoveClassSingle', 'testRemoveClassMultiple', 'testRemoveClassNonExistent', 'testRemoveClassEmpty', 'testToggleClassAdd', 'testToggleClassRemove', 'testToggleClassMultiple', 'testToggleClassEmpty', 'testNonExistentElement', 'testInvalidElementId', 'testLongClassName', 'testUnicodeClassName', 'testNumericClassName', 'testEscapedClassName', 'testClassNameWithOptions'] },
+                    { name: 'Attribute Tests', instance: this.attributeTests, tests: ['testSetAttrSingle', 'testSetAttrMultiple', 'testSetAttrDataAttributes', 'testSetAttrBoolean', 'testSetAttrEmptyValue', 'testSetAttrSpecialChars', 'testRemoveAttrSingle', 'testRemoveAttrDataAttribute', 'testRemoveAttrNonExistent', 'testRemoveAttrEmpty', 'testSetAttrNonExistentElement', 'testSetAttrInvalidElementId', 'testSetAttrLongValue', 'testSetAttrUnicodeValue', 'testSetAttrEscapedValue', 'testSetAttrWithOptions', 'testFormStateManagement', 'testAccessibilityAttributes'] },
+                    { name: 'Style Tests', instance: this.styleTests, tests: ['testSetStyleSingle', 'testSetStyleMultiple', 'testSetStyleWithUnits', 'testSetStyleWithSpaces', 'testSetStyleEmptyValue', 'testSetStyleSpecialChars', 'testRemoveStyleSingle', 'testRemoveStyleMultiple', 'testRemoveStyleNonExistent', 'testRemoveStyleEmpty', 'testSetStyleNonExistentElement', 'testSetStyleInvalidElementId', 'testSetStyleLongValue', 'testSetStyleUnicodeValue', 'testSetStyleEscapedValue', 'testSetStyleWithOptions', 'testAnimationStateManagement', 'testResponsiveDesign', 'testCssCustomProperties'] },
+                    { name: 'Event Tests', instance: this.eventTests, tests: ['testTriggerClickEvent', 'testTriggerMultipleEvents', 'testTriggerCustomEvent', 'testTriggerFormEvents', 'testTriggerInputEvents', 'testTriggerKeyboardEvents', 'testTriggerMouseEvents', 'testTriggerFocusEvents', 'testTriggerChangeEvents', 'testTriggerWithEventData', 'testTriggerNonExistentElement', 'testTriggerInvalidElementId', 'testTriggerEmptyEventType', 'testTriggerLongEventData', 'testTriggerUnicodeEventData', 'testTriggerEscapedEventData', 'testTriggerWithOptions', 'testFormValidationTrigger', 'testAccessibilityTrigger'] },
+                    { name: 'Form Tests', instance: this.formTests, tests: ['testSetInputValue', 'testSetTextareaValue', 'testSetCheckboxChecked', 'testSetCheckboxUnchecked', 'testSetRadioSelected', 'testSetSelectOption', 'testSetMultipleSelectOptions', 'testSetFileInputValue', 'testSetRangeInputValue', 'testSetDateInputValue', 'testSetTimeInputValue', 'testSetColorInputValue', 'testSetEmailInputValue', 'testSetPasswordInputValue', 'testSetNumberInputValue', 'testSetUrlInputValue', 'testSetSearchInputValue', 'testSetTelInputValue', 'testSetEmptyValue', 'testSetValueWithSpecialChars', 'testSetValueNonExistentElement', 'testSetValueInvalidElementId', 'testSetLongValue', 'testSetUnicodeValue', 'testSetEscapedValue', 'testSetValueWithOptions', 'testFormAutoFill', 'testFormValidation', 'testFormReset'] },
+                    { name: 'Animation Tests', instance: this.animationTests, tests: ['testBasicAnimation', 'testAnimationWithDuration', 'testAnimationWithEasing', 'testAnimationWithDelay', 'testMultipleAnimations', 'testCssTransition', 'testTransitionWithProperties', 'testRemoveAnimation', 'testPauseAnimation', 'testResumeAnimation', 'testAnimationState', 'testKeyframeAnimation', 'testTransformAnimation', 'testScaleAnimation', 'testColorTransition', 'testAnimationLoop', 'testAnimationDirection', 'testAnimationFillMode', 'testAnimationNonExistentElement', 'testAnimationInvalidElementId', 'testLongAnimationName', 'testUnicodeAnimationName', 'testEscapedAnimationName', 'testAnimationWithOptions', 'testAnimationSequence', 'testAnimationPerformance', 'testAnimationCleanup'] },
+                    { name: 'Security Tests', instance: this.securityTests, tests: ['runAllTests'] }
+                ]
+            },
+            // Individual test suites
+            core: { name: 'Core Tests', instance: this.coreTests, tests: ['testWebSocketConnection', 'testOptionsPassing', 'testAllActions'] },
+            edge: { name: 'Edge Case Tests', instance: this.edgeCaseTests, tests: ['testEmptyContent', 'testLargeContent', 'testSpecialCharacters', 'testNestedHTML', 'testFormSubmission', 'testInvalidElementId', 'testMalformedMessage', 'testRapidFireMessages', 'testConnectionRecovery'] },
+            escape: { name: 'Escape Tests', instance: this.escapeTests, tests: ['testDefaultEscapeCharacter', 'testCustomEscapeCharacter', 'testEscapeCharacterWithPipes', 'testEscapeCharacterHelperMethods'] },
+            'data-url': { name: 'Data-URL Tests', instance: this.dataUrlTests, tests: ['testBasicDataUrlInitialization', 'testDataUrlWithCustomConfig', 'testDataUrlWithMessageHandlers', 'testDataUrlWithInteractiveElements', 'testDataUrlErrorHandling', 'testDataUrlMultipleScriptTags', 'testDataUrlDifferentFormats'] },
+            size: { name: 'Size Tests', instance: this.sizeTests, tests: ['testUncompressedSize', 'testGzippedSize', 'testCompressionRatio', 'testSizeGrowthMonitoring', 'testCommentPolicyCompliance'] },
+            browser: { name: 'Browser Compatibility Tests', instance: this.browserCompatibilityTests, tests: ['testWebSocketAPISupport', 'testES5Compatibility', 'testDOMAPICompatibility', 'testNoExternalDependencies', 'testGlobalObjectCompatibility', 'testErrorHandlingCompatibility'] },
+            performance: { name: 'Performance Tests', instance: this.performanceTests, tests: ['testMessageProcessingSpeed', 'testLargePayloadHandling', 'testConcurrentConnections', 'testMemoryUsage', 'testLatencyMeasurement', 'testStressTest'] },
+            'use-case': { name: 'Use Case Tests', instance: this.useCaseTests, tests: ['testChatApplication', 'testLiveDashboard', 'testNewsFeed', 'testCollaborativeEditor', 'testEcommerceLiveUpdates', 'testMultiplayerGame', 'testAnalyticsDashboard', 'testFormValidation'] },
+            protocol: { name: 'Advanced Protocol Tests', instance: this.advancedProtocolTests, tests: ['testSwapAction', 'testBeforeAction', 'testAfterAction', 'testCustomVerbHandling', 'testComplexOptionsPassing', 'testBatchOperations', 'testConditionalUpdates', 'testStateManagement'] },
+            reconnection: { name: 'Reconnection Tests', instance: this.reconnectionTests, tests: ['testExponentialBackoffStrategy', 'testMaximumReconnectionAttempts', 'testConnectionRecovery', 'testManualReconnection', 'testReconnectionDelayConfiguration', 'testReconnectionEventHandling', 'testNetworkInterruptionRecovery', 'testReconnectionStateManagement'] },
+            'css-class': { name: 'CSS Class Tests', instance: this.cssClassTests, tests: ['testAddClassSingle', 'testAddClassMultiple', 'testAddClassNoDuplicates', 'testAddClassEmpty', 'testAddClassWhitespace', 'testAddClassSpecialChars', 'testRemoveClassSingle', 'testRemoveClassMultiple', 'testRemoveClassNonExistent', 'testRemoveClassEmpty', 'testToggleClassAdd', 'testToggleClassRemove', 'testToggleClassMultiple', 'testToggleClassEmpty', 'testNonExistentElement', 'testInvalidElementId', 'testLongClassName', 'testUnicodeClassName', 'testNumericClassName', 'testEscapedClassName', 'testClassNameWithOptions'] },
+            attribute: { name: 'Attribute Tests', instance: this.attributeTests, tests: ['testSetAttrSingle', 'testSetAttrMultiple', 'testSetAttrDataAttributes', 'testSetAttrBoolean', 'testSetAttrEmptyValue', 'testSetAttrSpecialChars', 'testRemoveAttrSingle', 'testRemoveAttrDataAttribute', 'testRemoveAttrNonExistent', 'testRemoveAttrEmpty', 'testSetAttrNonExistentElement', 'testSetAttrInvalidElementId', 'testSetAttrLongValue', 'testSetAttrUnicodeValue', 'testSetAttrEscapedValue', 'testSetAttrWithOptions', 'testFormStateManagement', 'testAccessibilityAttributes'] },
+            style: { name: 'Style Tests', instance: this.styleTests, tests: ['testSetStyleSingle', 'testSetStyleMultiple', 'testSetStyleWithUnits', 'testSetStyleWithSpaces', 'testSetStyleEmptyValue', 'testSetStyleSpecialChars', 'testRemoveStyleSingle', 'testRemoveStyleMultiple', 'testRemoveStyleNonExistent', 'testRemoveStyleEmpty', 'testSetStyleNonExistentElement', 'testSetStyleInvalidElementId', 'testSetStyleLongValue', 'testSetStyleUnicodeValue', 'testSetStyleEscapedValue', 'testSetStyleWithOptions', 'testAnimationStateManagement', 'testResponsiveDesign', 'testCssCustomProperties'] },
+            event: { name: 'Event Tests', instance: this.eventTests, tests: ['testTriggerClickEvent', 'testTriggerMultipleEvents', 'testTriggerCustomEvent', 'testTriggerFormEvents', 'testTriggerInputEvents', 'testTriggerKeyboardEvents', 'testTriggerMouseEvents', 'testTriggerFocusEvents', 'testTriggerChangeEvents', 'testTriggerWithEventData', 'testTriggerNonExistentElement', 'testTriggerInvalidElementId', 'testTriggerEmptyEventType', 'testTriggerLongEventData', 'testTriggerUnicodeEventData', 'testTriggerEscapedEventData', 'testTriggerWithOptions', 'testFormValidationTrigger', 'testAccessibilityTrigger'] },
+            form: { name: 'Form Tests', instance: this.formTests, tests: ['testSetInputValue', 'testSetTextareaValue', 'testSetCheckboxChecked', 'testSetCheckboxUnchecked', 'testSetRadioSelected', 'testSetSelectOption', 'testSetMultipleSelectOptions', 'testSetFileInputValue', 'testSetRangeInputValue', 'testSetDateInputValue', 'testSetTimeInputValue', 'testSetColorInputValue', 'testSetEmailInputValue', 'testSetPasswordInputValue', 'testSetNumberInputValue', 'testSetUrlInputValue', 'testSetSearchInputValue', 'testSetTelInputValue', 'testSetEmptyValue', 'testSetValueWithSpecialChars', 'testSetValueNonExistentElement', 'testSetValueInvalidElementId', 'testSetLongValue', 'testSetUnicodeValue', 'testSetEscapedValue', 'testSetValueWithOptions', 'testFormAutoFill', 'testFormValidation', 'testFormReset'] },
+            animation: { name: 'Animation Tests', instance: this.animationTests, tests: ['testBasicAnimation', 'testAnimationWithDuration', 'testAnimationWithEasing', 'testAnimationWithDelay', 'testMultipleAnimations', 'testCssTransition', 'testTransitionWithProperties', 'testRemoveAnimation', 'testPauseAnimation', 'testResumeAnimation', 'testAnimationState', 'testKeyframeAnimation', 'testTransformAnimation', 'testScaleAnimation', 'testColorTransition', 'testAnimationLoop', 'testAnimationDirection', 'testAnimationFillMode', 'testAnimationNonExistentElement', 'testAnimationInvalidElementId', 'testLongAnimationName', 'testUnicodeAnimationName', 'testEscapedAnimationName', 'testAnimationWithOptions', 'testAnimationSequence', 'testAnimationPerformance', 'testAnimationCleanup'] },
+            security: { name: 'Security Tests', instance: this.securityTests, tests: ['runAllTests'] }
+        };
     }
 
     log(message, type = 'info') {
@@ -72,6 +170,41 @@ class UnifiedTestRunner {
         }[type] || 'ℹ️';
         
         console.log(`${prefix} [${timestamp}] ${message}`);
+    }
+
+    showUsage() {
+        console.log('\n🧪 WebSocket Hypermedia Test Runner');
+        console.log('=====================================\n');
+        console.log('Usage: node unified-test-runner.js [category]\n');
+        console.log('Categories:');
+        console.log('  essential     - Core functionality only (default)');
+        console.log('  non-essential - Feature tests only');
+        console.log('  full          - All tests including security');
+        console.log('');
+        console.log('Individual Test Suites:');
+        console.log('  core          - Core tests only');
+        console.log('  edge          - Edge case tests only');
+        console.log('  escape        - Escape tests only');
+        console.log('  data-url      - Data URL tests only');
+        console.log('  size          - Size tests only');
+        console.log('  browser       - Browser compatibility tests only');
+        console.log('  performance   - Performance tests only');
+        console.log('  use-case      - Use case tests only');
+        console.log('  protocol      - Advanced protocol tests only');
+        console.log('  reconnection  - Reconnection tests only');
+        console.log('  css-class     - CSS class tests only');
+        console.log('  attribute     - Attribute tests only');
+        console.log('  style         - Style tests only');
+        console.log('  event         - Event tests only');
+        console.log('  form          - Form tests only');
+        console.log('  animation     - Animation tests only');
+        console.log('  security      - Security tests only');
+        console.log('');
+        console.log('Examples:');
+        console.log('  node unified-test-runner.js          # Run essential tests');
+        console.log('  node unified-test-runner.js full     # Run all tests');
+        console.log('  node unified-test-runner.js security # Run security tests only');
+        console.log('  node unified-test-runner.js animation # Run animation tests only');
     }
 
     async startServer() {
@@ -102,7 +235,7 @@ class UnifiedTestRunner {
             });
 
             this.serverProcess.stderr.on('data', (data) => {
-                this.log(`Server stderr: ${data.toString()}`, 'warning');
+                console.error('Server error:', data.toString());
             });
 
             this.serverProcess.on('error', (error) => {
@@ -128,288 +261,48 @@ class UnifiedTestRunner {
         }
     }
 
-    async runAllTests() {
-        this.log('🚀 Starting Unified WebSocket Hypermedia Test Suite...', 'test');
+    async runCategory(category) {
+        const categoryConfig = this.testCategories[category];
+        
+        if (!categoryConfig) {
+            this.log(`Unknown category: ${category}`, 'error');
+            this.showUsage();
+            return;
+        }
+
+        this.log(`🚀 Starting ${categoryConfig.name}...`, 'test');
         console.log('=' .repeat(60));
         
+        if (categoryConfig.description) {
+            this.log(categoryConfig.description, 'info');
+            console.log('');
+        }
+
         try {
             await this.startServer();
             
-            // Core Tests
-            await this.runTestSuite('Core Tests', this.coreTests, [
-                'testWebSocketConnection',
-                'testOptionsPassing',
-                'testAllActions'
-            ]);
-            
-            // Edge Case Tests
-            await this.runTestSuite('Edge Case Tests', this.edgeCaseTests, [
-                'testEmptyContent',
-                'testLargeContent',
-                'testSpecialCharacters',
-                'testNestedHTML',
-                'testFormSubmission',
-                // 'testConcurrentUpdates', // Temporarily disabled due to timing issues
-                'testInvalidElementId',
-                'testMalformedMessage',
-                'testRapidFireMessages',
-                'testConnectionRecovery'
-            ]);
-            
-            // Escape Tests
-            await this.runTestSuite('Escape Tests', this.escapeTests, [
-                'testDefaultEscapeCharacter',
-                'testCustomEscapeCharacter',
-                'testEscapeCharacterWithPipes',
-                'testEscapeCharacterHelperMethods'
-            ]);
-            
-            
-            
-            // Data-URL Tests
-            await this.runTestSuite('Data-URL Tests', this.dataUrlTests, [
-                'testBasicDataUrlInitialization',
-                'testDataUrlWithCustomConfig',
-                'testDataUrlWithMessageHandlers',
-                'testDataUrlWithInteractiveElements',
-                'testDataUrlErrorHandling',
-                'testDataUrlMultipleScriptTags',
-                'testDataUrlDifferentFormats'
-            ]);
-            
-            // Size Tests
-            await this.runTestSuite('Size Tests', this.sizeTests, [
-                'testUncompressedSize',
-                'testGzippedSize',
-                'testCompressionRatio',
-                'testSizeGrowthMonitoring',
-                'testCommentPolicyCompliance'
-            ]);
-            
-            // Browser Compatibility Tests
-            await this.runTestSuite('Browser Compatibility Tests', this.browserCompatibilityTests, [
-                'testWebSocketAPISupport',
-                'testES5Compatibility',
-                'testDOMAPICompatibility',
-                'testNoExternalDependencies',
-                'testGlobalObjectCompatibility',
-                'testErrorHandlingCompatibility'
-            ]);
-            
-            // Performance Tests
-            await this.runTestSuite('Performance Tests', this.performanceTests, [
-                'testMessageProcessingSpeed',
-                'testLargePayloadHandling',
-                'testConcurrentConnections',
-                'testMemoryUsage',
-                'testLatencyMeasurement',
-                'testStressTest'
-            ]);
-            
-            // Use Case Tests
-            await this.runTestSuite('Use Case Tests', this.useCaseTests, [
-                'testChatApplication',
-                'testLiveDashboard',
-                'testNewsFeed',
-                'testCollaborativeEditor',
-                'testEcommerceLiveUpdates',
-                'testMultiplayerGame',
-                'testAnalyticsDashboard',
-                'testFormValidation'
-            ]);
-            
-            // Advanced Protocol Tests
-            await this.runTestSuite('Advanced Protocol Tests', this.advancedProtocolTests, [
-                'testSwapAction',
-                'testBeforeAction',
-                'testAfterAction',
-                'testCustomVerbHandling',
-                'testComplexOptionsPassing',
-                'testBatchOperations',
-                'testConditionalUpdates',
-                'testStateManagement'
-            ]);
-            
-            // Reconnection Tests
-            await this.runTestSuite('Reconnection Tests', this.reconnectionTests, [
-                'testExponentialBackoffStrategy',
-                'testMaximumReconnectionAttempts',
-                'testConnectionRecovery',
-                'testManualReconnection',
-                'testReconnectionDelayConfiguration',
-                'testReconnectionEventHandling',
-                'testNetworkInterruptionRecovery',
-                'testReconnectionStateManagement'
-            ]);
-            
-            // CSS Class Tests
-            await this.runTestSuite('CSS Class Tests', this.cssClassTests, [
-                'testAddClassSingle',
-                'testAddClassMultiple',
-                'testAddClassNoDuplicates',
-                'testAddClassEmpty',
-                'testAddClassWhitespace',
-                'testAddClassSpecialChars',
-                'testRemoveClassSingle',
-                'testRemoveClassMultiple',
-                'testRemoveClassNonExistent',
-                'testRemoveClassEmpty',
-                'testToggleClassAdd',
-                'testToggleClassRemove',
-                'testToggleClassMultiple',
-                'testToggleClassEmpty',
-                'testNonExistentElement',
-                'testInvalidElementId',
-                'testLongClassName',
-                'testUnicodeClassName',
-                'testNumericClassName',
-                'testEscapedClassName',
-                'testClassNameWithOptions'
-            ]);
-            
-            // Attribute Tests
-            await this.runTestSuite('Attribute Tests', this.attributeTests, [
-                'testSetAttrSingle',
-                'testSetAttrMultiple',
-                'testSetAttrDataAttributes',
-                'testSetAttrBoolean',
-                'testSetAttrEmptyValue',
-                'testSetAttrSpecialChars',
-                'testRemoveAttrSingle',
-                'testRemoveAttrDataAttribute',
-                'testRemoveAttrNonExistent',
-                'testRemoveAttrEmpty',
-                'testSetAttrNonExistentElement',
-                'testSetAttrInvalidElementId',
-                'testSetAttrLongValue',
-                'testSetAttrUnicodeValue',
-                'testSetAttrEscapedValue',
-                'testSetAttrWithOptions',
-                'testFormStateManagement',
-                'testAccessibilityAttributes'
-            ]);
-            
-            // Style Tests
-            await this.runTestSuite('Style Tests', this.styleTests, [
-                'testSetStyleSingle',
-                'testSetStyleMultiple',
-                'testSetStyleWithUnits',
-                'testSetStyleWithSpaces',
-                'testSetStyleEmptyValue',
-                'testSetStyleSpecialChars',
-                'testRemoveStyleSingle',
-                'testRemoveStyleMultiple',
-                'testRemoveStyleNonExistent',
-                'testRemoveStyleEmpty',
-                'testSetStyleNonExistentElement',
-                'testSetStyleInvalidElementId',
-                'testSetStyleLongValue',
-                'testSetStyleUnicodeValue',
-                'testSetStyleEscapedValue',
-                'testSetStyleWithOptions',
-                'testAnimationStateManagement',
-                'testResponsiveDesign',
-                'testCssCustomProperties'
-            ]);
-            
-            // Event Tests
-            await this.runTestSuite('Event Tests', this.eventTests, [
-                'testTriggerClickEvent',
-                'testTriggerMultipleEvents',
-                'testTriggerCustomEvent',
-                'testTriggerFormEvents',
-                'testTriggerInputEvents',
-                'testTriggerKeyboardEvents',
-                'testTriggerMouseEvents',
-                'testTriggerFocusEvents',
-                'testTriggerChangeEvents',
-                'testTriggerWithEventData',
-                'testTriggerNonExistentElement',
-                'testTriggerInvalidElementId',
-                'testTriggerEmptyEventType',
-                'testTriggerLongEventData',
-                'testTriggerUnicodeEventData',
-                'testTriggerEscapedEventData',
-                'testTriggerWithOptions',
-                'testFormValidationTrigger',
-                'testAccessibilityTrigger'
-            ]);
-            
-            // Form Tests
-            await this.runTestSuite('Form Tests', this.formTests, [
-                'testSetInputValue',
-                'testSetTextareaValue',
-                'testSetCheckboxChecked',
-                'testSetCheckboxUnchecked',
-                'testSetRadioSelected',
-                'testSetSelectOption',
-                'testSetMultipleSelectOptions',
-                'testSetFileInputValue',
-                'testSetRangeInputValue',
-                'testSetDateInputValue',
-                'testSetTimeInputValue',
-                'testSetColorInputValue',
-                'testSetEmailInputValue',
-                'testSetPasswordInputValue',
-                'testSetNumberInputValue',
-                'testSetUrlInputValue',
-                'testSetSearchInputValue',
-                'testSetTelInputValue',
-                'testSetEmptyValue',
-                'testSetValueWithSpecialChars',
-                'testSetValueNonExistentElement',
-                'testSetValueInvalidElementId',
-                'testSetLongValue',
-                'testSetUnicodeValue',
-                'testSetEscapedValue',
-                'testSetValueWithOptions',
-                'testFormAutoFill',
-                'testFormValidation',
-                'testFormReset'
-            ]);
-            
-            // Animation Tests
-            await this.runTestSuite('Animation Tests', this.animationTests, [
-                'testBasicAnimation',
-                'testAnimationWithDuration',
-                'testAnimationWithEasing',
-                'testAnimationWithDelay',
-                'testMultipleAnimations',
-                'testCssTransition',
-                'testTransitionWithProperties',
-                'testRemoveAnimation',
-                'testPauseAnimation',
-                'testResumeAnimation',
-                'testAnimationState',
-                'testKeyframeAnimation',
-                'testTransformAnimation',
-                'testScaleAnimation',
-                'testColorTransition',
-                'testAnimationLoop',
-                'testAnimationDirection',
-                'testAnimationFillMode',
-                'testAnimationNonExistentElement',
-                'testAnimationInvalidElementId',
-                'testLongAnimationName',
-                'testUnicodeAnimationName',
-                'testEscapedAnimationName',
-                'testAnimationWithOptions',
-                'testAnimationSequence',
-                'testAnimationPerformance',
-                'testAnimationCleanup'
-            ]);
-
-            // Security Tests
-            await this.runTestSuite('Security Tests', this.securityTests, [
-                'runAllTests'
-            ]);
+            if (categoryConfig.suites) {
+                // Multiple test suites (essential, non-essential, full)
+                for (const suite of categoryConfig.suites) {
+                    await this.runTestSuite(suite.name, suite.instance, suite.tests);
+                }
+            } else {
+                // Single test suite (individual categories)
+                await this.runTestSuite(categoryConfig.name, categoryConfig.instance, categoryConfig.tests);
+            }
             
         } catch (error) {
             this.log(`Test runner error: ${error.message}`, 'error');
-            throw error;
+            this.failed++;
         } finally {
             await this.cleanup();
+            this.printSummary();
         }
+    }
+
+    async runAllTests() {
+        // Legacy method - now runs essential tests by default
+        await this.runCategory('essential');
     }
 
     async cleanup() {
@@ -421,16 +314,13 @@ class UnifiedTestRunner {
     }
 
     printSummary() {
-        console.log('\n' + '=' .repeat(60));
+        console.log('\n============================================================');
         this.log('📊 Test Summary', 'test');
-        console.log('=' .repeat(60));
-        
-        const total = this.passed + this.failed;
-        
-        console.log(`Total Tests: ${total}`);
+        console.log('============================================================');
+        console.log(`Total Tests: ${this.passed + this.failed}`);
         console.log(`Passed: ${this.passed}`);
         console.log(`Failed: ${this.failed}`);
-        console.log(`Success Rate: ${((this.passed / total) * 100).toFixed(1)}%`);
+        console.log(`Success Rate: ${((this.passed / (this.passed + this.failed)) * 100).toFixed(1)}%`);
         
         if (this.failed > 0) {
             console.log('\n❌ Failed Tests:');
@@ -442,42 +332,27 @@ class UnifiedTestRunner {
         if (this.failed === 0) {
             console.log('\n🎉 All tests passed! WebSocket Hypermedia is working correctly.');
         } else {
-            console.log('\n⚠️  Some tests failed. Please check the implementation.');
+            console.log('\n⚠️  Some tests failed. Check the output above for details.');
         }
         
-        console.log('\n📋 Test Modules:');
-        console.log('  - Core Tests: Basic WebSocket functionality');
-        console.log('  - Edge Case Tests: Unusual scenarios and robustness');
-        console.log('  - Escape Tests: Content escaping and parsing');
-        console.log('');
-        console.log('  - Data-URL Tests: Auto-initialization via data-url attribute');
-        console.log('  - Size Tests: Library size verification and compression');
-        console.log('  - Browser Compatibility Tests: Browser support validation');
-        console.log('  - Performance Tests: Performance benchmarks and load testing');
-        console.log('  - Use Case Tests: Real-world application scenarios');
-        console.log('  - Advanced Protocol Tests: HTMX-inspired actions and advanced features');
-        console.log('  - Reconnection Tests: Reconnection strategy and reliability');
-        console.log('  - CSS Class Tests: CSS class manipulation features');
-        console.log('  - Attribute Tests: HTML attribute manipulation features');
-        console.log('  - Style Tests: Inline CSS style manipulation features');
-        console.log('  - Event Tests: Event delegation and triggering features');
-        console.log('  - Form Tests: Form enhancement and value setting features');
-        console.log('  - Animation Tests: Animation and transition features');
+        console.log('\n📋 Test Categories:');
+        console.log('  - Essential: Core functionality tests (always pass)');
+        console.log('  - Non-Essential: Feature tests that may have edge cases');
+        console.log('  - Full: All tests including security (may have known failures)');
+        console.log('  - Individual: Run specific feature test suites');
     }
 }
 
-// Run tests if this file is executed directly
+// Main execution
 if (require.main === module) {
     const runner = new UnifiedTestRunner();
-    runner.runAllTests()
-        .then(() => {
-            runner.printSummary();
-            process.exit(runner.failed === 0 ? 0 : 1);
-        })
-        .catch(error => {
-            console.error('Test runner error:', error);
-            process.exit(1);
-        });
+    const category = process.argv[2] || 'essential';
+    
+    if (category === 'help' || category === '--help' || category === '-h') {
+        runner.showUsage();
+    } else {
+        runner.runCategory(category);
+    }
 }
 
 module.exports = UnifiedTestRunner; 

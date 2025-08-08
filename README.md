@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Size](https://img.shields.io/badge/size-17KB%20source%20%7C%207.4KB%20minified%20%7C%202.7KB%20gzipped-lightgrey.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
-[![Tests](https://img.shields.io/badge/tests-204%2F204%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
+[![Tests](https://img.shields.io/badge/tests-198%2F198%20passing-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Performance](https://img.shields.io/badge/performance-50K%20msg%2Fs-brightgreen.svg)](https://github.com/adam248/websocket-hypermedia-lib)
 [![Version](https://img.shields.io/badge/version-v1.1.0-blue.svg)](https://github.com/adam248/websocket-hypermedia-lib/releases/tag/v1.1.0)
 [![Stars](https://img.shields.io/github/stars/adam248/websocket-hypermedia-lib?style=social)](https://github.com/adam248/websocket-hypermedia-lib)
@@ -81,7 +81,7 @@ Transform your static HTML into dynamic, interactive experiences with just **one
 - **📏 Message Limits**: Configurable message size and parts limits
 - **🔐 Safe DOM**: Element ID validation and secure operations
 - **📝 Security Logging**: Optional security event monitoring
-- **✅ Battle-Tested**: 204/204 tests passing (100%)
+- **✅ Battle-Tested**: 198/198 tests passing (100%)
 
 ### 🎯 **Developer Experience**
 - **⚡ One-Line Setup**: Auto-initialization with data-url
@@ -472,7 +472,7 @@ cd test
 npm test
 ```
 
-This runs comprehensive automated tests (**204 test cases**) covering core functionality, edge cases, security features, performance benchmarks, animation system, and the primary data-url auto-initialization feature with clear results.
+This runs comprehensive automated tests (**198 test cases**) covering core functionality, edge cases, security features, performance benchmarks, animation system, and the primary data-url auto-initialization feature with clear results.
 
 #### Manual Testing (Optional)
 ```bash

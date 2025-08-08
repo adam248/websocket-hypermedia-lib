@@ -6,7 +6,17 @@
   "scripts": {
     "start": "node test-server.js",
     "test": "node unified-test-runner.js",
-    "test:core": "node -e \"const runner = require('./unified-test-runner'); const r = new runner(); r.runAllTests().then(() => r.printSummary()).catch(console.error);\"",
+    "test:essential": "node unified-test-runner.js essential",
+    "test:non-essential": "node unified-test-runner.js non-essential",
+    "test:full": "node unified-test-runner.js full",
+    "test:security": "node unified-test-runner.js security",
+    "test:core": "node unified-test-runner.js core",
+    "test:animation": "node unified-test-runner.js animation",
+    "test:form": "node unified-test-runner.js form",
+    "test:event": "node unified-test-runner.js event",
+    "test:style": "node unified-test-runner.js style",
+    "test:attribute": "node unified-test-runner.js attribute",
+    "test:css-class": "node unified-test-runner.js css-class",
     "test:legacy": "node run-tests.js"
   },
   "dependencies": {

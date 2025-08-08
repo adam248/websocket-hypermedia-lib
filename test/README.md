@@ -1,183 +1,224 @@
-# WebSocket Hypermedia Test
+# 🧪 WebSocket Hypermedia Test Suite
 
-A simple test setup to verify the WebSocket Hypermedia library works correctly.
+This directory contains comprehensive tests for the WebSocket Hypermedia library, organized into categories for different development needs.
 
-## Quick Start
-
-### Option 1: Automated Testing (Recommended)
-
-Run all tests with a single command:
+## 🚀 Quick Start
 
 ```bash
-cd test
-nix-shell --run "test"
-```
-
-Or with npm:
-```bash
-cd test
+# Run essential tests only (recommended for contributors)
 npm test
+
+# Or explicitly run essential tests
+npm run test:essential
+
+# Run all tests including security (may have known failures)
+npm run test:full
+
+# Run security tests only
+npm run test:security
 ```
 
-This will:
-- Set up the environment automatically
-- Start the WebSocket server
-- Run comprehensive automated tests
-- Show clear pass/fail results
-- Clean up automatically
+## 📋 Test Categories
 
-### Option 2: Manual Testing
-
-If you want to test manually in a browser:
+### **Essential Tests** (Default)
+Core functionality tests that should always pass. Perfect for contributors and CI/CD.
 
 ```bash
-cd test
-nix-shell --run "run-test"
+npm run test:essential
+# or simply: npm test
 ```
 
-Then open `test-client.html` in your web browser.
+**Includes:**
+- Core WebSocket functionality
+- Basic protocol handling
+- Escape character functionality
 
-### Option 3: Manual Setup
+### **Non-Essential Tests**
+Feature tests that may have edge cases or known issues. Good for feature development.
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+npm run test:non-essential
+```
 
-2. **Run automated tests:**
-   ```bash
-   npm test
-   ```
+**Includes:**
+- Edge case handling
+- Data-URL initialization
+- Size verification
+- Browser compatibility
+- Performance benchmarks
+- Use case scenarios
+- Advanced protocol features
+- Reconnection strategies
+- CSS class manipulation
+- Attribute manipulation
+- Style manipulation
+- Event handling
+- Form enhancement
+- Animation system
 
-3. **Or start the test server manually:**
-   ```bash
-   npm start
-   ```
+### **Full Test Suite**
+All tests including security tests. May have known failures for security vulnerabilities.
 
-### Test Structure
+```bash
+npm run test:full
+```
 
-The test suite is organized into modular test files:
+**Includes:**
+- All essential tests
+- All non-essential tests
+- Security vulnerability tests
 
-- **`core-tests.js`** - Basic WebSocket functionality
-- **`edge-case-tests.js`** - Unusual scenarios and robustness
-- **`escape-tests.js`** - Content escaping and parsing
+### **Individual Test Suites**
+Run specific feature test suites for focused development.
 
-- **`unified-test-runner.js`** - Main test runner that executes all modules
+```bash
+# Core functionality
+npm run test:core
 
-### Running Specific Test Modules
+# Animation system
+npm run test:animation
 
-You can run individual test modules by modifying the `unified-test-runner.js` file or by creating custom test runners.
+# Form enhancement
+npm run test:form
 
-## What Gets Tested
+# Event handling
+npm run test:event
 
-The automated test suite covers all the core WebSocket Hypermedia functionality (71 total tests):
+# Style manipulation
+npm run test:style
 
-### **Core Functionality** (3 tests)
-- **WebSocket Connection** - Basic connection establishment
-- **Options Passing** - Extra parameter handling (`verb|noun|subject|options`)
-- **Standard Actions** - `get_time`, `add_message`, `clear_messages`
-- **Server Communication** - Bidirectional message passing
-- **Error Handling** - Connection errors and timeouts
-- **Cleanup** - Automatic server shutdown
+# Attribute manipulation
+npm run test:attribute
 
-### **Edge Cases & Hypermedia Patterns** (9 tests)
-- **Empty Content** - Handling empty HTML content gracefully
-- **Large Content** - Processing large HTML payloads efficiently
-- **Special Characters** - Unicode, HTML entities, and special chars
-- **Nested HTML** - Complex HTML structures and DOM manipulation
-- **Form Submission** - Form data handling and validation
-- **Invalid Element ID** - Graceful handling of missing elements
-- **Malformed Messages** - Robust parsing of invalid message formats
-- **Rapid Fire Messages** - High-frequency message handling
-- **Connection Recovery** - Reconnection and state recovery
+# CSS class manipulation
+npm run test:css-class
 
-### **Escape Character Tests** (4 tests)
-- **Default Escape Character** - Basic tilde (~) escaping
-- **Custom Escape Character** - Configurable escape characters
-- **Escape with Pipes** - Content containing pipe characters
-- **Helper Methods** - sendEscaped() convenience methods
+# Security tests
+npm run test:security
+```
 
+## 🎯 When to Use Each Category
 
+### **For Contributors**
+- **Essential tests**: Always run these first
+- **Individual suites**: When working on specific features
+- **Non-essential tests**: Before submitting PRs
 
-### **Data-URL Auto-Initialization** (7 tests)
-- **Basic Data-URL Initialization** - Primary showcased feature testing
-- **Data-URL with Custom Config** - Hybrid auto/manual configuration
-- **Data-URL with Message Handlers** - Adding handlers to auto-initialized instance
-- **Data-URL with Interactive Elements** - Complete interactive workflow
-- **Data-URL Error Handling** - Graceful error handling with invalid URLs
-- **Data-URL Multiple Script Tags** - Proper handling of duplicate script tags
-- **Data-URL Different Formats** - URL format parsing and validation
+### **For Security Researchers**
+- **Security tests**: Focus on security vulnerabilities
+- **Full test suite**: Complete security assessment
 
-### **Size Verification** (5 tests)
-- **Uncompressed Size** - Verifies library stays under 14KB limit
-- **Gzipped Size** - Verifies gzipped size stays under 5KB limit
-- **Compression Ratio** - Ensures reasonable compression (15-50%)
-- **Size Growth Monitoring** - Prevents unexpected size increases
-- **Comment Policy Compliance** - Enforces no-comment policy in main file
+### **For CI/CD**
+- **Essential tests**: Fast feedback on core functionality
+- **Non-essential tests**: Comprehensive feature validation
 
-#### Comment Policy Enforcement
+### **For Development**
+- **Individual suites**: Focused testing during feature development
+- **Essential tests**: Quick validation of changes
 
-The test suite includes a dedicated test (`testCommentPolicyCompliance`) that:
-- Verifies only the single immutable comment exists at the top of the main file
-- Detects any additional comments (single-line `//` or multi-line `/* */`)
-- Reports specific line numbers and content of any violations
-- Ensures the no-comment policy is maintained during development
+## 🔧 Command Line Usage
 
-This test prevents accidental comment additions that would increase the library size unnecessarily.
+You can also run tests directly with the unified test runner:
 
-## Manual Testing
+```bash
+# Show help
+node unified-test-runner.js help
 
-If you want to test manually in a browser, the test demonstrates:
+# Run specific categories
+node unified-test-runner.js essential
+node unified-test-runner.js non-essential
+node unified-test-runner.js full
+node unified-test-runner.js security
 
-- **update** - Replace content in elements
-- **append** - Add content to the end of elements  
-- **remove** - Remove elements from the DOM
-- **Connection management** - Connect/disconnect handling
-- **Error handling** - Connection errors and reconnection
+# Run individual test suites
+node unified-test-runner.js animation
+node unified-test-runner.js form
+node unified-test-runner.js event
+node unified-test-runner.js style
+node unified-test-runner.js attribute
+node unified-test-runner.js css-class
+node unified-test-runner.js core
+node unified-test-runner.js edge
+node unified-test-runner.js escape
+node unified-test-runner.js data-url
+node unified-test-runner.js size
+node unified-test-runner.js browser
+node unified-test-runner.js performance
+node unified-test-runner.js use-case
+node unified-test-runner.js protocol
+node unified-test-runner.js reconnection
+```
 
-## Test Actions
+## 📊 Test Results
 
-Click the buttons to test different functionality:
+Each test run provides:
+- **Total Tests**: Number of tests executed
+- **Passed**: Number of successful tests
+- **Failed**: Number of failed tests
+- **Success Rate**: Percentage of tests that passed
+- **Detailed Output**: Specific test results and error messages
 
-- **Ping Server** - Tests basic communication
-- **Get Current Time** - Tests dynamic content updates
-- **Add Message** - Tests append functionality
-- **Clear Messages** - Tests update functionality
-- **Remove Status** - Tests remove functionality
-- **Send Echo** - Tests custom action handling
+## 🚨 Security Tests
 
+Security tests are designed to identify potential vulnerabilities:
 
+- **XSS Vulnerability Exposure**: Tests for unsafe HTML insertion
+- **JSON.parse() Without Validation**: Tests for prototype pollution risks
+- **Object.assign() Prototype Pollution**: Tests for prototype pollution protection
+- **Unlimited Message Size**: Tests for DoS vulnerabilities
+- **Element ID Injection**: Tests for DOM injection attacks
+- **WebSocket URL Injection**: Tests for SSRF vulnerabilities
+- **Event Data Injection**: Tests for event injection attacks
+- **Animation Keyframe Injection**: Tests for animation injection
+- **Style Property Injection**: Tests for CSS injection
+- **Attribute Value Injection**: Tests for attribute injection
 
-## Expected Behavior
+**Note**: Security tests may have known failures as they test for vulnerabilities that exist by design (server-side responsibilities) or are being addressed.
 
-1. When you open the page, it should connect automatically
-2. The content area should show "Welcome to WebSocket Hypermedia!"
-3. Clicking buttons should trigger real-time updates
-4. The connection status should show "Connected" when working
-5. You can disconnect and reconnect to test reconnection
+## 🏗️ Test Architecture
 
-## Nix Environment
+### **Test Categories**
+- **Essential**: Core functionality (always pass)
+- **Non-Essential**: Feature tests (may have edge cases)
+- **Full**: All tests including security (may have known failures)
+- **Individual**: Specific feature test suites
 
-The `shell.nix` file provides a reproducible development environment with:
+### **Test Types**
+- **Unit Tests**: Individual function testing
+- **Integration Tests**: WebSocket server interaction
+- **Security Tests**: Vulnerability identification
+- **Performance Tests**: Speed and memory benchmarks
+- **Compatibility Tests**: Browser and environment validation
 
-- **Node.js 20** - Latest LTS version
-- **npm** - Package manager
-- **run-test** - Custom command to start the test server
-- **Auto-run** - Automatically starts the test on fresh environments
+### **Test Infrastructure**
+- **WebSocket Server**: Test server for integration testing
+- **Unified Test Runner**: Categorized test execution
+- **Legacy Test Runner**: Original test system (still available)
 
-### Available Commands in Nix Shell
+## 🔄 Migration from Legacy Tests
 
-- `test` - Run automated test suite (recommended)
-- `run-test` - Start the WebSocket server for manual testing
-- `npm install` - Install dependencies
-- `npm start` - Start the server manually
-- `npm test` - Run automated test suite
+The legacy test system is still available:
 
-## Troubleshooting
+```bash
+npm run test:legacy
+```
 
-- Make sure the server is running on port 8765
-- Check browser console for any JavaScript errors
-- Verify the WebSocket connection in browser dev tools
-- Ensure `websocket-hypermedia.js` is in the parent directory (../websocket-hypermedia.js)
-- **Repository**: [https://github.com/adam248/websocket-hypermedia-lib](https://github.com/adam248/websocket-hypermedia-lib)
-- If using Nix, make sure you're in the nix-shell environment 
+This runs the original test suite without categorization.
+
+## 📝 Contributing
+
+When adding new tests:
+
+1. **Categorize appropriately**: Essential, non-essential, or individual
+2. **Update test categories**: Add to the appropriate category in `unified-test-runner.js`
+3. **Document test purpose**: Add comments explaining what the test validates
+4. **Consider security implications**: Add security tests for new features
+
+## 🎉 Success Criteria
+
+- **Essential tests**: Must always pass (100% success rate)
+- **Non-essential tests**: Should pass in normal conditions
+- **Security tests**: May have known failures (documented vulnerabilities)
+- **Individual suites**: Should pass for the specific feature being tested
+
+This categorized approach ensures that contributors can focus on the tests that matter most for their specific development needs while maintaining comprehensive coverage for the entire library. 
