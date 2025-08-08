@@ -125,6 +125,9 @@ build/
 dist/
 out/
 
+# Generated files (will be created by build pipeline)
+dist/
+
 # Node modules (root level)
 node_modules/
 package-lock.json
