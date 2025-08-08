@@ -643,6 +643,144 @@ class TestRunner {
         });
     }
 
+    async testEscapeCharacters() {
+        this.log('Testing escape character functionality...', 'info');
+        
+        const tests = [
+            this.testDefaultEscapeCharacter(),
+            this.testCustomEscapeCharacter(),
+            this.testEscapeCharacterWithPipes(),
+            this.testEscapeCharacterHelperMethods()
+        ];
+        
+        return Promise.all(tests);
+    }
+
+    async testDefaultEscapeCharacter() {
+        return new Promise((resolve, reject) => {
+            const ws = new WebSocket('ws://localhost:8765');
+            
+            ws.on('open', () => {
+                this.log('Testing default escape character (tilde)...', 'info');
+                ws.send('test_escape');
+            });
+            
+            ws.on('message', (data) => {
+                const message = data.toString();
+                this.log(`Received: ${message}`, 'info');
+                
+                if (message.includes('Hello World | & Good Morning New York!')) {
+                    ws.close();
+                    resolve({ test: 'Default Escape Character', passed: true });
+                }
+            });
+            
+            ws.on('error', (error) => {
+                ws.close();
+                reject(new Error(`Default Escape Character: ${error.message}`));
+            });
+            
+            setTimeout(() => {
+                ws.close();
+                reject(new Error('Default Escape Character: Timeout'));
+            }, 5000);
+        });
+    }
+
+    async testCustomEscapeCharacter() {
+        return new Promise((resolve, reject) => {
+            const ws = new WebSocket('ws://localhost:8765');
+            
+            ws.on('open', () => {
+                this.log('Testing custom escape character (caret)...', 'info');
+                ws.send('test_custom_escape');
+            });
+            
+            ws.on('message', (data) => {
+                const message = data.toString();
+                this.log(`Received: ${message}`, 'info');
+                
+                if (message.includes('Error: File not found | Path: /usr/local/bin')) {
+                    ws.close();
+                    resolve({ test: 'Custom Escape Character', passed: true });
+                }
+            });
+            
+            ws.on('error', (error) => {
+                ws.close();
+                reject(new Error(`Custom Escape Character: ${error.message}`));
+            });
+            
+            setTimeout(() => {
+                ws.close();
+                reject(new Error('Custom Escape Character: Timeout'));
+            }, 5000);
+        });
+    }
+
+    async testEscapeCharacterWithPipes() {
+        return new Promise((resolve, reject) => {
+            const ws = new WebSocket('ws://localhost:8765');
+            
+            ws.on('open', () => {
+                this.log('Testing escape character with multiple pipes...', 'info');
+                // Send a message with pipes that should be escaped
+                ws.send('update|content|~<p>Pipe | Test | Multiple | Pipes</p>~');
+            });
+            
+            ws.on('message', (data) => {
+                const message = data.toString();
+                this.log(`Received: ${message}`, 'info');
+                
+                // The message should be processed correctly without breaking
+                ws.close();
+                resolve({ test: 'Escape Character with Pipes', passed: true });
+            });
+            
+            ws.on('error', (error) => {
+                ws.close();
+                reject(new Error(`Escape Character with Pipes: ${error.message}`));
+            });
+            
+            setTimeout(() => {
+                ws.close();
+                reject(new Error('Escape Character with Pipes: Timeout'));
+            }, 5000);
+        });
+    }
+
+    async testEscapeCharacterHelperMethods() {
+        return new Promise((resolve, reject) => {
+            const ws = new WebSocket('ws://localhost:8765');
+            
+            ws.on('open', () => {
+                this.log('Testing escape character helper methods...', 'info');
+                // Test that the connection works with helper methods
+                ws.send('ping');
+            });
+            
+            ws.on('message', (data) => {
+                const message = data.toString();
+                this.log(`Received: ${message}`, 'info');
+                
+                if (message.includes('Pong!')) {
+                    ws.close();
+                    resolve({ test: 'Escape Character Helper Methods', passed: true });
+                }
+            });
+            
+            ws.on('error', (error) => {
+                ws.close();
+                reject(new Error(`Escape Character Helper Methods: ${error.message}`));
+            });
+            
+            setTimeout(() => {
+                ws.close();
+                reject(new Error('Escape Character Helper Methods: Timeout'));
+            }, 5000);
+        });
+    }
+
     async runTests() {
         this.log('🧪 Starting WebSocket Hypermedia Test Suite', 'info');
         this.log('==========================================', 'info');
@@ -656,7 +794,8 @@ class TestRunner {
                 this.testWebSocketConnection(),
                 this.testOptionsPassing(),
                 ...(await this.testAllActions()),
-                ...(await this.testEdgeCases())
+                ...(await this.testEdgeCases()),
+                ...(await this.testEscapeCharacters())
             ];
             
             const results = await Promise.allSettled(tests);

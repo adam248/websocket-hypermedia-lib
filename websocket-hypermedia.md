@@ -416,6 +416,7 @@ new WebSocketHypermedia(url, options)
 - `autoReconnect` (boolean): Enable automatic reconnection (default: `true`)
 - `reconnectDelay` (number): Base delay for reconnection attempts in ms (default: `1000`)
 - `maxReconnectAttempts` (number): Maximum reconnection attempts (default: `5`)
+- `escapeChar` (string): Character used to escape content with pipes (default: `~`)
 - `onConnect` (function): Called when connection is established
 - `onDisconnect` (function): Called when connection is lost
 - `onError` (function): Called when an error occurs
@@ -472,6 +473,40 @@ Remove a custom message handler.
 **Parameters:**
 - `verb` (string): Verb to remove handler for
 
+##### `sendEscaped(verb, noun, subject, ...options)`
+Send a message with automatically escaped content.
+
+**Parameters:**
+- `verb` (string): Action to perform
+- `noun` (string): Target element ID
+- `subject` (string): Content to send (will be automatically escaped)
+- `...options` (string): Additional parameters
+
+**Example:**
+```javascript
+// Automatically wraps content in escape characters
+ws.sendEscaped('update', 'content', '<p>Hello World | & Good Morning New York!</p>');
+// Sends: update|content|~<p>Hello World | & Good Morning New York!</p>~
+```
+
+##### `createMessage(verb, noun, subject, ...options)`
+Create a properly formatted message string.
+
+**Parameters:**
+- `verb` (string): Action to perform
+- `noun` (string): Target element ID
+- `subject` (string): Content to include
+- `...options` (string): Additional parameters
+
+**Returns:**
+- `string`: Formatted message
+
+**Example:**
+```javascript
+const message = ws.createMessage('update', 'content', '<p>Hello World</p>', 'priority-high');
+// Returns: update|content|<p>Hello World</p>|priority-high
+```
+
 #### Properties
 
 ##### `readyState`
@@ -498,6 +533,69 @@ The WSHM protocol follows a simple `verb|noun|subject` pattern for all messages,
 - **extraParams**: Optional additional parameters (e.g., `code-black`, `priority-high`, `user-id-123`)
 
 This pattern makes the protocol intuitive and extensible. When extending the protocol, follow this same pattern to maintain consistency. Extra parameters are transparently passed through to both server and client handlers.
+
+### Escape Character Support
+
+When your content contains pipe characters (`|`), you need to escape them to prevent parsing errors. The library supports a configurable escape character (default: `~`) to wrap content containing pipes.
+
+#### Default Escape Character (Tilde)
+
+**Example with pipes in content:**
+```javascript
+// This would break the protocol:
+ws.send('update|content|<p>Hello World | & Good Morning New York!</p>');
+
+// Use tilde to escape content with pipes:
+ws.send('update|content|~<p>Hello World | & Good Morning New York!</p>~');
+```
+
+#### Custom Escape Character
+
+You can configure a different escape character when creating the WebSocket instance:
+
+```javascript
+const ws = new WebSocketHypermedia("ws://localhost:8765", {
+    escapeChar: '^', // Use caret instead of tilde
+    // ... other options
+});
+
+// Now use caret for escaping:
+ws.send('update|content|^<p>Hello World | & Good Morning New York!</p>^');
+```
+
+#### Helper Methods
+
+The library provides convenient helper methods for working with escaped content:
+
+```javascript
+// Automatically escape content with pipes
+ws.sendEscaped('update', 'content', '<p>Hello World | & Good Morning New York!</p>');
+
+// Create properly formatted messages
+const message = ws.createMessage('update', 'content', '<p>Hello World | & Good Morning New York!</p>');
+ws.send(message);
+```
+
+#### Server-Side Escaping
+
+Your server should also use the same escape character when sending content with pipes:
+
+```python
+# Python example
+content_with_pipes = '<p>Hello World | & Good Morning New York!</p>'
+websocket.send(f"update|content|~{content_with_pipes}~")
+
+# Or with custom escape character
+websocket.send(f"update|content|^{content_with_pipes}^")
+```
+
+#### Why Tilde?
+
+The tilde (`~`) was chosen as the default escape character because:
+- **No JavaScript conflicts**: Unlike backticks, it's not used for template literals
+- **Rare in HTML/content**: Unlikely to appear in normal content
+- **Easy to type**: Accessible on all keyboards
+- **Clear visual distinction**: Easy to spot in messages
 
 ### Current Implementation
 ```

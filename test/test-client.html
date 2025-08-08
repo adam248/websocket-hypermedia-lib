@@ -118,6 +118,10 @@
         <button onclick="ws.send('clear_messages')">Clear Messages</button>
         <button onclick="sendEcho()">Send Echo</button>
         <button onclick="ws.send('special_update|breaking-news|Breaking news content|priority-high|code-black')">Special Update</button>
+        <button onclick="testEscapeCharacter()">Test Escape Character</button>
+        <button onclick="testCustomEscapeChar()">Test Custom Escape Char</button>
+        <button onclick="ws.send('test_escape')">Test Server Escape</button>
+        <button onclick="ws.send('test_custom_escape')">Test Server Custom Escape</button>
         <input type="text" id="echo-input" placeholder="Type message to echo..." style="padding: 8px; margin: 5px;">
     </div>
     
@@ -178,6 +182,26 @@
                 sendEcho();
             }
         });
+        
+        // Test escape character functionality
+        function testEscapeCharacter() {
+            // Test with default tilde escape character
+            const contentWithPipes = '<p>Hello World | & Good Morning New York!</p>';
+            ws.sendEscaped('update', 'content', contentWithPipes);
+        }
+        
+        // Test custom escape character
+        function testCustomEscapeChar() {
+            // Create a new instance with custom escape character
+            const wsCustom = new WebSocketHypermedia("ws://localhost:8765", {
+                escapeChar: '^',
+                onConnect: () => console.log('Custom escape char instance connected')
+            });
+            
+            // Test with caret escape character
+            const contentWithPipes = '<span>Error: File not found | Path: /usr/local/bin</span>';
+            wsCustom.sendEscaped('append', 'messages', contentWithPipes);
+        }
     </script>
 </body>
 </html> 

@@ -56,6 +56,18 @@ wss.on('connection', (ws) => {
                 ws.send(`update|${noun}|<p class="${code}">Special update with ${priority} priority!</p>|processed|${priority}|${code}`);
                 break;
                 
+            case 'test_escape':
+                // Test escape character functionality
+                const contentWithPipes = '<p>Hello World | & Good Morning New York!</p>';
+                ws.send(`update|content|~${contentWithPipes}~`);
+                break;
+                
+            case 'test_custom_escape':
+                // Test custom escape character (caret)
+                const logContent = '<span>Error: File not found | Path: /usr/local/bin</span>';
+                ws.send(`append|messages|^${logContent}^`);
+                break;
+                
             case 'form_submit':
                 // Handle form submission with validation
                 if (options.includes('validate')) {
@@ -89,4 +101,5 @@ wss.on('connection', (ws) => {
 
 console.log('Test server ready!');
 console.log('Available actions: ping, get_time, add_message, clear_messages, remove_status, echo:text');
-console.log('Options passing demo: special_update|breaking-news|content|priority-high|code-black'); 
+console.log('Options passing demo: special_update|breaking-news|content|priority-high|code-black');
+console.log('Escape character tests: test_escape, test_custom_escape'); 

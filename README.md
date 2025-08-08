@@ -146,6 +146,22 @@ after|content|<div>Footer</div>
 update|breaking-news|<p>Breaking news!</p>|priority-high|code-black
 ```
 
+### Escape Character Support
+
+When content contains pipe characters (`|`), use the tilde (`~`) escape character:
+
+```javascript
+// Content with pipes
+ws.send('update|content|~<p>Hello World | & Good Morning New York!</p>~');
+
+// Or use the helper method
+ws.sendEscaped('update', 'content', '<p>Hello World | & Good Morning New York!</p>');
+
+// Custom escape character
+const ws = new WebSocketHypermedia("ws://localhost:8765", { escapeChar: '^' });
+ws.send('update|content|^<p>Hello World | & Good Morning New York!</p>^');
+```
+
 ## 🌟 Use Cases
 
 - **💬 Chat Applications**: Real-time messaging

@@ -3,6 +3,8 @@
  * A minimal library for WebSocket-based hypermedia applications
  * 
  * Protocol: verb|noun|subject[|options...]
+ * 
+ * Escape Mechanism: Use configurable escape character (default: ~) to escape content containing pipe characters
  * Examples:
  * - update|content|<p>New content</p>
  * - append|news_list|<li>New item</li>
@@ -10,6 +12,8 @@
  * - replace|form|<form>...</form>
  * - remove|old_element|
  * - update|breaking-news|<p>Breaking news!</p>|priority-high|code-black
+ * - update|content|~<p>Hello World | & Good Morning New York!</p>~
+ * - append|log|~<span>Error: File not found | Path: /usr/local/bin</span>~
  * 
  * Usage:
  * ```javascript
@@ -21,6 +25,7 @@
  *     autoReconnect: true,
  *     reconnectDelay: 1000,
  *     maxReconnectAttempts: 5,
+ *     escapeChar: '~', // Custom escape character (default: ~)
  *     onConnect: () => console.log('Connected!'),
  *     onDisconnect: () => console.log('Disconnected!'),
  *     onError: (error) => console.error('Error:', error),
@@ -30,6 +35,12 @@
  * // Send actions
  * ws.send('ping');
  * ws.send('get_time');
+ * 
+ * // Send content with pipes using helper method
+ * ws.sendEscaped('update', 'content', '<p>Hello World | & Good Morning New York!</p>');
+ * 
+ * // Or manually escape content
+ * ws.send('update|content|~<p>Hello World | & Good Morning New York!</p>~');
  * 
  * // Add custom message handlers
  * ws.addMessageHandler('custom_verb', (element, subject, noun, options) => {
@@ -47,6 +58,7 @@ class WebSocketHypermedia {
             autoReconnect: true,
             reconnectDelay: 1000,
             maxReconnectAttempts: 5,
+            escapeChar: '~', // Default escape character for content with pipes
             onConnect: null,
             onDisconnect: null,
             onError: null,
@@ -121,7 +133,7 @@ class WebSocketHypermedia {
         console.log('Received message:', data);
         
         try {
-            const parts = data.split("|");
+            const parts = this.parseMessage(data);
             
             if (parts.length >= 3) {
                 const verb = parts[0];
@@ -136,6 +148,47 @@ class WebSocketHypermedia {
         } catch (error) {
             console.error('Error processing message:', error);
         }
+    }
+    
+    parseMessage(data) {
+        const parts = [];
+        let currentPart = '';
+        let i = 0;
+        let inEscapedContent = false;
+        const escapeChar = this.options.escapeChar;
+        
+        while (i < data.length) {
+            const char = data[i];
+            
+            if (char === escapeChar && !inEscapedContent) {
+                // Start of escaped content
+                inEscapedContent = true;
+                i++;
+                continue;
+            } else if (char === escapeChar && inEscapedContent) {
+                // End of escaped content
+                inEscapedContent = false;
+                i++;
+                continue;
+            } else if (char === '|' && !inEscapedContent) {
+                // Field separator (only when not in escaped content)
+                parts.push(currentPart);
+                currentPart = '';
+                i++;
+                continue;
+            }
+            
+            // Add character to current part
+            currentPart += char;
+            i++;
+        }
+        
+        // Add the last part
+        if (currentPart.length > 0 || parts.length > 0) {
+            parts.push(currentPart);
+        }
+        
+        return parts;
     }
     
     processAction(verb, noun, subject, options = []) {
@@ -190,6 +243,20 @@ class WebSocketHypermedia {
         } else {
             console.warn('WebSocket not ready, state:', this.ws?.readyState);
         }
+    }
+    
+    // Helper method to create escaped messages
+    createMessage(verb, noun, subject, ...options) {
+        const parts = [verb, noun, subject, ...options];
+        return parts.join('|');
+    }
+    
+    // Helper method to send escaped content
+    sendEscaped(verb, noun, subject, ...options) {
+        const escapeChar = this.options.escapeChar;
+        const escapedSubject = `${escapeChar}${subject}${escapeChar}`;
+        const message = this.createMessage(verb, noun, escapedSubject, ...options);
+        this.send(message);
     }
     
     addMessageHandler(action, handler) {
