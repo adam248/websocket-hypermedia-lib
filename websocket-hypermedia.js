@@ -2,13 +2,14 @@
  * WebSocket Hypermedia Core Library
  * A minimal library for WebSocket-based hypermedia applications
  * 
- * Protocol: action|elementId|html
+ * Protocol: verb|noun|subject[|options...]
  * Examples:
  * - update|content|<p>New content</p>
  * - append|news_list|<li>New item</li>
  * - prepend|messages|<div>New message</div>
  * - replace|form|<form>...</form>
  * - remove|old_element|
+ * - update|breaking-news|<p>Breaking news!</p>|priority-high|code-black
  * 
  * Usage:
  * ```javascript
@@ -31,12 +32,12 @@
  * ws.send('get_time');
  * 
  * // Add custom message handlers
- * ws.addMessageHandler('custom_action', (element, html, elementId) => {
+ * ws.addMessageHandler('custom_verb', (element, subject, noun, options) => {
  *     // Custom handling logic
  * });
  * ```
  * 
- * Size: ~6.0KB uncompressed, ~1.8KB gzipped
+ * Size: ~7.3KB uncompressed, ~2.2KB gzipped
  */
 
 class WebSocketHypermedia {
@@ -123,39 +124,63 @@ class WebSocketHypermedia {
             const parts = data.split("|");
             
             if (parts.length >= 3) {
-                const [action, elementId, html] = parts;
-                this.processAction(action, elementId, html);
+                const verb = parts[0];
+                const noun = parts[1];
+                const subject = parts[2];
+                const options = parts.slice(3); // Capture all additional parameters
+                
+                this.processAction(verb, noun, subject, options);
             } else {
-                console.warn('Invalid message format. Expected: action|elementId|html, got:', data);
+                console.warn('Invalid message format. Expected: verb|noun|subject[|options...], got:', data);
             }
         } catch (error) {
             console.error('Error processing message:', error);
         }
     }
     
-    processAction(action, elementId, html) {
-        const element = document.getElementById(elementId);
+    processAction(verb, noun, subject, options = []) {
+        const element = document.getElementById(noun);
         
         if (!element) {
-            console.warn('Element not found:', elementId);
+            console.warn('Element not found:', noun);
             return;
         }
         
-        const customHandler = this.messageHandlers.get(action);
+        // Check for custom handler first (for UI/UX enhancements only)
+        const customHandler = this.messageHandlers.get(verb);
         if (customHandler) {
-            customHandler(element, html, elementId);
+            // Pass options to custom handlers
+            customHandler(element, subject, noun, options);
             return;
         }
         
+        // Default server-controlled actions (HTMX-inspired)
         const actions = {
-            update: () => element.innerHTML = html,
-            append: () => element.insertAdjacentHTML('beforeend', html),
-            prepend: () => element.insertAdjacentHTML('afterbegin', html),
-            replace: () => element.outerHTML = html,
-            remove: () => element.remove()
+            update: () => element.innerHTML = subject,
+            append: () => element.insertAdjacentHTML('beforeend', subject),
+            prepend: () => element.insertAdjacentHTML('afterbegin', subject),
+            replace: () => element.outerHTML = subject,
+            remove: () => element.remove(),
+            // HTMX-inspired actions
+            swap: () => element.outerHTML = subject,
+            before: () => element.insertAdjacentHTML('beforebegin', subject),
+            after: () => element.insertAdjacentHTML('afterend', subject)
         };
         
-        actions[action]?.() || console.warn('Unknown action:', action);
+        if (actions[verb]) {
+            actions[verb]();
+            // Log options for debugging (but don't break functionality)
+            if (options.length > 0) {
+                console.log(`Verb '${verb}' executed with options:`, options);
+            }
+        } else {
+            // Unknown verbs are logged but don't break the system
+            // This allows server-side extensibility without client changes
+            console.warn('Unknown verb:', verb, '- Server can extend protocol without client updates');
+            if (options.length > 0) {
+                console.log('Options received:', options);
+            }
+        }
     }
     
     send(action) {
